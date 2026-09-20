@@ -68,7 +68,10 @@ class JevClient:
                 raise ValueError("choice outside criteria")
             if kind in ("choice", "score"):
                 answer.confidence(name)
-        tokens = parsed.get("usage", {}).get("input_tokens", 0)
+        usage = parsed.get("usage", {})
+        if not isinstance(usage, dict):
+            raise ValueError("usage must be an object")
+        tokens = usage.get("input_tokens", 0)
         if type(tokens) is not int or tokens < 0:
             raise ValueError("invalid token usage")
         self.input_tokens += tokens
@@ -124,5 +127,6 @@ class MockClient(JevClient):
         return self._answer(raw, canonical(response), questions)
 
     def finish(self):
-        if next(self._responses, None) is not None:
+        exhausted = object()
+        if next(self._responses, exhausted) is not exhausted:
             raise ValueError("unused mock responses")

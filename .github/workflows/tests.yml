@@ -1,6 +1,5 @@
 name: mock-only tests
-# Manual only while the operator has paused testing.
-on: workflow_dispatch
+on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
