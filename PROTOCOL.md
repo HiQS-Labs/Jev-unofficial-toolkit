@@ -48,5 +48,6 @@ includes the explicit crash and `expects_edits` rules. Replaying historical answ
 does not validate that wording. Its hash identifies this toolkit's new question
 set; historical request hashes remain separately identified.
 
-Testing is paused by operator instruction. The final handoff-based implementation
-has not been validated; the manual CI workflow has not been dispatched.
+The operator authorized mock-only validation. The suite and shipped fixture
+replays pass; CI runs the offline suite on pushes and pull requests. No live
+request was made. See [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4).

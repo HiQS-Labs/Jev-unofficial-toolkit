@@ -2,7 +2,7 @@
 
 **The classification labels behind these numbers are a three-model consensus, not human gold.** Agreement with those labels can reflect shared model errors. The ATE benchmark is synthetic with labels known by construction; its separate error-log reference is Gemma, not that classification consensus.
 
-These are historical findings from the read-only [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff), interpreted under [issue #1](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1). The final toolkit revision has not been tested at the operator's request. Its fixtures and test assertions target these receipts; this page does not claim new live measurements or completed acceptance.
+These are historical findings from the read-only [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff), interpreted under [issue #1](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1). The toolkit's mock suite and fixture replays verify the scoring within the limits described below; see [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4). This page does not claim new live measurements or reconstruction of missing probability data.
 
 | Use case | Recorded evidence | Verdict and boundary |
 | --- | --- | --- |

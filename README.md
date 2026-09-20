@@ -4,7 +4,7 @@
 
 [Jev](https://docs.typesafe.ai/introduction) is TypeSafe's decision model: it evaluates state against typed questions and returns answers that software can use directly. Choice selects a label; Score returns a rubric value; both include confidence and probabilities. Noul returns a yes-probability without separate confidence. Jev is not a text generator. This independent toolkit adds provenance hashes, frozen questions and inputs, blind-label commitments, confidence gates, ordered mocks, and evaluation around the pinned `jev-1.13.0` endpoint.
 
-**Build status:** the final handoff-based implementation is awaiting tests at the operator's request. The examples below are commands for when testing resumes, not claims that this revision passed. No live API request has been made for this build. CI is manual-dispatch only while testing is paused.
+**Build status:** mock-only tests and all shipped fixture replays pass. CI runs the same offline suite on pushes and pull requests, and supports manual dispatch. No live API request has been made for this build. These checks establish the scoring and guard behavior described below, not new model-performance measurements. See [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4).
 
 ## Use it without a key
 
@@ -19,7 +19,7 @@ python3 -m unittest discover -s tests -v
 
 Each output directory must be new. Tests block Python networking and external process execution, while transport tests use canned HTTP responses. The live client also refuses requests when `CI` is set. Nothing runs a live experiment in CI.
 
-The receipt targets are:
+The reproduced receipt metrics and their limits are:
 
 | Fixture | Expected result from the handoff | What replay can establish |
 | --- | --- | --- |
