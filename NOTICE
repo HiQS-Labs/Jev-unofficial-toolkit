@@ -1,0 +1,6 @@
+Jev-unofficial-toolkit — GPL-3.0 (see LICENSE).
+
+Portions under handoff/needle-fork/ originate from HiQS-Labs/Needle-fork (Apache License 2.0),
+commit f7c7047, and are redistributed here with attribution as that licence permits. Receipts
+and plan documents under handoff/ are HiQS-Labs' own material, included by the operator.
+No code from HiQS-Labs/XYZ-forge (AGPL-3.0) is included; see handoff/README.md.

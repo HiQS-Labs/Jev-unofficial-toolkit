@@ -1,0 +1,100 @@
+{"id": "fresh-001", "purpose_primary": "maintenance", "area_primary": "telemetry", "source": "agy", "agy_reason": "Relocating routine harness telemetry files out-of-tree to prevent merge collisions is a behaviour-preserving refactor and file reorganization falling under maintenance."}
+{"id": "fresh-002", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "agy", "agy_reason": "The code being modified is the Jog execution runner (utils/py/jog_run.py), which belongs to core_harness rather than the ledger itself."}
+{"id": "fresh-003", "purpose_primary": "bug_fix", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-004", "purpose_primary": "bug_fix", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-005", "purpose_primary": "feature_enhancement", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-006", "purpose_primary": "merge_closeout", "area_primary": "telemetry", "source": "consensus"}
+{"id": "fresh-007", "purpose_primary": "merge_closeout", "area_primary": "documentation_policy", "source": "consensus"}
+{"id": "fresh-008", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-009", "purpose_primary": "feature_enhancement", "area_primary": "ledger", "source": "consensus"}
+{"id": "fresh-010", "purpose_primary": "maintenance", "area_primary": "integrations", "source": "consensus"}
+{"id": "fresh-011", "purpose_primary": "documentation", "area_primary": "documentation_policy", "source": "consensus"}
+{"id": "fresh-012", "purpose_primary": "feature_enhancement", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-013", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-014", "purpose_primary": "planning_design", "area_primary": "integrations", "source": "consensus"}
+{"id": "fresh-015", "purpose_primary": "feature_enhancement", "area_primary": "ui", "source": "consensus"}
+{"id": "fresh-016", "purpose_primary": "feature_enhancement", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-017", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-018", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-019", "purpose_primary": "merge_closeout", "area_primary": "documentation_policy", "source": "consensus"}
+{"id": "fresh-020", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-021", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-022", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-023", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-024", "purpose_primary": "planning_design", "area_primary": "model_inference", "source": "agy", "agy_reason": "The issue's primary deliverable is a specification and contract defining the calibration seed for subsequent classifier training runs, aligning with planning_design."}
+{"id": "fresh-025", "purpose_primary": "research_evaluation", "area_primary": "uncertain", "source": "agy", "agy_reason": "The task evaluates an analytical timeline and task-start detection algorithm over static prompt captures, which does not modify an ingestion or sync component and lacks a clear match among listed areas."}
+{"id": "fresh-026", "purpose_primary": "bug_fix", "area_primary": "uncertain", "source": "consensus"}
+{"id": "fresh-027", "purpose_primary": "documentation", "area_primary": "documentation_policy", "source": "consensus"}
+{"id": "fresh-028", "purpose_primary": "bug_fix", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-029", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-030", "purpose_primary": "feature_enhancement", "area_primary": "ui", "source": "consensus"}
+{"id": "fresh-031", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-032", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "agy", "agy_reason": "The change resolves an environment PATH resolution failure within a scheduled launchd canary runner, which is CI/CD infrastructure rather than model inference logic."}
+{"id": "fresh-033", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-034", "purpose_primary": "bug_fix", "area_primary": "telemetry", "source": "consensus"}
+{"id": "fresh-035", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "agy", "agy_reason": "The failure and fix occur in the hosted post-merge workflow gate verifying test receipts, which represents CI/CD qualification infrastructure rather than the ledger database."}
+{"id": "fresh-036", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-037", "purpose_primary": "feature_enhancement", "area_primary": "ledger", "source": "consensus"}
+{"id": "fresh-038", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-039", "purpose_primary": "documentation", "area_primary": "ingestion_sync", "source": "agy", "agy_reason": "The documentation explains operational patterns for the git-pulse synchronization component (ingestion_sync), rather than general repository governance or policy."}
+{"id": "fresh-040", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-041", "purpose_primary": "maintenance", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-042", "purpose_primary": "feature_enhancement", "area_primary": "core_harness", "source": "agy", "agy_reason": "The PR introduces a batch of new capabilities and harness enhancements (such as xyz-init-clone, token auto-suffixing, and preflight warnings) rather than fixing a discrete defect."}
+{"id": "fresh-043", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-044", "purpose_primary": "bug_fix", "area_primary": "uncertain", "source": "consensus"}
+{"id": "fresh-045", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-046", "purpose_primary": "planning_design", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-047", "purpose_primary": "bug_fix", "area_primary": "ingestion_sync", "source": "agy", "agy_reason": "The fix targets the startup configuration of the pulse-server daemon, which is the core service powering the ingestion and sync subsystem."}
+{"id": "fresh-048", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-049", "purpose_primary": "maintenance", "area_primary": "dependencies", "source": "consensus"}
+{"id": "fresh-050", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-051", "purpose_primary": "feature_enhancement", "area_primary": "ui", "source": "consensus"}
+{"id": "fresh-052", "purpose_primary": "bug_fix", "area_primary": "telemetry", "source": "consensus"}
+{"id": "fresh-053", "purpose_primary": "feature_enhancement", "area_primary": "ui", "source": "consensus"}
+{"id": "fresh-054", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-055", "purpose_primary": "feature_enhancement", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-056", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-057", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-058", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "agy", "agy_reason": "The core deliverable of the work is an empirical capacity measurement and audit of the evaluation sample against quota constraints, making research_evaluation the primary purpose."}
+{"id": "fresh-059", "purpose_primary": "bug_fix", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-060", "purpose_primary": "feature_enhancement", "area_primary": "ledger", "source": "agy", "agy_reason": "The change modifies the document promotion validation logic in the reconciler, which governs the repository's ledger and PDDA lifecycle contracts."}
+{"id": "fresh-061", "purpose_primary": "bug_fix", "area_primary": "telemetry", "source": "consensus"}
+{"id": "fresh-062", "purpose_primary": "feature_enhancement", "area_primary": "ledger", "source": "consensus"}
+{"id": "fresh-063", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-064", "purpose_primary": "research_evaluation", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-065", "purpose_primary": "bug_fix", "area_primary": "ingestion_sync", "source": "agy", "agy_reason": "The PR resolves critical defects where discarded event identities and mount-dependent path hashes corrupted data preparation, making bug_fix the primary objective."}
+{"id": "fresh-066", "purpose_primary": "documentation", "area_primary": "documentation_policy", "source": "consensus"}
+{"id": "fresh-067", "purpose_primary": "feature_enhancement", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-068", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-069", "purpose_primary": "feature_enhancement", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-070", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-071", "purpose_primary": "bug_fix", "area_primary": "core_harness", "source": "agy", "agy_reason": "The modifications implement wall-clock guards, process-tree reaping, and lifecycle monitoring across scheduled jobs, which constitute the runtime's core_harness."}
+{"id": "fresh-072", "purpose_primary": "documentation", "area_primary": "documentation_policy", "source": "agy", "agy_reason": "The PR adds only capture documentation and changelog entries with no runtime code changes, directly matching documentation."}
+{"id": "fresh-073", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-074", "purpose_primary": "bug_fix", "area_primary": "uncertain", "source": "consensus"}
+{"id": "fresh-075", "purpose_primary": "feature_enhancement", "area_primary": "integrations", "source": "consensus"}
+{"id": "fresh-076", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-077", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "consensus"}
+{"id": "fresh-078", "purpose_primary": "bug_fix", "area_primary": "telemetry", "source": "consensus"}
+{"id": "fresh-079", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-080", "purpose_primary": "planning_design", "area_primary": "skills", "source": "agy", "agy_reason": "The issue documents failure modes identified during an audit and lays out a phased remediation roadmap for future work, fitting planning_design."}
+{"id": "fresh-081", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-082", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-083", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-084", "purpose_primary": "feature_enhancement", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-085", "purpose_primary": "feature_enhancement", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-086", "purpose_primary": "feature_enhancement", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-087", "purpose_primary": "maintenance", "area_primary": "ledger", "source": "consensus"}
+{"id": "fresh-088", "purpose_primary": "feature_enhancement", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-089", "purpose_primary": "research_evaluation", "area_primary": "ingestion_sync", "source": "consensus"}
+{"id": "fresh-090", "purpose_primary": "research_evaluation", "area_primary": "model_inference", "source": "consensus"}
+{"id": "fresh-091", "purpose_primary": "research_evaluation", "area_primary": "uncertain", "source": "agy", "agy_reason": "The PR implements an experimental prompt journey clustering and analysis script, which does not modify ingestion or sync machinery and does not cleanly match any predefined area."}
+{"id": "fresh-092", "purpose_primary": "planning_design", "area_primary": "uncertain", "source": "agy", "agy_reason": "The issue delivers a phased outcome plan and trial design for future experiments, while the target journey analysis domain lacks a clear match among listed component areas."}
+{"id": "fresh-093", "purpose_primary": "bug_fix", "area_primary": "skills", "source": "consensus"}
+{"id": "fresh-094", "purpose_primary": "feature_enhancement", "area_primary": "core_harness", "source": "consensus"}
+{"id": "fresh-095", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "agy", "agy_reason": "The PR resolves a critical integrity flaw where post-merge reconciliation authorized closeouts without verifying tested receipts on integrated code, making bug_fix the primary purpose."}
+{"id": "fresh-096", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "agy", "agy_reason": "The fix configures executable resolution for a scheduled launchd canary job, addressing automated runner infrastructure (ci_cd) rather than model inference."}
+{"id": "fresh-097", "purpose_primary": "feature_enhancement", "area_primary": "integrations", "source": "consensus"}
+{"id": "fresh-098", "purpose_primary": "bug_fix", "area_primary": "ledger", "source": "agy", "agy_reason": "The defect is in the ledger merge engine's duplicate natural-key detection refusing valid branch states, which is a ledger component issue rather than a skill script flaw."}
+{"id": "fresh-099", "purpose_primary": "bug_fix", "area_primary": "ci_cd", "source": "consensus"}
+{"id": "fresh-100", "purpose_primary": "feature_enhancement", "area_primary": "skills", "source": "consensus"}

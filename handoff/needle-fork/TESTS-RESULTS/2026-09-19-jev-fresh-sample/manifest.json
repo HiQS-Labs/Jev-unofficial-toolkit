@@ -1,0 +1,95 @@
+{
+ "annotators": {
+  "adjudicator": "operator on disagreements; agy (Gemini Flash 3.1 High) available as tie-breaker",
+  "claude": "Claude Opus 5 (1M context), this session, blind",
+  "codex": "Codex gpt-6-astra, extra-high reasoning, operator-run on another device, blind"
+ },
+ "cap": {
+  "HiQS-Labs/XYZ-forge": 55
+ },
+ "commitments": {
+  "claude_committed_utc": "2026-09-19T22:01:51.862645+00:00",
+  "claude_sha256": "34960b1cdcce0a0f2a2fc99218b4b964cccb1e97ecc7fa1b7f7b18917e8121ed",
+  "note": "sha256 of answers/claude.jsonl, labelled blind before Codex ran; the file itself is added to this branch only after answers/codex-astra-xh.jsonl is in, and must hash to this value."
+ },
+ "description_limit": 1800,
+ "excluded": [
+  [
+   "HiQS-Labs/Needle-fork",
+   "issue",
+   67
+  ],
+  [
+   "HiQS-Labs/Needle-fork",
+   "issue",
+   69
+  ],
+  [
+   "HiQS-Labs/XYZ-forge",
+   "issue",
+   709
+  ],
+  [
+   "HiQS-Labs/XYZ-forge",
+   "issue",
+   712
+  ],
+  [
+   "HiQS-Labs/XYZ-forge",
+   "pr",
+   714
+  ]
+ ],
+ "n": 100,
+ "pool_by_repo": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": 10,
+  "HiQS-Labs/AgentChorus-Skill": 0,
+  "HiQS-Labs/GitCanary-fork": 0,
+  "HiQS-Labs/HiQS-AI-Resolve-Catalog": 2,
+  "HiQS-Labs/MiniCPM-fork": 1,
+  "HiQS-Labs/Model-catalog": 1,
+  "HiQS-Labs/Needle-fork": 46,
+  "HiQS-Labs/Orca-fork": 0,
+  "HiQS-Labs/Orion-fork": 0,
+  "HiQS-Labs/XYZ-CLIO": 0,
+  "HiQS-Labs/XYZ-code-intelligence": 0,
+  "HiQS-Labs/XYZ-forge": 181,
+  "HiQS-Labs/XYZ-mini": 0,
+  "HiQS-Labs/XYZ-skills-army-mini": 0,
+  "HiQS-Labs/rebalanceOS": 32,
+  "HiQS-Labs/timeline-ui": 0
+ },
+ "public_repos": [
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot",
+  "HiQS-Labs/AgentChorus-Skill",
+  "HiQS-Labs/GitCanary-fork",
+  "HiQS-Labs/HiQS-AI-Resolve-Catalog",
+  "HiQS-Labs/MiniCPM-fork",
+  "HiQS-Labs/Model-catalog",
+  "HiQS-Labs/Needle-fork",
+  "HiQS-Labs/Orca-fork",
+  "HiQS-Labs/Orion-fork",
+  "HiQS-Labs/XYZ-CLIO",
+  "HiQS-Labs/XYZ-code-intelligence",
+  "HiQS-Labs/XYZ-forge",
+  "HiQS-Labs/XYZ-mini",
+  "HiQS-Labs/XYZ-skills-army-mini",
+  "HiQS-Labs/rebalanceOS",
+  "HiQS-Labs/timeline-ui"
+ ],
+ "quiz_sha256": "cb9e961692b0abbed103c995ea26ec3745d5c91b56b74e1aa6db283a1511be99",
+ "sample_by_kind": {
+  "issue": 57,
+  "pr": 43
+ },
+ "sample_by_repo": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": 5,
+  "HiQS-Labs/HiQS-AI-Resolve-Catalog": 1,
+  "HiQS-Labs/Needle-fork": 29,
+  "HiQS-Labs/XYZ-forge": 42,
+  "HiQS-Labs/rebalanceOS": 23
+ },
+ "seed": 20260919,
+ "since": "2026-09-10T00:00:00Z",
+ "snapshot_utc": "2026-09-19T21:55:51.909975+00:00"
+}
