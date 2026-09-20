@@ -18,6 +18,8 @@ class Answer:
             raise ValueError("response must identify the pinned model")
         if not isinstance(response.get("answers"), dict) or not response["answers"]:
             raise ValueError("response has no answers")
+        if any(not isinstance(item, dict) for item in response["answers"].values()):
+            raise ValueError("each answer must be an object")
         self.response = response
         self.model = response["model"]
         self.request_sha256 = request_sha256

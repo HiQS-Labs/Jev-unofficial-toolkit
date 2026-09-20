@@ -6,7 +6,7 @@ from collections import Counter
 from pathlib import Path
 
 from .answers import MODEL, number
-from .client import JevClient, MockClient, canonical, load_key, sha256
+from .client import JevClient, MockClient, canonical, load_key, request_bytes, sha256
 from .eval import (agreement, binary_counts, confidence_table, gate, metrics,
                    metrics_from_confusion)
 from .guard import (FROZEN_FIXTURES, POLICY, load_questions, repo_visibility,
@@ -78,6 +78,8 @@ def run(args):
         records = read_json(args.records)
         input_path = args.records
     keyed(records)
+    for record in records:
+        request_bytes(record["state"], questions)  # Validate the entire batch before spending.
     mock = args.mock_responses is not None
     if args.command == "replay" and not mock:
         raise ValueError("replay requires --mock-responses or --fixture")

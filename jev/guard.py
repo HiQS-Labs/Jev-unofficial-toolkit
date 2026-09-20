@@ -44,6 +44,9 @@ def verify(labels_file, manifest):
 
 
 def repo_visibility(repos, policy=POLICY, runner=None):
+    repos = list(repos)
+    if any(not isinstance(repo, str) or not repo.strip() for repo in repos):
+        raise ValueError("repository names must be nonempty strings")
     runner = runner or subprocess.run
     result = {}
     for repo in sorted(set(repos)):

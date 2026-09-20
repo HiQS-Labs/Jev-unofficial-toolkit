@@ -48,6 +48,36 @@ class HarnessTests(unittest.TestCase):
         self.assertFalse(gate(["a", "b"], ["a", "a"], [0.9, 0.9])["met"])
         self.assertTrue(gate(["a", "b"], ["a", "b"], [0.9, 0.9])["met"])
 
+    def test_unused_null_mock_refused(self):
+        client = MockClient([response(), None])
+        client.ask("synthetic", Q)
+        with self.assertRaises(ValueError):
+            client.finish()
+
+    def test_all_states_checked_before_first_request(self):
+        records = [{"id": "one", "repo": "HiQS-Labs/pub", "state": "synthetic"},
+                   {"id": "two", "repo": "HiQS-Labs/pub", "state": {}}]
+        record_file = self.tmp / "records.json"
+        record_file.write_bytes(canonical(records))
+        labels = self.tmp / "labels.json"; labels.write_text("[]")
+        questions = load_questions("work_purpose_v3")
+        manifest = self.tmp / "manifest.json"
+        manifest.write_bytes(canonical({"model": MODEL,
+            "quiz_sha256": sha256(record_file.read_bytes()),
+            "questions_sha256": sha256(canonical(questions)), **commit(labels),
+            "gate": {"axis": "purpose", "confidence_floor": 0.8,
+                     "min_accuracy": 0.9, "min_coverage": 0.6}}))
+        canned = json.loads((ROOT / "examples/fixtures/fresh-100/responses.json").read_text())[0]
+        answer = MockClient([canned]).ask("synthetic", questions)
+        args = ["eval", "--records", str(record_file), "--labels", str(labels),
+                "--manifest", str(manifest), "--live", "--out", str(self.tmp / "out")]
+        with patch.dict(os.environ, {"TYPESAFE_API_KEY": "test-only"}, clear=True), \
+                patch("jev.cli.repo_visibility", return_value={"HiQS-Labs/pub": "PUBLIC"}), \
+                patch.object(JevClient, "ask", return_value=answer) as ask, \
+                contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            main(args)
+        ask.assert_not_called()
+
     def test_empty_alignment_and_nonfinite_refused(self):
         for call in [lambda: metrics([], [], []), lambda: metrics(["a"], [], ["a"]),
                      lambda: gate([], [], []), lambda: confidence_table(["a"], ["a"], []),
@@ -154,6 +184,15 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaises(FileExistsError): write_results(self.tmp / "safe.json", {})
         for fixture in (ROOT / "examples/fixtures").glob("*/*.json"):
             safe_results(json.loads(fixture.read_text()))
+
+    def test_malformed_repository_and_response_shapes_refused(self):
+        for repo in (None, 7, {}, ""):
+            with self.assertRaises(ValueError): repo_visibility([repo])
+        for usage in (None, [], "invalid"):
+            bad = response(); bad["usage"] = usage
+            with self.assertRaises(ValueError): MockClient([bad]).ask("synthetic", Q)
+        bad = response(); bad["answers"]["purpose"] = []
+        with self.assertRaises(ValueError): MockClient([bad]).ask("synthetic", Q)
 
     def test_visibility_is_fail_closed(self):
         def runner(cmd, **kwargs):
