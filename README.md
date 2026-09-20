@@ -6,6 +6,14 @@
 
 **Build status:** all 18 offline tests and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. This repeated-sample check required recovery from the [probability-accessor defect](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); it is not a clean end-to-end CLI pass or a new unseen-sample result.
 
+## Getting Started
+
+**For this toolkit, get a TypeSafe API key.** Sign up or log in at the [TypeSafe console](https://console.typesafe.ai/), then obtain a key from the dashboard as described in the [official quick start](https://docs.typesafe.ai/introduction/quickstart). Store it in a private file outside the repository and pass its path with `--key-file`, or supply `TYPESAFE_API_KEY` in your environment for each live run. Never commit the key. Start with the offline examples below, then follow [Live use](#live-use-after-mock-acceptance) for the required manifest, input policy and explicit live flag.
+
+**To explore Jev through OpenRouter**, visit [OpenRouter](https://openrouter.ai/) and choose **Sign Up**. After signing in, create an API key on the [API keys page](https://openrouter.ai/settings/keys), then consult the [OpenRouter quickstart](https://openrouter.ai/docs/quickstart) and [TypeSafe Jev listing](https://openrouter.ai/~typesafe/jev-latest) for access and usage details.
+
+OpenRouter is a separate access route: its keys do not work with this toolkit's direct TypeSafe client, and an OpenRouter adapter has not been implemented or tested here. The linked listing follows the latest Jev version; this toolkit keeps its model pinned to `jev-1.13.0` for reproducibility.
+
 ## Use it without a key
 
 Run from the repository root; the harness and tests use only the Python standard library. No SDK installation is required.
