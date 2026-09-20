@@ -1,0 +1,612 @@
+{
+ "area_glosses_by_script": [
+  "ci_cd",
+  "skills",
+  "ui"
+ ],
+ "axes": {
+  "area": {
+   "metrics": {
+    "confusion": [
+     [
+      6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      6,
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+     ]
+    ],
+    "confusion_labels": [
+     "ci_cd",
+     "core_harness",
+     "dependencies",
+     "documentation_policy",
+     "ingestion_sync",
+     "integrations",
+     "ledger",
+     "model_inference",
+     "search_retrieval",
+     "skills",
+     "telemetry",
+     "ui"
+    ],
+    "correct": 32,
+    "labeled_n": 38,
+    "macro_f1": 0.6963864838864838,
+    "raw_accuracy": 0.8421052631578947,
+    "uncertain_truth_n": 2
+   }
+  },
+  "purpose": {
+   "metrics": {
+    "confusion": [
+     [
+      16,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      7,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1
+     ]
+    ],
+    "confusion_labels": [
+     "bug_fix",
+     "documentation",
+     "feature_enhancement",
+     "maintenance",
+     "merge_closeout",
+     "planning_design",
+     "research_evaluation",
+     "testing_validation"
+    ],
+    "correct": 37,
+    "labeled_n": 40,
+    "macro_f1": 0.6753787878787879,
+    "raw_accuracy": 0.925,
+    "uncertain_truth_n": 0
+   }
+  }
+ },
+ "freeze": {
+  "holdout-labels.json": "70aa61d43044c7f33664474e8ee3a6717402b81c590dcc8adf81c956c5207bd4",
+  "holdout.json": "24995fe28edf56d3c77be41d9e0baec958006f987889efc51369fa77e5eedf26",
+  "taxonomy.md": "2a373c3b08cb78779be6b14d433bf353f99d40365d0014447f05fdd72f0c8891"
+ },
+ "holdout_id_list_sha256": "8910623f39c6659634fa509e8ba91dc5c05b5ec38b1d04a047521d8e8fb4f218",
+ "input_tokens": 55579,
+ "model_requested": "jev-1.13.0",
+ "models_seen": [
+  "jev-1.13.0"
+ ],
+ "predictions": [
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.41,
+   "id": "holdout-001",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.44,
+   "id": "holdout-002",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.46
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 1.0,
+   "id": "holdout-003",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.38,
+   "id": "holdout-004",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.94
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.41,
+   "id": "holdout-005",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.96,
+   "id": "holdout-006",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.56
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.42,
+   "id": "holdout-007",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.55
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.97,
+   "id": "holdout-008",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.53
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.91,
+   "id": "holdout-009",
+   "purpose_choice": "testing_validation",
+   "purpose_confidence": 0.93
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "holdout-010",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.49,
+   "id": "holdout-011",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.64
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.99,
+   "id": "holdout-012",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.91
+  },
+  {
+   "area_choice": "search_retrieval",
+   "area_confidence": 0.51,
+   "id": "holdout-013",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.59
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.99,
+   "id": "holdout-014",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 1.0,
+   "id": "holdout-015",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.85,
+   "id": "holdout-016",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 1.0,
+   "id": "holdout-017",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.82
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.34,
+   "id": "holdout-018",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.97,
+   "id": "holdout-019",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.53
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 1.0,
+   "id": "holdout-020",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.44
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.5,
+   "id": "holdout-021",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 0.94
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.6,
+   "id": "holdout-022",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 1.0,
+   "id": "holdout-023",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.51,
+   "id": "holdout-024",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.95
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.99,
+   "id": "holdout-025",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.61,
+   "id": "holdout-026",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.72,
+   "id": "holdout-027",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 1.0,
+   "id": "holdout-028",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 0.89
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.84,
+   "id": "holdout-029",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.44,
+   "id": "holdout-030",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.79,
+   "id": "holdout-031",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.88
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.99,
+   "id": "holdout-032",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.96
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.5,
+   "id": "holdout-033",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.59
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.76,
+   "id": "holdout-034",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.47
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.99,
+   "id": "holdout-035",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.99,
+   "id": "holdout-036",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.71,
+   "id": "holdout-037",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.87
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.99,
+   "id": "holdout-038",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.79,
+   "id": "holdout-039",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.86,
+   "id": "holdout-040",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.96
+  }
+ ],
+ "questions_sha256": "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821",
+ "records": 40,
+ "script_sha256": "0740582603468547081f4fd0ee3883e5c1331d1b1056522e7652c9e4cca6a643",
+ "sent": 40,
+ "skipped_ids": [],
+ "utc_finished": "2026-09-18T23:34:58.264822+00:00",
+ "utc_started": "2026-09-18T23:34:47.965845+00:00",
+ "visibility": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": "PUBLIC",
+  "HiQS-Labs/Model-catalog": "PUBLIC",
+  "HiQS-Labs/Needle-fork": "PUBLIC",
+  "HiQS-Labs/Orion-fork": "PUBLIC",
+  "HiQS-Labs/XYZ-code-RAG": "PUBLIC",
+  "HiQS-Labs/XYZ-forge": "PUBLIC",
+  "HiQS-Labs/rebalanceOS": "PUBLIC"
+ }
+}

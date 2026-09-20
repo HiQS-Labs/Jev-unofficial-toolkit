@@ -1,0 +1,22 @@
+{
+ "gate": {
+  "axis": "purpose",
+  "confidence_floor": 0.8,
+  "min_accuracy": 0.9,
+  "min_coverage": 0.6
+ },
+ "labels_sha256": "e9e39d5ffe76f74b35ed912434ecafe5e0f45f4233bec169f90a05a369459a59",
+ "mode": "classification",
+ "model": "jev-1.13.0",
+ "original_responses_available": false,
+ "probabilities_retained": false,
+ "questions": "work_purpose_v3",
+ "questions_sha256": "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821",
+ "quiz_sha256": "7abec9f1e0880c3917db2138e31d21b7be20823bdd2043d65d6eb6bc86acb70a",
+ "reproduction_scope": "All scoring and annotator counts; historical run metadata copied, no original text or API bytes.",
+ "source": "https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-19-jev-fresh-sample/jev",
+ "source_consensus_sha256": "8604b8947d8f0047fe52ee7cb243bc300e3fa825b3b8824018e58ddb03bb763b",
+ "source_requests_sha256": "bf9a2b09cbb99b1666ed5e9fd42ae74634af3a292dd8c342810b8b14663fa8ba",
+ "source_results_sha256": "304ae72dccc63fdf7ab286c58767882fdf48c4aa940623159d3368c33aee4c90",
+ "usage_per_record_retained": false
+}

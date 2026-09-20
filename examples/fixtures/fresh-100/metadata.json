@@ -1,0 +1,30 @@
+{
+ "consensus_sha256": "8604b8947d8f0047fe52ee7cb243bc300e3fa825b3b8824018e58ddb03bb763b",
+ "input_tokens": 133560,
+ "label_sources": {
+  "agy": 20,
+  "consensus": 80
+ },
+ "model_requested": "jev-1.13.0",
+ "models_seen": [
+  "jev-1.13.0"
+ ],
+ "questions_sha256": "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821",
+ "quiz_sha256": "cb9e961692b0abbed103c995ea26ec3745d5c91b56b74e1aa6db283a1511be99",
+ "records": 100,
+ "script_sha256": {
+  "jev_fresh_eval.py": "9c501fe92e9f705fe50d203810ee3487b2132eac7cb4aeafebbdf4bf40a4eb3f",
+  "jev_zero_shot.py": "0740582603468547081f4fd0ee3883e5c1331d1b1056522e7652c9e4cca6a643"
+ },
+ "sent": 100,
+ "skipped_ids": [],
+ "utc_finished": "2026-09-19T22:37:54.125331+00:00",
+ "utc_started": "2026-09-19T22:37:29.135521+00:00",
+ "visibility": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": "PUBLIC",
+  "HiQS-Labs/HiQS-AI-Resolve-Catalog": "PUBLIC",
+  "HiQS-Labs/Needle-fork": "PUBLIC",
+  "HiQS-Labs/XYZ-forge": "PUBLIC",
+  "HiQS-Labs/rebalanceOS": "PUBLIC"
+ }
+}
