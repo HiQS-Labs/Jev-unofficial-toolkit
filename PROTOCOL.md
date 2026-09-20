@@ -48,6 +48,4 @@ includes the explicit crash and `expects_edits` rules. Replaying historical answ
 does not validate that wording. Its hash identifies this toolkit's new question
 set; historical request hashes remain separately identified.
 
-The operator authorized mock-only validation. The suite and shipped fixture
-replays pass; CI runs the offline suite on pushes and pull requests. No live
-request was made. See [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4).
+The offline suite and shipped fixture replays pass; CI remains mock-only. The operator subsequently authorized live testing and an explicit exception to the one-live-run rule for a [historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md). The verbatim rules above remain unchanged. The new receipt records failed attempts, recovery and unavailable total usage; it does not replace the original experiment or establish independent generalization. The probability-accessor and batch-persistence limitation is tracked in [issue #6](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6).

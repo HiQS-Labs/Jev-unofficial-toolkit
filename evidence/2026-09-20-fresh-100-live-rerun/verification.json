@@ -1,0 +1,12 @@
+{
+ "mock_tests_passed": 18,
+ "offline_mock_rescoring_matches": true,
+ "original_request_hash_matches": 100,
+ "receipt_sha256": {
+  "answers.json": "19445d9a317efa49f201ffdd806f64ba2f729016649421946b156533f17229b2",
+  "manifest.json": "71536f61a9afad89091c8e3a62d1805cfb6be3fb7f069fd7ec9809f1cd6ffe7e",
+  "provenance.json": "85a8a37025a55dedde0109568ff53ec9338173214920d77eec3a5846a2181b21",
+  "results.json": "75e0dac9e30fdb7fd336d983ef76370838d5f88b6032422a52b3fbfc6ab25ab9"
+ },
+ "retained_records": 100
+}

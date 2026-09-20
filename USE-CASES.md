@@ -2,7 +2,7 @@
 
 **The classification labels behind these numbers are a three-model consensus, not human gold.** Agreement with those labels can reflect shared model errors. The ATE benchmark is synthetic with labels known by construction; its separate error-log reference is Gemma, not that classification consensus.
 
-These are historical findings from the read-only [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff), interpreted under [issue #1](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1). The toolkit's mock suite and fixture replays verify the scoring within the limits described below; see [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4). This page does not claim new live measurements or reconstruction of missing probability data.
+These are historical findings from the read-only [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff), interpreted under [issue #1](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1). The toolkit's mock suite and fixture replays verify the scoring within the limits described below; see [harness PR validation](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/4). The table preserves the original evidence. A separately authorized repeated-sample live check is described below; missing historical probability data remains unreconstructed.
 
 | Use case | Recorded evidence | Verdict and boundary |
 | --- | --- | --- |
@@ -10,6 +10,10 @@ These are historical findings from the read-only [handoff snapshot](https://gith
 | Component-area classification | Older holdout: `32/38`. Fresh sample: `60/94`; in its confidence buckets, `5/22` correct below `0.5`, and `45/53` at or above `0.8`. [Holdout receipt](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-18-jev-purpose-zero-shot/results.json), [fresh receipt](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-19-jev-fresh-sample/jev/results.json). | **Not ready unattended.** Taxonomy ambiguity and model errors both matter. Area confidence is a weaker routing signal. |
 | Failed-run triage: status, severity, category | Benchmark: FN `1`, FP `0`, with `24` known failures. Error-log agreement: status `143/143`, category `6/143`, severity `70/143`. [Benchmark receipt](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/TESTS-RESULTS/2026-09-18+GH-712/benchmark/summary.json), [error-log receipt](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/TESTS-RESULTS/2026-09-18+GH-712/errorlog/summary.json). | **Promising, but the gate was missed as written.** The error-log category reference was itself unfit; disagreement is not automatically a Jev error. No deployment flag followed. |
 | Free-text causes or rationale | Not attempted; Jev provides typed decisions rather than generated prose. [Issue #1](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1), [TypeSafe introduction](https://docs.typesafe.ai/introduction). | **Out of scope by design.** A generative model is needed when prose is the deliverable. |
+
+## Repeated-sample live check
+
+The [new receipt](evidence/2026-09-20-fresh-100-live-rerun/README.md) records purpose `89/100` (macro-F1 `0.7002285599360067`), area `62/94`, and `72/74` correct at confidence ≥ `0.8` with `74/100` coverage. The original purpose gate passes. This is the same historical sample, not new generalization evidence or grounds to change the area verdict. Execution recovered from a probability-accessor failure; the receipt distinguishes retained-response usage from unknown total usage and identifies the unresolved CLI defect.
 
 ## Confidence-gated routing
 

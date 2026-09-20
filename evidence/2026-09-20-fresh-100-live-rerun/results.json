@@ -1,0 +1,1091 @@
+{
+ "axes": {
+  "area": {
+   "confidence_buckets": [
+    {
+     "accuracy": 0.36363636363636365,
+     "bucket": "<0.5",
+     "correct": 8,
+     "n": 22
+    },
+    {
+     "accuracy": 0.5238095238095238,
+     "bucket": "0.5-0.8",
+     "correct": 11,
+     "n": 21
+    },
+    {
+     "accuracy": 0.8431372549019608,
+     "bucket": ">=0.8",
+     "correct": 43,
+     "n": 51
+    }
+   ],
+   "metrics": {
+    "confusion": [
+     [
+      4,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      5,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      3,
+      0,
+      1,
+      4,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      3,
+      0,
+      8,
+      1,
+      0,
+      0,
+      10,
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      11,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4
+     ]
+    ],
+    "confusion_labels": [
+     "ci_cd",
+     "core_harness",
+     "dependencies",
+     "documentation_policy",
+     "ingestion_sync",
+     "integrations",
+     "ledger",
+     "model_inference",
+     "search_retrieval",
+     "skills",
+     "telemetry",
+     "ui"
+    ],
+    "correct": 62,
+    "labeled_n": 94,
+    "macro_f1": 0.6578870475929299,
+    "raw_accuracy": 0.6595744680851063,
+    "uncertain_truth_n": 6
+   },
+   "prediction_counts": {
+    "ci_cd": 5,
+    "core_harness": 20,
+    "dependencies": 1,
+    "documentation_policy": 14,
+    "ingestion_sync": 5,
+    "integrations": 5,
+    "ledger": 5,
+    "model_inference": 12,
+    "search_retrieval": 1,
+    "skills": 15,
+    "telemetry": 10,
+    "ui": 7
+   }
+  },
+  "purpose": {
+   "confidence_buckets": [
+    {
+     "accuracy": 0.6666666666666666,
+     "bucket": "<0.5",
+     "correct": 4,
+     "n": 6
+    },
+    {
+     "accuracy": 0.65,
+     "bucket": "0.5-0.8",
+     "correct": 13,
+     "n": 20
+    },
+    {
+     "accuracy": 0.972972972972973,
+     "bucket": ">=0.8",
+     "correct": 72,
+     "n": 74
+    }
+   ],
+   "metrics": {
+    "confusion": [
+     [
+      35,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+     ],
+     [
+      0,
+      5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      2,
+      0,
+      21,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      4,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      0,
+      0,
+      3,
+      1,
+      0
+     ],
+     [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      20,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    ],
+    "confusion_labels": [
+     "bug_fix",
+     "documentation",
+     "feature_enhancement",
+     "maintenance",
+     "merge_closeout",
+     "planning_design",
+     "research_evaluation",
+     "testing_validation"
+    ],
+    "correct": 89,
+    "labeled_n": 100,
+    "macro_f1": 0.7002285599360067,
+    "raw_accuracy": 0.89,
+    "uncertain_truth_n": 0
+   },
+   "prediction_counts": {
+    "bug_fix": 37,
+    "documentation": 9,
+    "feature_enhancement": 24,
+    "maintenance": 4,
+    "merge_closeout": 1,
+    "planning_design": 3,
+    "research_evaluation": 22
+   }
+  }
+ },
+ "gate": {
+  "accuracy": 0.972972972972973,
+  "axis": "purpose",
+  "confidence_floor": 0.8,
+  "coverage": 0.74,
+  "high_confidence_correct": 72,
+  "high_confidence_rows": 74,
+  "met": true,
+  "min_accuracy": 0.9,
+  "min_coverage": 0.6,
+  "scored_rows": 100
+ },
+ "input_tokens_retained_responses": 133560,
+ "model_requested": "jev-1.13.0",
+ "models_seen": [
+  "jev-1.13.0"
+ ],
+ "predictions": [
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.99,
+   "id": "fresh-001",
+   "purpose_choice": "maintenance",
+   "purpose_confidence": 0.6
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.33,
+   "id": "fresh-002",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.82
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.53,
+   "id": "fresh-003",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.7
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.56,
+   "id": "fresh-004",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "fresh-005",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.65
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.95,
+   "id": "fresh-006",
+   "purpose_choice": "merge_closeout",
+   "purpose_confidence": 0.53
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.91,
+   "id": "fresh-007",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.51
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.35,
+   "id": "fresh-008",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.71,
+   "id": "fresh-009",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.91
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.28,
+   "id": "fresh-010",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.8
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 1.0,
+   "id": "fresh-011",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.92,
+   "id": "fresh-012",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.87
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.48,
+   "id": "fresh-013",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.89
+  },
+  {
+   "area_choice": "integrations",
+   "area_confidence": 0.7,
+   "id": "fresh-014",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 0.98,
+   "id": "fresh-015",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.68
+  },
+  {
+   "area_choice": "search_retrieval",
+   "area_confidence": 0.61,
+   "id": "fresh-016",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.73,
+   "id": "fresh-017",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.96,
+   "id": "fresh-018",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.91,
+   "id": "fresh-019",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.67
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.92,
+   "id": "fresh-020",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.62
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.4,
+   "id": "fresh-021",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.95
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 1.0,
+   "id": "fresh-022",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.64
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.24,
+   "id": "fresh-023",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.54,
+   "id": "fresh-024",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.34
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 0.39,
+   "id": "fresh-025",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.9
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.44,
+   "id": "fresh-026",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.87
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.99,
+   "id": "fresh-027",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.97
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.8,
+   "id": "fresh-028",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.94
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.73,
+   "id": "fresh-029",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 0.48,
+   "id": "fresh-030",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.77,
+   "id": "fresh-031",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "integrations",
+   "area_confidence": 0.4,
+   "id": "fresh-032",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.99,
+   "id": "fresh-033",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.45,
+   "id": "fresh-034",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.97,
+   "id": "fresh-035",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.66,
+   "id": "fresh-036",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.8,
+   "id": "fresh-037",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.79,
+   "id": "fresh-038",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.85
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.86,
+   "id": "fresh-039",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.47,
+   "id": "fresh-040",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.76
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "fresh-041",
+   "purpose_choice": "maintenance",
+   "purpose_confidence": 0.81
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.7,
+   "id": "fresh-042",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.46
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.45,
+   "id": "fresh-043",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.58,
+   "id": "fresh-044",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.92
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.96,
+   "id": "fresh-045",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.42,
+   "id": "fresh-046",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.57
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.78,
+   "id": "fresh-047",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.42,
+   "id": "fresh-048",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "dependencies",
+   "area_confidence": 0.97,
+   "id": "fresh-049",
+   "purpose_choice": "maintenance",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.85,
+   "id": "fresh-050",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 1.0,
+   "id": "fresh-051",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.97
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.8,
+   "id": "fresh-052",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.86
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 1.0,
+   "id": "fresh-053",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.87,
+   "id": "fresh-054",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.49,
+   "id": "fresh-055",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.79,
+   "id": "fresh-056",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.71
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.3,
+   "id": "fresh-057",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.99,
+   "id": "fresh-058",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.92
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.55,
+   "id": "fresh-059",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.84
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.68,
+   "id": "fresh-060",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.59
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.88,
+   "id": "fresh-061",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.96
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 0.99,
+   "id": "fresh-062",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.94
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.39,
+   "id": "fresh-063",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.23,
+   "id": "fresh-064",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.52,
+   "id": "fresh-065",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.64
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.81,
+   "id": "fresh-066",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.98
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.49,
+   "id": "fresh-067",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.44
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.99,
+   "id": "fresh-068",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "fresh-069",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.75
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.54,
+   "id": "fresh-070",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.88
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 1.0,
+   "id": "fresh-071",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.93
+  },
+  {
+   "area_choice": "integrations",
+   "area_confidence": 0.47,
+   "id": "fresh-072",
+   "purpose_choice": "documentation",
+   "purpose_confidence": 0.6
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.88,
+   "id": "fresh-073",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.46,
+   "id": "fresh-074",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.83
+  },
+  {
+   "area_choice": "integrations",
+   "area_confidence": 0.29,
+   "id": "fresh-075",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.88,
+   "id": "fresh-076",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 1.0,
+   "id": "fresh-077",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.64
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.61,
+   "id": "fresh-078",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "fresh-079",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.84
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.85,
+   "id": "fresh-080",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 0.84
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.92,
+   "id": "fresh-081",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.77
+  },
+  {
+   "area_choice": "documentation_policy",
+   "area_confidence": 0.64,
+   "id": "fresh-082",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.96
+  },
+  {
+   "area_choice": "model_inference",
+   "area_confidence": 0.98,
+   "id": "fresh-083",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.46
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.97,
+   "id": "fresh-084",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.4
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.91,
+   "id": "fresh-085",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.92
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.99,
+   "id": "fresh-086",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.99
+  },
+  {
+   "area_choice": "ledger",
+   "area_confidence": 1.0,
+   "id": "fresh-087",
+   "purpose_choice": "maintenance",
+   "purpose_confidence": 0.83
+  },
+  {
+   "area_choice": "ingestion_sync",
+   "area_confidence": 0.91,
+   "id": "fresh-088",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.86,
+   "id": "fresh-089",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 0.96
+  },
+  {
+   "area_choice": "telemetry",
+   "area_confidence": 0.15,
+   "id": "fresh-090",
+   "purpose_choice": "research_evaluation",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 0.95,
+   "id": "fresh-091",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.5
+  },
+  {
+   "area_choice": "ui",
+   "area_confidence": 0.22,
+   "id": "fresh-092",
+   "purpose_choice": "planning_design",
+   "purpose_confidence": 0.45
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.8,
+   "id": "fresh-093",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.84,
+   "id": "fresh-094",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.93
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 1.0,
+   "id": "fresh-095",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.65
+  },
+  {
+   "area_choice": "core_harness",
+   "area_confidence": 0.41,
+   "id": "fresh-096",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "integrations",
+   "area_confidence": 0.74,
+   "id": "fresh-097",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.8
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 0.89,
+   "id": "fresh-098",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 1.0
+  },
+  {
+   "area_choice": "ci_cd",
+   "area_confidence": 0.99,
+   "id": "fresh-099",
+   "purpose_choice": "bug_fix",
+   "purpose_confidence": 0.87
+  },
+  {
+   "area_choice": "skills",
+   "area_confidence": 1.0,
+   "id": "fresh-100",
+   "purpose_choice": "feature_enhancement",
+   "purpose_confidence": 0.97
+  }
+ ],
+ "records": 100,
+ "sent": 100,
+ "skipped_ids": [],
+ "total_billed_input_tokens": null,
+ "visibility": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": "PUBLIC",
+  "HiQS-Labs/HiQS-AI-Resolve-Catalog": "PUBLIC",
+  "HiQS-Labs/Needle-fork": "PUBLIC",
+  "HiQS-Labs/XYZ-forge": "PUBLIC",
+  "HiQS-Labs/rebalanceOS": "PUBLIC"
+ }
+}
