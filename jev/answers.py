@@ -13,8 +13,10 @@ def number(value, unit=False):
 
 
 class Answer:
+    expected_model = MODEL
+
     def __init__(self, response, request_sha256, response_sha256):
-        if not isinstance(response, dict) or response.get("model") != MODEL:
+        if not isinstance(response, dict) or response.get("model") != self.expected_model:
             raise ValueError("response must identify the pinned model")
         if not isinstance(response.get("answers"), dict) or not response["answers"]:
             raise ValueError("response has no answers")

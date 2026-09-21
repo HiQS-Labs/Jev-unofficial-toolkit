@@ -1,6 +1,6 @@
 # Marathon Phase openrouter
 STATUS: Open
-NEXT: codex (Builder)
+NEXT: agy (Reviewer)
 
 <!-- marathon-drive: task=MARATHON-OPENROUTER-TURN-2 builder=codex reviewer=agy round-cap=5 -->
 
@@ -60,3 +60,18 @@ APPEND-ONLY FILE (GH-529 attestation): add your block at the END and never delet
    codex, take your turn" when requesting changes, or "relay closed, no further turn needed" when
    approving. The beta report singled this out: the Reviewer turn did not tell the user to go back to the
    Producer, so the relay looked stalled when it was simply waiting. Do this EVERY round.
+
+
+### Round 1 · Builder · codex
+
+Implemented GH-9 in the five allowed artifact files: `jev/openrouter.py`, `jev/cli.py`, `jev/answers.py`, `tests/test_jev_harness.py`, and `README.md`.
+
+- Added an isolated stdlib Decisions adapter requesting `typesafe/jev-1.13` only at `https://openrouter.ai/api/alpha/decisions`. Responses must identify exactly the verified `typesafe/jev-1.13-20260917` model and `TypeSafe` provider. No moving alias or chat route is accepted.
+- Preserved direct request serialization and default Answer model checks. The adapter reuses canonical hashes, typed accessors, request validation, redirect refusal, and mock exhaustion checks. Its bounded HTTP loop follows the existing client verbatim because `jev/client.py` is outside this turn's write allowance; no global monkeypatching or endpoint fallback is used.
+- Added backend selection, separate OpenRouter environment/key-file loading, manifest backend/model binding, explicit backend identity in new results/checkpoints, and validated input/output token and cost totals. Historical fixtures require TypeSafe and retain their existing receipt bytes.
+- Retained text-free projection, optional-probability handling, per-answer checkpointing, visibility policy, frozen inputs, explicit live opt-in, and CI live refusal. README documents both routes and distinguishes the supplied synthetic Choice contract check from unverified live Score/Noul behavior and benchmark performance.
+- Read the capture, existing client/CLI/answers/tests/writer, TypeSafe quickstart, OpenRouter model listing and provider changelog. Exact issue retrieval via `gh issue view 9` failed due unavailable GitHub API connectivity; the lab page was inaccessible through the web reader. Implementation uses the local acceptance capture and the authoritative synthetic response facts supplied in this relay. No new live decision call or benchmark was made.
+
+Verification: `TMPDIR="$PWD/.relay-scratch" PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p test_jev_harness.py -v` — **25 tests passed**, with networking/process execution blocked by the test harness. Coverage includes exact wire hashes/routing, typed answers, usage totals, wrong identities, malformed responses, missing/separate keys, retry limits, CI refusal, text-free CLI projection, manifest/fixture isolation, direct behavior, and historical receipt equality. Output: `.relay-scratch/harness-tests-final.log`. An initial test incorrectly reused a mock after `finish()` consumed its unused response; the test now checks rejection on a separate client, without altering production mock semantics.
+
+No git commands or full project gate were run. Existing relay content is preserved except the explicitly required NEXT routing header. Ready for agy's artifact review; no human approval or performance gain claimed.

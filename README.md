@@ -12,9 +12,19 @@
 
 **To explore Jev through OpenRouter**, visit [OpenRouter](https://openrouter.ai/) and choose **Sign Up**. After signing in, create an API key on the [API keys page](https://openrouter.ai/settings/keys), then consult the [OpenRouter quickstart](https://openrouter.ai/docs/quickstart) and the [versioned TypeSafe Jev listing](https://openrouter.ai/typesafe/jev-1.13) for access and usage details.
 
-OpenRouter is a separate access route: its keys do not work with this toolkit's direct TypeSafe client. **OpenRouter remains unsupported by this toolkit.** The proposed integration targets only `typesafe/jev-1.13` at `POST https://openrouter.ai/api/alpha/decisions`, using an OpenRouter bearer key; it must never route decisions through chat completions or the moving `~typesafe/jev-latest` alias. The [provider changelog](https://github.com/OpenRouterTeam/ai-sdk-provider/blob/main/CHANGELOG.md) documents the dedicated Decisions route.
+OpenRouter is a separate access route: use `--backend openrouter` with `OPENROUTER_API_KEY` or `--key-file` containing an OpenRouter key. The default `--backend typesafe` uses `TYPESAFE_API_KEY` or a TypeSafe key file; keys are never borrowed from the other backend.
 
-The September 20 readiness review could confirm the versioned listing but could not verify a typed response: an OpenRouter credential was not available in the checked environment or credential directory, and direct HTTP access failed. Returned model identity, usage fields, and probability shape therefore remain unverified. No adapter or OpenRouter CLI/key variable support is shipped, and no live request or benchmark was run. Support requires the authorized synthetic contract check before implementation; direct TypeSafe access remains pinned to `jev-1.13.0`.
+The adapter sends canonical `state`, `questions`, and `model` JSON to **`POST https://openrouter.ai/api/alpha/decisions`**, requesting **`typesafe/jev-1.13`** with bearer authentication. It never uses chat completions or the moving latest alias. The [provider changelog](https://github.com/OpenRouterTeam/ai-sdk-provider/blob/main/CHANGELOG.md) documents the dedicated Decisions route.
+
+An operator-authorized synthetic contract check returned the concrete model `typesafe/jev-1.13-20260917` and provider `TypeSafe`; the adapter accepts exactly that response identity and fails closed on other revisions. The typed `answers` retain Choice, Score, and Noul accessors. OpenRouter additionally returns `id`, `provider`, and usage fields `input_tokens`, `output_tokens`, and `cost`; the adapter validates and totals all three usage fields without retaining arbitrary response extensions. The live check established the Choice response contract, not Score/Noul live behavior or benchmark accuracy. No additional live call or historical benchmark was run for this implementation.
+
+For an authorized live request, use the same frozen-input and repository-policy requirements as the direct route:
+
+```sh
+python3 -m jev ask --backend openrouter --state STATE.json --questions work_purpose_v3 --repo HiQS-Labs/REPO --manifest MANIFEST.json --live --out results/openrouter-new
+```
+
+Supply `OPENROUTER_API_KEY` in the environment or add `--key-file FILE`. The manifest must specify `"backend": "openrouter"` and `"model": "typesafe/jev-1.13"`, plus the hashes below. For offline use, replace `--live` with `--mock-responses FILE` containing an ordered list of Decisions response objects with the concrete response model, provider, and usage fields above. New results and per-record checkpoints explicitly identify their backend; OpenRouter reports also include provider, output tokens and cost. The shipped historical fixtures remain TypeSafe-only and their receipt results remain unchanged.
 
 ## Use it without a key
 
@@ -58,7 +68,8 @@ A manifest contains:
 
 | Field | Contract |
 | --- | --- |
-| `model` | Exactly `jev-1.13.0`. |
+| `backend` | `typesafe` (default when absent), or `openrouter` explicitly. Must match `--backend`. |
+| `model` | `jev-1.13.0` for TypeSafe; `typesafe/jev-1.13` for OpenRouter. |
 | `quiz_sha256` | SHA-256 of the exact input file bytes (`--state` or `--records`). |
 | `questions_sha256` | SHA-256 of canonical question JSON; must match the frozen set. |
 | `labels_sha256` | Blind annotation commitment from `guard.commit(labels_file)`; checked only after responses finish. |
@@ -84,7 +95,7 @@ Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES
 
 ## Other OSS projects — untested potential integrations
 
-[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version's client is restricted to the pinned TypeSafe model and endpoint.
+[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version supports only the pinned TypeSafe and OpenRouter Decisions routes described above.
 
 ## Licence
 
