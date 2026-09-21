@@ -1,6 +1,6 @@
 # Marathon Phase human_protocol
 STATUS: Open
-NEXT: codex (Builder)
+NEXT: agy (Reviewer)
 
 <!-- marathon-drive: task=MARATHON-HUMAN_PROTOCOL-TURN builder=codex reviewer=agy round-cap=5 -->
 
@@ -58,3 +58,18 @@ APPEND-ONLY FILE (GH-529 attestation): add your block at the END and never delet
    codex, take your turn" when requesting changes, or "relay closed, no further turn needed" when
    approving. The beta report singled this out: the Reviewer turn did not tell the user to go back to the
    Producer, so the relay looked stalled when it was simply waiting. Do this EVERY round.
+
+
+### Round 1 · Builder · codex
+
+Created `HUMAN-LABEL-PROTOCOL.md` as a draft protocol, not a human-reference result. It leaves GH-10 open and explicitly identifies published classification labels as three-model consensus rather than human gold.
+
+The draft specifies a prospective public-data frame; fixed 400-row representative and 320-row stratified challenge cohorts; a separate retrospective bridge; qualified independent human labelers; blinded commitments and adjudication; uncertain-row denominators; class support; fixed confidence/accuracy/coverage and class-performance gates; privacy, retention, budget, and stop rules. It distinguishes protocol readiness, missing future mock scorer controls, an actual experiment receipt, and a separate deployment decision. No human labeling or live Jev calls occurred.
+
+Grounding: read the GH-10 inbox capture, phase brief, PROTOCOL.md, USE-CASES.md, frozen receipt README, fresh fixture metadata, question taxonomy, and relevant offline fixture test. Live GH-10 retrieval failed through both web access and gh; the document records reconciliation as a preregistration prerequisite rather than asserting current issue state.
+
+Verification: targeted offline `test_receipt_replays_and_labels_after_answers` passed (1 test; historical 40/100-row fixture replay and labels-after-answers checks). Documentation probe passed: every local link resolves, all eight purpose boundaries exactly match frozen questions, and no private filesystem paths appear. Logs are confined to `.relay-scratch/human-protocol-fixture-check.log` and `.relay-scratch/human-protocol-doc-check.log`. No full suite, Git command, or other artifact edit was performed.
+
+Files touched: HUMAN-LABEL-PROTOCOL.md and this relay. Existing relay content is preserved except the top NEXT routing line, updated as explicitly required by turn step 5; this build block is appended.
+
+Ready for agy's whole-file review. Handing off to agy — agy, take your turn.
