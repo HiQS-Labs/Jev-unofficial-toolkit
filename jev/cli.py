@@ -7,8 +7,8 @@ from pathlib import Path
 
 from .answers import MODEL, number
 from .client import JevClient, MockClient, canonical, load_key, request_bytes, sha256
-from .eval import (agreement, binary_counts, confidence_table, gate, metrics,
-                   metrics_from_confusion)
+from .eval import (agreement, binary_counts, confidence_table, gate, hit_equal, metrics,
+                   metrics_from_confusion, noul_metrics, score_metrics, within)
 from .guard import (FROZEN_FIXTURES, POLICY, load_questions, repo_visibility,
                     verify, verify_freeze, write_results)
 
@@ -26,21 +26,52 @@ def keyed(rows):
     return result
 
 
-def score(rows, labels, questions, gate_config, annotators=None):
+def scoring_parameters(manifest, questions):
+    """Pre-registered scoring parameters: required whenever an axis of that type is scored, never defaulted."""
+    kinds = {question["type"] for question in questions.values()}
+    scoring = {}
+    if "score" in kinds:
+        if "score_tolerance" not in manifest:
+            raise ValueError("a scored Score axis requires score_tolerance in --manifest")
+        scoring["score_tolerance"] = number(manifest["score_tolerance"])
+        if scoring["score_tolerance"] < 0:
+            raise ValueError("score_tolerance must be nonnegative")
+    if "noul" in kinds:
+        if "noul_threshold" not in manifest:
+            raise ValueError("a scored Noul axis requires noul_threshold in --manifest")
+        scoring["noul_threshold"] = number(manifest["noul_threshold"], unit=True)
+    return scoring
+
+
+def score(rows, labels, questions, gate_config, annotators=None, scoring=None):
     lookup = keyed(labels)
     if set(keyed(rows)) != set(lookup):
         raise ValueError("label IDs must exactly match completed records")
+    scoring = scoring or {}
     axes, predictions = {}, []
     for row in rows:
-        predictions.append({"id": row["id"], **{
-            f"{axis}_{field}": row["answers"][axis][field]
-            for axis in questions for field in ("choice", "confidence")}})
+        entry = {"id": row["id"]}
+        for axis in questions:
+            answer = row["answers"][axis]
+            entry[f"{axis}_{answer['type']}"] = answer[answer["type"]]
+            if "confidence" in answer:
+                entry[f"{axis}_confidence"] = answer["confidence"]
+        predictions.append(entry)
+    hits = {}
     for axis, question in questions.items():
-        if question["type"] != "choice":
-            raise ValueError("evaluation supports Choice questions only")
+        kind = question["type"]
         truth = [lookup[r["id"]][axis] for r in rows]
-        pred = [r["answers"][axis]["choice"] for r in rows]
+        pred = [r["answers"][axis][kind] for r in rows]
+        if kind == "noul":
+            axes[axis] = {"metrics": noul_metrics(truth, pred, scoring["noul_threshold"])}
+            continue
         conf = [r["answers"][axis]["confidence"] for r in rows]
+        if kind == "score":
+            hits[axis] = within(scoring["score_tolerance"])
+            axes[axis] = {"metrics": score_metrics(truth, pred, scoring["score_tolerance"]),
+                          "confidence_buckets": confidence_table(truth, pred, conf, hits[axis])}
+            continue
+        hits[axis] = hit_equal
         axes[axis] = {"metrics": metrics(truth, pred, question["criteria"]),
                       "confidence_buckets": confidence_table(truth, pred, conf),
                       "prediction_counts": dict(Counter(pred))}
@@ -50,11 +81,13 @@ def score(rows, labels, questions, gate_config, annotators=None):
     axis = gate_config["axis"]
     report = {"axes": axes, "predictions": predictions}
     if axis in questions:
+        kind = questions[axis]["type"]
         report["gate"] = {"axis": axis, **gate(
             [lookup[r["id"]][axis] for r in rows],
-            [r["answers"][axis]["choice"] for r in rows],
+            [r["answers"][axis][kind] for r in rows],
             [r["answers"][axis]["confidence"] for r in rows],
-            gate_config["confidence_floor"], gate_config["min_accuracy"], gate_config["min_coverage"])}
+            gate_config["confidence_floor"], gate_config["min_accuracy"], gate_config["min_coverage"],
+            hit=hits[axis])}
     return report
 
 
@@ -113,10 +146,14 @@ def run(args):
             raise ValueError("evaluation requires a pre-registered gate in --manifest")
         if config["axis"] not in questions:
             raise ValueError("gate axis not in questions")
+        if questions[config["axis"]]["type"] == "noul":
+            raise ValueError("gate axis must be a Choice or Score question; Noul has no confidence")
         for field in ("confidence_floor", "min_accuracy", "min_coverage"):
             number(config[field], unit=True)
         if "labels_sha256" not in manifest:
             raise ValueError("evaluation requires a blind label commitment")
+        scored_questions = {k: v for k, v in questions.items() if k in manifest.get("scored_axes", questions)}
+        scoring = scoring_parameters(manifest, scored_questions)
     if manifest.get("mode") in ("confusion", "benchmark") and not fixture:
         raise ValueError("receipt-specific replay requires a pinned fixture")
     out = Path(args.out)
@@ -124,15 +161,7 @@ def run(args):
     completed = []
     for record in sendable:
         answer = client.ask(record["state"], questions)
-        # Project typed fields only; never persist state, arbitrary API extensions, or error text.
-        values = {}
-        for name, question in questions.items():
-            kind = question["type"]
-            values[name] = {"type": kind, kind: getattr(answer, kind)(name)}
-            if kind in ("choice", "score"):
-                values[name]["confidence"] = answer.confidence(name)
-                if "probabilities" in answer.response["answers"][name]:
-                    values[name]["probabilities"] = answer.probabilities(name)
+        values = answer.project(questions)  # Typed fields only; never state, API extensions, or error text.
         completed.append({"id": record["id"], "model": answer.model, "answers": values,
                           "request_sha256": answer.request_sha256, "response_sha256": answer.response_sha256})
     if mock:
@@ -168,8 +197,7 @@ def run(args):
             raise ValueError("label IDs must match the entire input including skipped rows")
         labels = [r for r in labels if r["id"] not in skipped]
         annotators = read_json(fixture / "annotators.json") if fixture and (fixture / "annotators.json").exists() else None
-        scored_questions = {k: v for k, v in questions.items() if k in manifest.get("scored_axes", questions)}
-        computed = score(completed, labels, scored_questions, config, annotators)
+        computed = score(completed, labels, scored_questions, config, annotators, scoring)
         if fixture and manifest.get("mode") == "classification":
             report = read_json(fixture / "metadata.json")
         report.update(computed)

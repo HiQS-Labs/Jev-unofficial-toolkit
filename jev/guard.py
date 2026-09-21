@@ -3,13 +3,16 @@
 """Freeze, blind commitments, visibility policy, and the sole results writer."""
 import json
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 from .client import canonical, sha256
 
-DENIED = {"title", "description", "stderr", "stdout", "body"}
+# Backstop against persisting source text; typed projection is the guarantee, this is the second line.
+DENIED = {"title", "description", "stderr", "stdout", "body",
+          "state", "command", "task", "summary", "diff_summary", "text", "content", "prompt"}
 POLICY = {"allowed_owners": ["HiQS-Labs"], "denied_owners": ["BinoidCBD", "LTVera"],
           "denied_repos": []}
-FROZEN_QUESTIONS = {'work_purpose_v3': '21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821', 'ate_triage_v1': '65e8dc9a32bf163b2ebefe183e3c50ed532f3f3b0a5ae6371a7eb43f884aeaa7'}
+FROZEN_QUESTIONS = {'work_purpose_v3': '21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821', 'ate_triage_v1': '65e8dc9a32bf163b2ebefe183e3c50ed532f3f3b0a5ae6371a7eb43f884aeaa7', 'agent_action_gate_v1': '786cf464aa3a135ab618b15dbadb3c875f6cfe9af08993ca4ee2bc552df6bdcd'}
 FROZEN_FIXTURES = {'purpose-40': {'confusions.json': '13c00c5fee29eec83cfc453cf80fc8ff81e8fe3607b25faa245d2b0a7f929412', 'expected.json': '68d9918c9c5e551f6366f8c143b49e55f09237c89bd5cb36421afc431691d2ea', 'historical-hashes.json': '6b20d791fb8fc600bff51bc52caf390b12c830b6b531bd2609a557d1c6b22d93', 'manifest.json': '265209b4f97aac41ed81d39a4e59cca52ac94eea94f5a8797b7854384eb7dd5a', 'metadata.json': '3d24e88a1507e3aee26e6e38b4ac65f734f81b0b6b030af5d4932fe89795dada', 'records.json': '221a5e6bddaaf69b4e67c3fd0cc2b650dfc680c3464ab60cf5bf4134e569e8ee', 'responses.json': '30e3377dd92fccb3329d03c5f7604791b0e160c6bcf7f5dfa7556c33731be1c8'}, 'fresh-100': {'annotators.json': '06d856924f41cb4940176f6e5b51fca8fb8b13972a17c6ecfa2fad55fb4dbdff', 'expected.json': '304ae72dccc63fdf7ab286c58767882fdf48c4aa940623159d3368c33aee4c90', 'historical-hashes.json': 'a50e422b639f61849a84d23f3287247bb27fb46dcb9b2a5b33c501ffba5e7301', 'labels.json': 'e9e39d5ffe76f74b35ed912434ecafe5e0f45f4233bec169f90a05a369459a59', 'manifest.json': '103dfc40ae50ff0ca67259424a3ba6a1870cb24e492feb30bdc1d52a88e6d9b0', 'metadata.json': 'ff4159b18fc498447d04d04a8d008b6cb655804cf9287a034f21c47bdc0ac6a4', 'records.json': '7abec9f1e0880c3917db2138e31d21b7be20823bdd2043d65d6eb6bc86acb70a', 'responses.json': 'bf3de130985b00e77f57b27959ec5cfd23fcde00224fdeb3e3ea3bb95c05e425'}, 'ate-benchmark': {'historical-hashes.json': '8d1729a88db101df56013a5f0ebde06396e8bf98511196e9d2dbbfe07463fbb5', 'historical-summary.json': 'ee5484b7710767e18dced8239a8f41bc680f6b70790a4c38a0814da2cee9eba8', 'labels.json': '58bf51e28275153fd72d7736d69947acdad1a617f214c3f452867aeddaeb8d74', 'manifest.json': 'f9a5a5bb13198feecb1aaf84089281963f08b0c85e168578b56aaa9e5c41a693', 'records.json': 'e983f3f16b688344ff231cafe901553fdf009cedc85edfe19c2851c003e727d8', 'reference.json': '0cd404acebd6c11521ac52d2b1082da764be76af56cab59e9f0125703f35acec', 'responses.json': '8e4c9185c2e2acb83cceef9c29504a9c3cc253e339dad244f7268df8d4236ac6'}}
 
 
@@ -81,3 +84,40 @@ def write_results(path, value):
     raw = json.dumps(value, indent=1, sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n"
     with Path(path).open("x", encoding="utf-8") as stream:
         stream.write(raw)
+
+
+def decision_record(skill, skill_version, answer, questions, final_decision, rule_hits=(), *,
+                    state_schema_version="1", policy=None, executed_action=None, human_override=None,
+                    outcome_label=None, latency_ms=0, created_at=None):
+    """One decision-log row: typed answers, hashes and labels only. State never enters it."""
+    if not all(isinstance(x, str) and x for x in (skill, skill_version, final_decision, state_schema_version)):
+        raise ValueError("skill, skill_version, final_decision and state_schema_version must be nonempty strings")
+    if type(latency_ms) is not int or latency_ms < 0:
+        raise ValueError("latency_ms must be a nonnegative integer")
+    if any(not isinstance(hit, str) or not hit for hit in rule_hits):
+        raise ValueError("rule hits must be nonempty strings")
+    for value in (executed_action, human_override, outcome_label, created_at):
+        if value is not None and not isinstance(value, str):
+            raise ValueError("optional labels must be strings or null")
+    answers = answer.project(questions)
+    record = {"skill": skill, "skill_version": skill_version, "model": answer.model,
+              "state_schema_version": state_schema_version,
+              "question_bundle_version": sha256(canonical(questions)),
+              "input_fingerprint": "sha256:" + answer.request_sha256, "response_sha256": answer.response_sha256,
+              "answers": answers,
+              "confidence": {k: v["confidence"] for k, v in answers.items() if "confidence" in v},
+              "probabilities": {k: v["probabilities"] for k, v in answers.items() if "probabilities" in v},
+              "deterministic_rule_hits": list(rule_hits), "final_decision": final_decision,
+              "executed_action": executed_action, "human_override": human_override,
+              "outcome_label": outcome_label, "latency_ms": latency_ms,
+              "created_at": created_at or datetime.now(timezone.utc).isoformat()}
+    if policy is not None:
+        record["policy_sha256"] = sha256(canonical(policy))
+    return safe_results(record)
+
+
+def append_decision(path, record):
+    """Append one validated JSON line; earlier lines are never rewritten."""
+    line = json.dumps(safe_results(record), sort_keys=True, ensure_ascii=True, allow_nan=False) + "\n"
+    with Path(path).open("a", encoding="utf-8") as stream:
+        stream.write(line)

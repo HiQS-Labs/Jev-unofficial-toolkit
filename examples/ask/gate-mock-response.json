@@ -1,0 +1,25 @@
+[
+ {
+  "model": "jev-1.13.0",
+  "answers": {
+   "approval_mode": {
+    "type": "choice",
+    "choice": "block",
+    "confidence": 0.93
+   },
+   "risk_level": {
+    "type": "score",
+    "score": 2.8,
+    "confidence": 0.88
+   },
+   "scope_matches_task": {
+    "type": "noul",
+    "noul": 0.21
+   },
+   "likely_sensitive_change": {
+    "type": "noul",
+    "noul": 0.97
+   }
+  }
+ }
+]

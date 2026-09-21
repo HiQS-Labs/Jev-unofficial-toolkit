@@ -8,6 +8,20 @@ from .answers import number
 BUCKETS = (("<0.5", 0, 0.5), ("0.5-0.8", 0.5, 0.8), (">=0.8", 0.8, 1.01))
 
 
+def hit_equal(truth, pred):
+    return truth == pred
+
+
+def within(tolerance):
+    """Score hit: prediction within `tolerance` rubric levels of the labelled level."""
+    return lambda truth, pred: abs(pred - truth) <= tolerance
+
+
+def above(threshold):
+    """Noul hit: the thresholded probability agrees with the boolean label."""
+    return lambda truth, pred: (pred >= threshold) == truth
+
+
 def aligned(truth, pred, conf=None):
     if not truth or len(truth) != len(pred) or (conf is not None and len(conf) != len(truth)):
         raise ValueError("inputs must be nonempty and aligned")
@@ -39,24 +53,48 @@ def metrics(truth, pred, classes):
             "confusion_labels": universe, "confusion": confusion}
 
 
-def confidence_table(truth, pred, conf):
+def score_metrics(truth, pred, tolerance):
+    aligned(truth, pred)
+    tolerance = number(tolerance)
+    if tolerance < 0:
+        raise ValueError("tolerance must be nonnegative")
+    pairs = [(number(t), number(p)) for t, p in zip(truth, pred) if t is not None]
+    correct = sum(abs(p - t) <= tolerance for t, p in pairs)
+    return {"labeled_n": len(pairs), "uncertain_truth_n": len(truth) - len(pairs),
+            "correct": correct, "raw_accuracy": correct / len(pairs) if pairs else 0.0,
+            "mae": sum(abs(p - t) for t, p in pairs) / len(pairs) if pairs else 0.0, "tolerance": tolerance}
+
+
+def noul_metrics(truth, pred, threshold):
+    aligned(truth, pred)
+    threshold = number(threshold, unit=True)
+    if any(t is not None and type(t) is not bool for t in truth):
+        raise ValueError("noul truth must be boolean or null")
+    pairs = [(t, number(p, unit=True)) for t, p in zip(truth, pred) if t is not None]
+    correct = sum((p >= threshold) == t for t, p in pairs)
+    return {"labeled_n": len(pairs), "uncertain_truth_n": len(truth) - len(pairs),
+            "correct": correct, "raw_accuracy": correct / len(pairs) if pairs else 0.0,
+            "brier": sum((p - t) ** 2 for t, p in pairs) / len(pairs) if pairs else 0.0, "threshold": threshold}
+
+
+def confidence_table(truth, pred, conf, hit=hit_equal):
     aligned(truth, pred, conf)
     rows = []
     for name, lo, hi in BUCKETS:
         members = [i for i, c in enumerate(conf) if lo <= c < hi and truth[i] is not None]
-        hits = sum(truth[i] == pred[i] for i in members)
+        hits = sum(hit(truth[i], pred[i]) for i in members)
         rows.append({"bucket": name, "n": len(members), "correct": hits,
                      "accuracy": hits / len(members) if members else 0.0})
     return rows
 
 
-def gate(truth, pred, conf, floor=0.8, min_accuracy=0.9, min_coverage=0.6):
+def gate(truth, pred, conf, floor=0.8, min_accuracy=0.9, min_coverage=0.6, hit=hit_equal):
     aligned(truth, pred, conf)
     for value in (floor, min_accuracy, min_coverage):
         number(value, unit=True)
     scored = [i for i, t in enumerate(truth) if t is not None]
     high = [i for i in scored if conf[i] >= floor]
-    hits = sum(truth[i] == pred[i] for i in high)
+    hits = sum(hit(truth[i], pred[i]) for i in high)
     accuracy = hits / len(high) if high else 0.0
     coverage = len(high) / len(scored) if scored else 0.0
     return {"scored_rows": len(scored), "high_confidence_rows": len(high),
