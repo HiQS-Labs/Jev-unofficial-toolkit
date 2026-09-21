@@ -38,5 +38,6 @@ All of the following are hypotheses from [issue #1](https://github.com/HiQS-Labs
 - Guardrail screening of agent transcripts before corpus ingestion.
 - A second decision stage for anomaly rows, once the necessary error text is retained.
 - Batching records into shared state to reduce repeated criteria, provided independence is demonstrated.
+- The three bounded-judgment skills in [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15): the harness can now ask and score their Score and Noul axes offline, but no live sample, labels, or gate exists for any of them.
 
 Each needs its own baseline, data policy, frozen question set, and pre-registered gate. None inherits the classification experiment's outcome. The possible SemIf/laya integrations listed in [README.md](README.md) are also untested; no adapters or compatibility claims ship here.

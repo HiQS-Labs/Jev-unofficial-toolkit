@@ -28,7 +28,8 @@ are pinned in the [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial
 
 ## Applying them here
 
-`jev-1.13.0` is the only accepted model. Question files have sidecars and
+`jev-1.13.0` is the only accepted model unless the operator sets `JEV_MODEL` to another exact
+version for a shadow run; aliases are refused. Question files have sidecars and
 independently pinned hashes in `guard.py`; commit them before a live experiment.
 A live manifest freezes the input file, questions, model, blind labels, and gate.
 The CLI reserves a new output directory before sending requests, finalizes the

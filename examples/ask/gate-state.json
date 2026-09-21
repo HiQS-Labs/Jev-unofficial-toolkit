@@ -1,0 +1,17 @@
+{
+ "agent": "codex",
+ "repo": "example-org/store-monitor",
+ "branch": "feature/checkout-retries",
+ "task": "Fix duplicate charges after checkout retry timeout",
+ "operation": {
+  "type": "shell_command",
+  "command": "git push origin main --force"
+ },
+ "changed_files": [
+  ".github/workflows/deploy.yml",
+  "src/payments/retry.ts"
+ ],
+ "diff_summary": "Changes payment idempotency logic and production deployment workflow.",
+ "environment": "local",
+ "tests_status": "not_run"
+}

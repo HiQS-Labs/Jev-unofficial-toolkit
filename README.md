@@ -35,6 +35,7 @@ python3 -m jev replay --fixture examples/fixtures/fresh-100 --out results/fresh
 python3 -m jev replay --fixture examples/fixtures/purpose-40 --out results/holdout
 python3 -m jev replay --fixture examples/fixtures/ate-benchmark --out results/ate
 python3 -m jev ask --state examples/ask/ate-state.json --questions ate_triage_v1 --mock-responses examples/ask/ate-mock-response.json --out results/ask
+python3 -m jev ask --state examples/ask/gate-state.json --questions agent_action_gate_v1 --mock-responses examples/ask/gate-mock-response.json --out results/gate
 python3 -m unittest discover -s tests -v
 ```
 
@@ -92,6 +93,28 @@ The client makes at most three attempts for rate limits and server errors, honor
 `work_purpose_v3` preserves the original taxonomy text and question hash. Its `ci_cd`, `skills`, and `ui` glosses were script-authored, not taxonomy definitions. `ate_triage_v1` is a new implementation of the [handoff requirements](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/PROJECT/GH-712-JEV-ATE-TRIAGE.md#requirements); it includes the required option union, crash override, and `expects_edits` condition. Supply the structured state described there, with the specified output tails. Historical canned answers do not validate the new question wording.
 
 Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES.md](USE-CASES.md) for evidence limits and untested hypotheses. [FAQ.md](FAQ.md) answers background questions about Jev, Needle, and where each fits; it is orientation, not evidence. The [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff) remains read-only and is not a runtime dependency.
+
+## Bounded-judgment skills
+
+Three skill designs are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13) (agent action gate), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14) (next-step router), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15) (commerce incident triage), with the shared harness contract in [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12). **None has evidence yet.** Each needs its own frozen question set, blind labels, and pre-registered gate before its first live request; nothing inherits the classification results above. The `gate` example line above runs the `agent_action_gate_v1` question set offline; its mock answers are illustrative, not recorded Jev output, and #13's thresholds, hook, and shadow mode are not part of this toolkit.
+
+The harness supports all three primitives under the [provider contract](https://docs.typesafe.ai/primitives):
+
+| Type | Question fields | Answer fields | Label in `--labels` | Metrics |
+| --- | --- | --- | --- | --- |
+| `choice` | `instructions`, `criteria` `{label: gloss}` (both nonempty) | `choice`, `confidence`, optional `probabilities` | label string | accuracy, macro-F1, confusion, confidence buckets, gate |
+| `score` | `instructions`, `criteria` ordered list of ≥ 2 level descriptions | `score` float in `[0, N−1]`, `confidence`, optional `probabilities` | number (rubric level) | correct within `score_tolerance`, MAE, confidence buckets, gate |
+| `noul` | `instructions` only | `noul` probability | `true` / `false` | correct at `noul_threshold`, Brier |
+
+`null` marks unknown truth for any type. A manifest that scores a Score axis must carry `score_tolerance` (≥ 0) and one that scores a Noul axis must carry `noul_threshold` (in `[0, 1]`); a missing key is refused before any request, like a missing gate. Noul has no confidence, so it cannot be the gate axis. Invalid question shapes are refused before the first request.
+
+`jev.policy.decide(policy, answers, rule_hits)` composes a decision deterministically: an ordered list of clauses, each `any`/`all` over leaf conditions (`{"rule": name}`, or `{"axis": a, "choice": c | "min": x | "max": x | "min_confidence": f}`); the first clause that holds wins and no match returns the policy's `default`, which callers set to the fail-closed value. The policy is plain JSON, so `policy_sha256` can be frozen and logged. `jev.guard.decision_record(...)` builds one decision-log row from an `Answer` (typed answers, confidence, probabilities, request/response hashes, rule hits, decision, override, outcome, latency) and `append_decision(path, record)` appends it as one JSON line; the recursive denylist applies, so the log can never carry state.
+
+The text boundary is the caller's: the toolkit sends state to Jev and never writes it, but a hook must hash or redact free text (`task`, `command`, `diff_summary`, …) before anything is logged. `guard.DENIED` now also refuses `state`, `command`, `task`, `summary`, `diff_summary`, `text`, `content`, and `prompt` as a backstop; the guarantee remains the typed projection.
+
+`JEV_MODEL=jev-<major>.<minor>.<patch>` overrides the pinned model for a shadow run against a manifest that names that exact version; aliases such as `jev-latest` are refused at import, with an uncaught `ValueError: model must be an exact pinned version`. The shipped fixtures pin `jev-1.13.0` and refuse under an override — that is the freeze working.
+
+To add a frozen question set: write `jev/questions/<name>.json` (canonical JSON, keys sorted), write its SHA-256 to `jev/questions/<name>.sha256`, and add the same hash to `FROZEN_QUESTIONS` in `guard.py`. `load_questions` refuses anything else.
 
 ## Other OSS projects — untested potential integrations
 

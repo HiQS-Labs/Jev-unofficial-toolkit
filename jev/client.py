@@ -32,11 +32,32 @@ def load_key(key_file=None):
     return key
 
 
+def validate_questions(questions):
+    """Provider contract: Choice criteria map labels to glosses, Score criteria list ordered levels, Noul has none."""
+    if not isinstance(questions, dict) or not questions:
+        raise ValueError("questions must be nonempty")
+    for name, question in questions.items():
+        if not isinstance(name, str) or not name or not isinstance(question, dict):
+            raise ValueError("question names and bodies must be nonempty")
+        kind, criteria = question.get("type"), question.get("criteria")
+        if kind not in ("choice", "score", "noul") or not isinstance(question.get("instructions"), str) or not question["instructions"].strip():
+            raise ValueError("question needs a supported type and instructions")
+        if kind == "choice":
+            if not isinstance(criteria, dict) or not criteria or any(
+                    not isinstance(k, str) or not k.strip() or not isinstance(v, str) or not v.strip() for k, v in criteria.items()):
+                raise ValueError("choice criteria must map nonempty labels to nonempty glosses")
+        elif kind == "score":
+            if not isinstance(criteria, list) or len(criteria) < 2 or any(not isinstance(c, str) or not c.strip() for c in criteria):
+                raise ValueError("score criteria must be an ordered list of at least two level descriptions")
+        elif "criteria" in question:
+            raise ValueError("noul questions take instructions only")
+    return questions
+
+
 def request_bytes(state, questions):
     if not isinstance(state, (str, dict, list)) or not state or (isinstance(state, str) and not state.strip()):
         raise ValueError("state must be nonempty")
-    if not isinstance(questions, dict) or not questions:
-        raise ValueError("questions must be nonempty")
+    validate_questions(questions)
     return canonical({"state": state, "model": MODEL, "questions": questions})
 
 
@@ -66,6 +87,8 @@ class JevClient:
             value = getattr(answer, kind)(name)
             if kind == "choice" and value not in question["criteria"]:
                 raise ValueError("choice outside criteria")
+            if kind == "score" and not 0 <= value <= len(question["criteria"]) - 1:
+                raise ValueError("score outside rubric range")
             if kind in ("choice", "score"):
                 answer.confidence(name)
         usage = parsed.get("usage", {})

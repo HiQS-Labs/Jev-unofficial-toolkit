@@ -57,6 +57,8 @@ class OpenRouterClient:
             value = getattr(answer, kind)(name)
             if kind == "choice" and value not in question["criteria"]:
                 raise ValueError("choice outside criteria")
+            if kind == "score" and not 0 <= value <= len(question["criteria"]) - 1:
+                raise ValueError("score outside rubric range")
             if kind in ("choice", "score"):
                 answer.confidence(name)
         usage = parsed.get("usage")

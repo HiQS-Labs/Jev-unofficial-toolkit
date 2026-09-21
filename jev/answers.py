@@ -1,7 +1,17 @@
 """Typed accessors; absent retained fields are never fabricated."""
 import math
+import os
+import re
 
-MODEL = "jev-1.13.0"
+
+def pinned_model(value):
+    # Exact versions only: an alias such as jev-latest moves, so results under it are not reproducible.
+    if not isinstance(value, str) or not re.fullmatch(r"jev-\d+\.\d+\.\d+", value):
+        raise ValueError("model must be an exact pinned version")
+    return value
+
+
+MODEL = pinned_model(os.environ.get("JEV_MODEL", "jev-1.13.0"))  # JEV_MODEL is the operator's shadow-run override.
 
 
 def number(value, unit=False):
@@ -50,6 +60,23 @@ class Answer:
         if item["type"] not in ("choice", "score"):
             raise ValueError("Noul has no separate confidence")
         return number(item["confidence"], unit=True)
+
+    def project(self, questions) -> dict:
+        """Typed fields only; never state, arbitrary API extensions, or error text."""
+        values = {}
+        for name, question in questions.items():
+            kind = question["type"]
+            values[name] = {"type": kind, kind: getattr(self, kind)(name)}
+            if kind in ("choice", "score"):
+                values[name]["confidence"] = self.confidence(name)
+                if "probabilities" in self.response["answers"][name]:
+                    try:
+                        values[name]["probabilities"] = self.probabilities(name)
+                    except (ValueError, KeyError, TypeError):
+                        # Probabilities are optional for scoring. Keep the typed verdict
+                        # and disclose the rejected distribution without inventing one.
+                        values[name]["probabilities_status"] = "invalid"
+        return values
 
     def probabilities(self, name) -> dict:
         item = self.response["answers"][name]

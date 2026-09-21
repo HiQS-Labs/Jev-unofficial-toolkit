@@ -12,12 +12,14 @@ from unittest.mock import patch
 from urllib.error import HTTPError
 
 from jev import openrouter
-from jev.answers import Answer, MODEL
-from jev.client import JevClient, MockClient, canonical, load_key, sha256
-from jev.cli import main
-from jev.eval import agreement, confidence_table, fn_zero_threshold, gate, metrics, metrics_from_confusion, binary_counts
-from jev.guard import (commit, load_questions, repo_visibility, safe_results,
+from jev.answers import Answer, MODEL, pinned_model
+from jev.client import JevClient, MockClient, canonical, load_key, sha256, validate_questions
+from jev.cli import main, score
+from jev.eval import (agreement, confidence_table, fn_zero_threshold, gate, metrics, metrics_from_confusion,
+                      binary_counts, noul_metrics, score_metrics, within)
+from jev.guard import (append_decision, commit, decision_record, load_questions, repo_visibility, safe_results,
                        verify, verify_freeze, write_results)
+from jev.policy import decide
 
 ROOT = Path(__file__).resolve().parents[1]
 Q = {"purpose": {"type": "choice", "instructions": "Choose a or b.", "criteria": {"a": "A", "b": "B"}}}
@@ -48,7 +50,9 @@ class HarnessTests(unittest.TestCase):
         canned = self.router_response()
         canned["answers"].update(rating={"type": "score", "score": 2, "confidence": 0.7},
                                  valid={"type": "noul", "noul": 0.8})
-        questions = dict(Q, rating={"type": "score"}, valid={"type": "noul"})
+        questions = dict(Q,
+                         rating={"type": "score", "instructions": "Rate.", "criteria": ["low", "high", "high+"]},
+                         valid={"type": "noul", "instructions": "Is it valid?"})
         client = openrouter.OpenRouterMockClient([canned, canned])
         answer = client.ask("synthetic", questions)
         self.assertEqual(answer.request_sha256, sha256(canonical({
@@ -91,6 +95,11 @@ class HarnessTests(unittest.TestCase):
             with self.assertRaises(ValueError): openrouter.OpenRouterClient("test", endpoint=endpoint)
         with self.assertRaises(ValueError): openrouter.OpenRouterClient("test", model="typesafe/jev-1.14")
         with self.assertRaises(ValueError): JevClient("test", endpoint=openrouter.ENDPOINT)
+        canned = self.router_response()
+        canned["answers"] = {"rating": {"type": "score", "score": 2, "confidence": 0.8}}
+        with self.assertRaises(ValueError):
+            openrouter.OpenRouterMockClient([canned]).ask(
+                "synthetic", {"rating": {"type": "score", "instructions": "Rate.", "criteria": ["low", "high"]}})
 
     def test_openrouter_keys_and_ci(self):
         with patch.dict(os.environ, {"TYPESAFE_API_KEY": "direct-only"}, clear=True):
@@ -365,7 +374,8 @@ class HarnessTests(unittest.TestCase):
         write_results(self.tmp / "safe.json", {"correct": 1})
         with self.assertRaises(FileExistsError): write_results(self.tmp / "safe.json", {})
         for fixture in (ROOT / "examples/fixtures").glob("*/*.json"):
-            safe_results(json.loads(fixture.read_text()))
+            if fixture.name != "records.json":  # inputs carry `state` by definition; results never do
+                safe_results(json.loads(fixture.read_text()))
 
     def test_malformed_repository_and_response_shapes_refused(self):
         for repo in (None, 7, {}, ""):
@@ -393,11 +403,229 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(report["false_positives"], 1)
         with self.assertRaises(ValueError): fn_zero_threshold(["pass"], [0.1])
 
+    GATE = {"default": "confirm", "clauses": [
+        {"decision": "block", "any": [{"rule": "denylist"},
+                                      {"axis": "approval_mode", "choice": "block", "min_confidence": 0.9},
+                                      {"all": [{"axis": "risk_level", "min": 2.5},
+                                               {"axis": "likely_sensitive_change", "min": 0.85}]}]},
+        {"decision": "confirm", "any": [{"rule": "protected_path"},
+                                        {"axis": "approval_mode", "choice": "confirm", "min_confidence": 0.75},
+                                        {"axis": "scope_matches_task", "max": 0.65},
+                                        {"axis": "risk_level", "min": 1.5}]},
+        {"decision": "allow", "all": [{"rule": "allowlist"},
+                                      {"axis": "approval_mode", "choice": "allow", "min_confidence": 0.85},
+                                      {"axis": "scope_matches_task", "min": 0.8}]}]}
+
+    @staticmethod
+    def gate_answers(mode="allow", conf=0.9, risk=0.5, scope=0.9, sensitive=0.1):
+        return {"approval_mode": {"type": "choice", "choice": mode, "confidence": conf},
+                "risk_level": {"type": "score", "score": risk, "confidence": 0.8},
+                "scope_matches_task": {"type": "noul", "noul": scope},
+                "likely_sensitive_change": {"type": "noul", "noul": sensitive}}
+
+    def bundle_eval(self, responses, labels, manifest_extra, questions="agent_action_gate_v1"):
+        """Run an offline `eval` of the three-primitive bundle; returns (exit_code, out_dir)."""
+        q = load_questions(questions)
+        records = [{"id": r["id"], "repo": "HiQS-Labs/pub", "state": {"n": i}} for i, r in enumerate(labels)]
+        record_file = self.tmp / "records.json"; record_file.write_bytes(canonical(records))
+        label_file = self.tmp / "labels.json"; label_file.write_bytes(canonical(labels))
+        mocks = self.tmp / "mocks.json"; mocks.write_bytes(canonical(responses))
+        manifest = self.tmp / "manifest.json"
+        manifest.write_bytes(canonical({"model": MODEL, "quiz_sha256": sha256(record_file.read_bytes()),
+            "questions_sha256": sha256(canonical(q)), **commit(label_file), **manifest_extra}))
+        out = self.tmp / "out"
+        args = ["eval", "--records", str(record_file), "--labels", str(label_file), "--questions", questions,
+                "--manifest", str(manifest), "--mock-responses", str(mocks), "--out", str(out)]
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            try:
+                return main(args), out
+            except SystemExit as stop:
+                return stop.code, out
+
+    def test_pinned_model_refuses_aliases(self):
+        self.assertEqual(pinned_model("jev-1.14.0"), "jev-1.14.0")
+        for alias in ("jev-latest", "jev-1", "jev-1.13", "1.13.0", "", None):
+            with self.assertRaises(ValueError): pinned_model(alias)
+        self.assertEqual(MODEL, "jev-1.13.0")
+
+    def test_question_schema_refusals(self):
+        good = {"c": {"type": "choice", "instructions": "Choose.", "criteria": {"a": "A"}},
+                "s": {"type": "score", "instructions": "Rate.", "criteria": ["low", "high"]},
+                "n": {"type": "noul", "instructions": "Is it?"}}
+        self.assertIs(validate_questions(good), good)
+        bad = [
+            {"c": {"type": "choice", "criteria": {"a": "A"}}},                               # no instructions
+            {"c": {"type": "rank", "instructions": "x", "criteria": {"a": "A"}}},            # unknown type
+            {"c": {"type": "choice", "instructions": "x", "criteria": {"": "A"}}},           # empty label
+            {"c": {"type": "choice", "instructions": "x", "criteria": {"a": ""}}},           # empty gloss
+            {"c": {"type": "choice", "instructions": "x", "criteria": ["a"]}},              # list, not dict
+            {"s": {"type": "score", "instructions": "x", "criteria": ["only"]}},             # one level
+            {"s": {"type": "score", "instructions": "x", "criteria": {"0": "low"}}},         # dict, not list
+            {"n": {"type": "noul", "instructions": "x", "criteria": ["y"]}},                 # noul with criteria
+            {"": {"type": "noul", "instructions": "x"}},                                     # empty name
+        ]
+        for questions in bad:
+            with self.assertRaises(ValueError): validate_questions(questions)
+        with self.assertRaises(ValueError): MockClient([{"model": MODEL, "answers": {"s": {"type": "score", "score": 1.5, "confidence": 0.5}}}]).ask("x", {"s": good["s"]})
+        self.assertEqual(MockClient([{"model": MODEL, "answers": {"s": {"type": "score", "score": 1.0, "confidence": 0.5}}}]).ask("x", {"s": good["s"]}).score("s"), 1.0)
+
+    def test_score_and_noul_metrics_and_gate(self):
+        m = score_metrics([0, 2, None, 3], [0.4, 2.6, 1.0, 1.0], 0.5)
+        self.assertEqual((m["labeled_n"], m["uncertain_truth_n"], m["correct"]), (3, 1, 1))
+        self.assertAlmostEqual(m["mae"], (0.4 + 0.6 + 2.0) / 3)
+        with self.assertRaises(ValueError): score_metrics([0], [0.1], -0.1)
+        n = noul_metrics([True, False, None, True], [0.9, 0.6, 0.5, 0.2], 0.5)
+        self.assertEqual((n["labeled_n"], n["uncertain_truth_n"], n["correct"]), (3, 1, 1))
+        self.assertAlmostEqual(n["brier"], (0.01 + 0.36 + 0.64) / 3)
+        with self.assertRaises(ValueError): noul_metrics([1], [0.5], 0.5)      # non-boolean truth
+        with self.assertRaises(ValueError): noul_metrics([True], [1.5], 0.5)   # probability outside unit
+        g = gate([1, 2], [1.5, 2.6], [0.9, 0.9], 0.8, 0.9, 0.6, hit=within(0.5))
+        self.assertEqual(g["high_confidence_correct"], 1)
+        self.assertEqual(gate([1, 2], [1.5, 2.5], [0.9, 0.9], hit=within(0.5))["high_confidence_correct"], 2)
+        self.assertEqual(confidence_table([1], [1.4], [0.95], within(0.5))[2]["correct"], 1)
+        with self.assertRaises(ValueError):
+            score([{"id": "a", "answers": {"rating": {
+                "type": "score", "score": 1.0, "confidence": 0.9}}}],
+                  [{"id": "a", "rating": 2}],
+                  {"rating": {"type": "score", "instructions": "Rate.", "criteria": ["low", "high"]}},
+                  {"axis": "rating", "confidence_floor": 0.8, "min_accuracy": 0.9, "min_coverage": 0.6},
+                  scoring={"score_tolerance": 0.5})
+
+    def test_bundle_eval_requires_registered_parameters(self):
+        labels = [{"id": "a", "approval_mode": "block", "risk_level": 3, "scope_matches_task": False, "likely_sensitive_change": True},
+                  {"id": "b", "approval_mode": "allow", "risk_level": 0, "scope_matches_task": True, "likely_sensitive_change": None}]
+        responses = [{"model": MODEL, "answers": self.gate_answers("block", 0.93, 2.8, 0.21, 0.97)},
+                     {"model": MODEL, "answers": self.gate_answers("allow", 0.9, 0.4, 0.85, 0.05)}]
+        gate_cfg = {"gate": {"axis": "risk_level", "confidence_floor": 0.8, "min_accuracy": 0.9, "min_coverage": 0.6}}
+        code, out = self.bundle_eval(responses, labels, {**gate_cfg, "score_tolerance": 0.5, "noul_threshold": 0.5})
+        self.assertEqual(code, 0)
+        report = json.loads((out / "results.json").read_text())
+        self.assertEqual(report["axes"]["approval_mode"]["metrics"]["correct"], 2)
+        self.assertEqual(report["axes"]["risk_level"]["metrics"]["correct"], 2)
+        self.assertEqual(report["axes"]["scope_matches_task"]["metrics"]["correct"], 2)
+        self.assertEqual(report["axes"]["likely_sensitive_change"]["metrics"]["labeled_n"], 1)
+        self.assertNotIn("confidence_buckets", report["axes"]["scope_matches_task"])
+        self.assertTrue(report["gate"]["met"])
+        self.assertEqual(report["predictions"][0]["risk_level_score"], 2.8)
+        self.assertEqual(report["predictions"][0]["scope_matches_task_noul"], 0.21)
+        for missing in ({**gate_cfg, "noul_threshold": 0.5}, {**gate_cfg, "score_tolerance": 0.5}):
+            self.tmp = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
+            code, out = self.bundle_eval(responses, labels, missing)
+            self.assertEqual(code, 2)
+            self.assertFalse((out / "answers.json").exists())  # refused before any request
+        self.tmp = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
+        code, _ = self.bundle_eval(responses, labels, {"gate": {**gate_cfg["gate"], "axis": "scope_matches_task"},
+                                                       "score_tolerance": 0.5, "noul_threshold": 0.5})
+        self.assertEqual(code, 2)  # noul cannot be a gate axis
+        self.tmp = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
+        code, out = self.bundle_eval(responses, labels, {**gate_cfg, "scored_axes": ["approval_mode"], "score_tolerance": 0.5})
+        self.assertEqual(code, 2)  # gate axis excluded by scored_axes must refuse, not silently drop the gate
+        self.assertFalse((out / "answers.json").exists())
+        for selected in ([], "risk_level", ["missing"], ["risk_level", "risk_level"]):
+            self.tmp = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
+            code, out = self.bundle_eval(responses, labels, {
+                **gate_cfg, "scored_axes": selected, "score_tolerance": 0.5, "noul_threshold": 0.5})
+            self.assertEqual(code, 2)
+            self.assertFalse((out / "answers.json").exists())
+
+    def test_frozen_set_with_valid_hash_but_invalid_shape_refused(self):
+        bad = canonical({"n": {"type": "noul", "instructions": "x", "criteria": []}})
+        (self.tmp / "bad.json").write_bytes(bad)
+        (self.tmp / "bad.sha256").write_text(sha256(bad) + "\n")
+        with patch.dict("jev.guard.FROZEN_QUESTIONS", {"bad": sha256(bad)}):
+            with self.assertRaises(ValueError): load_questions("bad", self.tmp)
+
+    def test_decision_log_is_typed_and_append_only(self):
+        q = load_questions("agent_action_gate_v1")
+        answer = MockClient([{"model": MODEL, "answers": self.gate_answers("block", 0.93, 2.8, 0.21, 0.97)}]).ask(
+            {"task": "secret text", "command": "rm -rf /"}, q)
+        record = decision_record("jev-agent-action-gate", "0.1.0", answer, q, "block", ["denylist"],
+                                 policy=self.GATE, latency_ms=12, created_at="2026-09-20T00:00:00+00:00")
+        self.assertEqual(record["input_fingerprint"], "sha256:" + answer.request_sha256)
+        self.assertEqual(record["question_bundle_version"], sha256(canonical(q)))
+        self.assertEqual(record["confidence"], {"approval_mode": 0.93, "risk_level": 0.8})
+        self.assertEqual(record["probabilities"], {})
+        self.assertEqual(record["policy_sha256"], decide(self.GATE, record["answers"])["policy_sha256"])
+        log = self.tmp / "decisions.jsonl"
+        append_decision(log, record); append_decision(log, {**record, "outcome_label": "confirmed"})
+        lines = log.read_text().splitlines()
+        self.assertEqual(len(lines), 2)
+        self.assertNotIn("secret text", log.read_text()); self.assertNotIn("rm -rf", log.read_text())
+        self.assertEqual(json.loads(lines[1])["outcome_label"], "confirmed")
+        for bad in ({**record, "state": {}}, {**record, "nested": [{"command": "x"}]}, {**record, "latency_ms": float("nan")}):
+            with self.assertRaises(ValueError): append_decision(log, bad)
+        self.assertEqual(len(log.read_text().splitlines()), 2)
+        with self.assertRaises(ValueError): decision_record("", "0.1.0", answer, q, "block")
+        with self.assertRaises(ValueError): decision_record("s", "0.1.0", answer, q, "block", latency_ms=-1)
+        with self.assertRaises(ValueError): decision_record("s", "0.1.0", answer, q, "block", executed_action=7)
+        with self.assertRaises(ValueError): write_results(self.tmp / "leak.json", {"answers": [{"state": {}}]})
+
+    def test_policy_first_match_and_fail_closed(self):
+        cases = [
+            (self.gate_answers(), ["allowlist"], "allow", 2),
+            (self.gate_answers(), [], "confirm", None),                                   # no allowlist hit → default
+            (self.gate_answers(scope=0.79), ["allowlist"], "confirm", None),              # scope just under allow floor
+            (self.gate_answers(risk=1.5), ["allowlist"], "confirm", 1),                   # risk at confirm edge
+            (self.gate_answers(scope=0.65), ["allowlist"], "confirm", 1),                 # scope at confirm edge
+            (self.gate_answers("confirm", 0.75), ["allowlist"], "confirm", 1),
+            (self.gate_answers("block", 0.9), ["allowlist"], "block", 0),
+            (self.gate_answers("block", 0.89), ["allowlist"], "confirm", None),           # block below floor → fail-closed default
+            (self.gate_answers(risk=2.5, sensitive=0.85), ["allowlist"], "block", 0),
+            (self.gate_answers(risk=2.5, sensitive=0.84), ["allowlist"], "confirm", 1),
+            (self.gate_answers(), ["denylist", "allowlist"], "block", 0),                 # deterministic rule wins
+            ({"other": {"type": "choice", "choice": "x", "confidence": 1.0}}, ["allowlist"], "confirm", None),
+        ]
+        for answers, hits, decision, clause in cases:
+            result = decide(self.GATE, answers, hits)
+            self.assertEqual((result["decision"], result["clause"]), (decision, clause), (answers, hits))
+        self.assertEqual(len(decide(self.GATE, {})["policy_sha256"]), 64)
+        for bad in ({"clauses": []}, {"default": "x", "clauses": [{"decision": "y"}]},
+                    {"default": "x", "clauses": [{"decision": "y", "any": []}]},
+                    {"default": "x", "clauses": [{"decision": "y", "all": [{"axis": "a"}]}]},
+                    {"default": "x", "clauses": [{"decision": "y", "all": [{"axis": "a", "min": "1"}]}]},
+                    {"default": "x", "clauses": [{"decision": "y", "any": [{"rule": ""}]}]}):
+            with self.assertRaises(ValueError): decide(bad, {})
+        numeric = {"default": "confirm", "clauses": [
+            {"decision": "allow", "all": [{"axis": "risk", "min": 1}]}]}
+        for malformed in (True, "2", float("nan"), float("inf")):
+            self.assertEqual(decide(numeric, {"risk": {"type": "score", "score": malformed}})["decision"], "confirm")
+        self.assertEqual(decide(numeric, {"risk": {"type": [], "score": 2}})["decision"], "confirm")
+        confidence = {"default": "confirm", "clauses": [
+            {"decision": "allow", "all": [{"axis": "scope", "min_confidence": 0.5}]}]}
+        self.assertEqual(decide(confidence, {"scope": {
+            "type": "noul", "noul": 0.9, "confidence": 1.0}})["decision"], "confirm")
+
+    def test_gate_example_runs_offline_without_persisting_state(self):
+        out = self.tmp / "gate"
+        args = ["ask", "--state", str(ROOT / "examples/ask/gate-state.json"), "--questions", "agent_action_gate_v1",
+                "--mock-responses", str(ROOT / "examples/ask/gate-mock-response.json"), "--out", str(out)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args), 0)
+        answers = json.loads((out / "answers.json").read_text())
+        self.assertEqual(len(answers), 1)
+        got = answers[0]["answers"]
+        self.assertEqual({k: v["type"] for k, v in got.items()},
+                         {"approval_mode": "choice", "risk_level": "score", "scope_matches_task": "noul", "likely_sensitive_change": "noul"})
+        self.assertIsInstance(got["risk_level"]["score"], float); self.assertTrue(0 <= got["risk_level"]["score"] <= 3)
+        for axis in ("scope_matches_task", "likely_sensitive_change"):
+            self.assertTrue(0 <= got[axis]["noul"] <= 1)
+        for key in ("request_sha256", "response_sha256"):
+            self.assertRegex(answers[0][key], r"^[0-9a-f]{64}$")
+        state = json.loads((ROOT / "examples/ask/gate-state.json").read_text())
+        for name in ("answers.json", "results.json"):
+            text = (out / name).read_text()
+            for secret in (state["task"], state["operation"]["command"], state["diff_summary"]):
+                self.assertNotIn(secret, text)
+
     def test_frozen_question_sets(self):
         work = load_questions("work_purpose_v3")
         self.assertEqual(len(work["purpose"]["criteria"]), 8)
         self.assertEqual(len(work["area"]["criteria"]), 12)
         self.assertEqual(sha256(canonical(work)), "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821")
+        gate_q = load_questions("agent_action_gate_v1")
+        self.assertEqual({k: v["type"] for k, v in gate_q.items()},
+                         {"approval_mode": "choice", "risk_level": "score", "scope_matches_task": "noul", "likely_sensitive_change": "noul"})
+        self.assertEqual(len(gate_q["risk_level"]["criteria"]), 4)
         triage = load_questions("ate_triage_v1")
         self.assertEqual(set(triage["severity"]["criteria"]), {"none", "low", "medium", "high", "critical"})
         self.assertEqual(set(triage["category"]["criteria"]), {"crash", "auth_failure", "bad_diff", "timeout", "no_edit", "config_error", "env_failure", "env_missing", "ok"})
