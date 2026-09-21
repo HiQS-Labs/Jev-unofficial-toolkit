@@ -14,7 +14,7 @@
 
 | What was just completed | What's next |
 |---|---|
-| #6 recovery, #9 OpenRouter adapter, and #10 protocol draft completed on one branch. | Review and merge the starter-readiness PR; later authorize a separate human-reference experiment. |
+| #6 recovery and #9 OpenRouter access merged in PR #19; #12 harness prerequisites merged in PR #20. | Finalize and separately authorize #10's prospective human-reference experiment; continue #13–#15 only with task-specific evidence. |
 
 ## Ledger
 
@@ -24,13 +24,13 @@
 
 ### In progress
 
-- [GH-6 live answer recovery](PROJECT/2-WORKING/GH-6-PROBABILITY-CHECKPOINTS.md) — fix committed on the starter branch, awaiting review.
-- [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — one-branch marathon tracking #6, #9 and #10 protocol.
-- [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — reviewed implementation awaiting PR merge.
+- [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
 
 ### Completed
 
-- No completed docs.
+- [GH-6 live answer recovery](PROJECT/2-WORKING/GH-6-PROBABILITY-CHECKPOINTS.md) — closed after checkpoint and optional-probability recovery shipped in PR #19.
+- [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — closed after the pinned Decisions adapter and mock coverage shipped in PR #19.
+- GH-12 judgment harness prerequisites — closed after Score/Noul scoring, schema validation, policy composition, and decision logging shipped in PR #20. No local project doc was created for this issue.
 
 ### Deferred
 

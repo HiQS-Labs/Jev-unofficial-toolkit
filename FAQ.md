@@ -1,6 +1,6 @@
 # FAQ: Jev, Needle, and Practical AI Model Use
 
-This FAQ collects the questions that come up when evaluating Jev and Needle for this toolkit's work. Answers reflect public vendor documentation as of 2026-09-20; Jev's internal architecture and parameter count are not publicly disclosed. For what this toolkit has actually measured, read [USE-CASES.md](USE-CASES.md).
+This FAQ collects the questions that come up when evaluating Jev and Needle for this toolkit's work. Vendor facts reflect public documentation reviewed on 2026-09-20; toolkit status reflects merged PRs #19 and #20. Jev's internal architecture and parameter count are not publicly disclosed. For what this toolkit has actually measured, read [USE-CASES.md](USE-CASES.md).
 
 ---
 
@@ -267,7 +267,7 @@ For the existing 44-label next-action problem, Needle 3 is a hypothesis to evalu
 
 ## 7. What are three practical skill-file ideas that use Jev?
 
-The most useful Jev skills are those in which Jev makes a narrow semantic judgment and deterministic code retains control of execution. All three below are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15), with the shared harness prerequisites in [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12). None has evidence yet; each needs its own baseline and pre-registered gate per [USE-CASES.md](USE-CASES.md).
+The most useful Jev skills are those in which Jev makes a narrow semantic judgment and deterministic code retains control of execution. All three below are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15). The shared harness prerequisites in closed issue [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12) now support frozen Choice/Score/Noul bundles, offline scoring, deterministic policy composition, and typed decision logs. The three designs still have no live outcome evidence; each needs its own baseline and pre-registered gate per [USE-CASES.md](USE-CASES.md).
 
 ### Skill 1: `jev-agent-action-gate`
 

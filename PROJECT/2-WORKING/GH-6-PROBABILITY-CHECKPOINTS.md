@@ -2,9 +2,10 @@
 gh_issue: 6
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6
 title: Preserve live answers when optional probabilities fail
-status: In progress
+status: Complete — merged in PR #19; issue closed
 created: 2026-09-20
 updated: 2026-09-20
+reviewed_after_merge: true
 owner: toolkit maintainer
 goal: Keep valid typed answers and completed paid responses when an optional probability map or later request fails.
 doc_type: bugfix
@@ -20,17 +21,17 @@ phases: 1
 
 | What was just completed | What's next |
 |---|---|
-| Commit `3cf45d0` keeps each completed answer and marks invalid optional probabilities. | Run preflight and hosted CI; review before closing the issue. |
+| PR #19 keeps each completed answer and marks invalid optional probabilities; hosted CI and the merged suite pass. | No implementation work remains. Preserve the historical receipt's evidence limits. |
 
 The observed historical rerun lost the first batch's in-memory answers after an optional probability validation error. The cause of the rejected distribution is not established because the failing probability map was not retained.
 
 ## Acceptance
 
-- [ ] The typed probability accessor still rejects invalid distributions; no values are fabricated or silently normalized.
-- [ ] Choice/confidence scoring remains available when only optional probabilities fail.
-- [ ] Completed answers are written through the results denylist before the next request, with hashes and no state text.
-- [ ] A later failed response leaves earlier checkpoints and no completed `results.json`.
-- [ ] The existing fixture replays and mock-only CI pass. No new live run is needed for this fix.
+- [x] The typed probability accessor still rejects invalid distributions; no values are fabricated or silently normalized.
+- [x] Choice/confidence scoring remains available when only optional probabilities fail.
+- [x] Completed answers are written through the results denylist before the next request, with hashes and no state text.
+- [x] A later failed response leaves earlier checkpoints and no completed `results.json`.
+- [x] The existing fixture replays and mock-only CI pass. No new live run was needed for this fix.
 
 ## Swarm Preflight Contract
 

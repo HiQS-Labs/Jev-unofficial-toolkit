@@ -1,5 +1,7 @@
 # Jev unofficial toolkit
 
+[Project site](https://hiqs-labs.github.io/Jev-unofficial-toolkit/) · [GitHub repository](https://github.com/HiQS-Labs/Jev-unofficial-toolkit) · [XYZ Forge flagship project](https://github.com/HiQS-Labs/XYZ-forge)
+
 **The classification labels behind these results are a three-model consensus, not human gold.**
 
 [Jev](https://docs.typesafe.ai/introduction) is TypeSafe's decision model: it evaluates state against typed questions and returns answers that software can use directly. Choice selects a label; Score returns a rubric value; both include confidence and probabilities. Noul returns a yes-probability without separate confidence. Jev is not a text generator. This independent toolkit adds provenance hashes, frozen questions and inputs, blind-label commitments, confidence gates, ordered mocks, and evaluation around the pinned `jev-1.13.0` endpoint.
@@ -75,6 +77,9 @@ A manifest contains:
 | `questions_sha256` | SHA-256 of canonical question JSON; must match the frozen set. |
 | `labels_sha256` | Blind annotation commitment from `guard.commit(labels_file)`; checked only after responses finish. |
 | `gate` | `axis`, `confidence_floor`, `min_accuracy`, and `min_coverage`, fixed before requests. |
+| `scored_axes` | Optional nonempty list of unique frozen question IDs. The gate axis must be included. |
+| `score_tolerance` | Required when a scored axis uses Score; a nonnegative rubric-level tolerance. |
+| `noul_threshold` | Required when a scored axis uses Noul; a threshold in `[0, 1]`. |
 
 `guard.verify(labels_file, manifest)` verifies the commitment. Preserve the manifest in an independently committed record before annotation disclosure; a hash does not prove blindness if someone can replace both labels and manifest. `guard.verify_freeze(directory, expected)` checks file bytes against caller-pinned constants. The shipped question and fixture constants live in `guard.py`, independently of sidecars.
 
@@ -86,7 +91,7 @@ Live spend needs operator authorization. Supply `TYPESAFE_API_KEY` per run or `-
 
 For historical state text, consult [Needle-fork at f7c7047](https://github.com/HiQS-Labs/Needle-fork/tree/f7c7047/TESTS-RESULTS/2026-09-19-jev-fresh-sample) outside this repository and verify the original `quiz_sha256` in the [handoff manifest](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-19-jev-fresh-sample/manifest.json). If you transform it into this CLI's record schema, freeze the transformed file separately. Do not fetch or store issue titles or descriptions here. A separately authorized historical rerun must preserve the original receipts and be identified as a repeated-sample check, never a new unseen-sample performance claim.
 
-The client makes at most three attempts for rate limits and server errors, honoring `Retry-After` as seconds or an HTTP date. It refuses an excessive wait, redirects, other model IDs, and other endpoints. Errors do not echo provider payloads or keys. The recursive results writer refuses `title`, `description`, `stderr`, `stdout`, and `body`; the CLI additionally projects typed fields and never writes state.
+The client makes at most three attempts for rate limits and server errors, honoring `Retry-After` as seconds or an HTTP date. It refuses an excessive wait, redirects, other model IDs, and other endpoints. Errors do not echo provider payloads or keys. The recursive results writer refuses source-text fields including `state`, `title`, `description`, `stderr`, `stdout`, `body`, `command`, `task`, `summary`, `diff_summary`, `text`, `content`, and `prompt`; the CLI additionally projects typed fields and never writes state.
 
 ## Questions and evidence
 
@@ -96,7 +101,7 @@ Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES
 
 ## Bounded-judgment skills
 
-Three skill designs are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13) (agent action gate), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14) (next-step router), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15) (commerce incident triage), with the shared harness contract in [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12). **None has evidence yet.** Each needs its own frozen question set, blind labels, and pre-registered gate before its first live request; nothing inherits the classification results above. The `gate` example line above runs the `agent_action_gate_v1` question set offline; its mock answers are illustrative, not recorded Jev output, and #13's thresholds, hook, and shadow mode are not part of this toolkit.
+Three skill designs are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13) (agent action gate), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14) (next-step router), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15) (commerce incident triage). The shared harness prerequisites in [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12) are implemented: schema validation, Score/Noul scoring, typed decision logs, exact model overrides, and deterministic policy composition. **None of the three skill designs has live outcome evidence yet.** Each needs its own frozen question set, blind labels, and pre-registered gate before its first live request; nothing inherits the classification results above. The `gate` example line above runs the frozen `agent_action_gate_v1` question set offline with illustrative mock answers. Its hook, shadow deployment, and live thresholds remain work under #13.
 
 The harness supports all three primitives under the [provider contract](https://docs.typesafe.ai/primitives):
 
@@ -122,8 +127,8 @@ To add a frozen question set: write `jev/questions/<name>.json` (canonical JSON,
 
 ## Build a Jev function in your app
 
-The [Jev app integration skill](skills/jev-app-integration/SKILL.md) helps a coding agent inspect your app, add one function for a specific Jev decision, and test it with an offline mock. Ask your agent: “Use `jev-app-integration` to add a function that [describe the decision] in [app path].” Bring a sample input and the action you want for each answer. The agent should give you the changed function, a focused test, and run instructions. New question wording and new app behavior still need their own labeled validation before you rely on model quality; live requests require your authorization.
+The [Jev app integration skill](skills/jev-app-integration/SKILL.md) helps a coding agent inspect your app, add one function for a specific Jev decision, and test it with an offline mock. Ask your agent: “Use `jev-app-integration` to add a function that [describe the decision] in [app path].” Bring a sample input and the action you want for each answer. The agent should give you the changed function, a focused test, and run instructions. New question wording and new app behavior still need their own labeled validation before you rely on model quality; live requests require your authorization. For the broader multi-agent engineering system behind this work, visit [XYZ Forge](https://github.com/HiQS-Labs/XYZ-forge).
 
 ## Licence
 
-The operator selected XYZ-forge's AGPL plus commercial setup, superseding this repository's original GPL licence. See [LICENSE](LICENSE), [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md), and [NOTICE](NOTICE). Needle-derived portions retain their [Apache licence](licenses/Apache-2.0.txt) and attribution. No XYZ-forge Jev implementation or TypeSafe SDK is vendored. Jev and TypeSafe are their owners' marks; this project is unofficial.
+The operator selected [XYZ Forge](https://github.com/HiQS-Labs/XYZ-forge)'s AGPL plus commercial setup, superseding this repository's original GPL licence. See [LICENSE](LICENSE), [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md), and [NOTICE](NOTICE). Needle-derived portions retain their [Apache licence](licenses/Apache-2.0.txt) and attribution. No XYZ Forge Jev implementation or TypeSafe SDK is vendored. Jev and TypeSafe are their owners' marks; this project is unofficial.

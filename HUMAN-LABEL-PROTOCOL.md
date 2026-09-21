@@ -6,11 +6,11 @@
 
 ## Evidence and scope
 
-This draft follows the [GH-10 intake](PROJECT/1-INBOX/GH-10-HUMAN-LABELS.md), [experiment rules](PROTOCOL.md), [use-case limits](USE-CASES.md), and [frozen rerun receipt](evidence/2026-09-20-fresh-100-live-rerun/README.md). The local intake supplies the issue requirements; attempts to retrieve the live issue during drafting failed, so its current body and status must be reconciled before registration.
+This draft follows the [GH-10 intake](PROJECT/1-INBOX/GH-10-HUMAN-LABELS.md), [experiment rules](PROTOCOL.md), [use-case limits](USE-CASES.md), and [frozen rerun receipt](evidence/2026-09-20-fresh-100-live-rerun/README.md). The live issue remains open, and its acceptance criteria were reconciled with this draft during the post-merge documentation review. Registration still requires an operator-approved final protocol and execution receipt.
 
 The original fresh fixture reports purpose agreement 88/100 and 73/75 correct among 75 high-confidence rows. The repeated-sample receipt reports 89/100 and 72/74 among 74 high-confidence rows. Neither is independent human validation or a new population. These observations motivate this study; they do not set its outcome. Area classification and ATE triage are outside its routing claim.
 
-Only this document is delivered in this phase. No scorer implementation or existing execution path changes are proposed here; code recon is therefore not applicable. Future human-reference scorer support and mock receipt checks are execution prerequisites, not features claimed to exist today.
+This document was the protocol artifact delivered in the starter-readiness phase. The harness now supports frozen Choice, Score, and Noul evaluation, but protocol-specific human-reference receipts and checks remain execution prerequisites and are not claimed to exist today.
 
 ## Registration and responsibility
 

@@ -13,7 +13,7 @@ These are historical findings from the read-only [handoff snapshot](https://gith
 
 ## Repeated-sample live check
 
-The [new receipt](evidence/2026-09-20-fresh-100-live-rerun/README.md) records purpose `89/100` (macro-F1 `0.7002285599360067`), area `62/94`, and `72/74` correct at confidence ≥ `0.8` with `74/100` coverage. The original purpose gate passes. This is the same historical sample, not new generalization evidence or grounds to change the area verdict. Execution recovered from a probability-accessor failure; the receipt distinguishes retained-response usage from unknown total usage and identifies the unresolved CLI defect.
+The [new receipt](evidence/2026-09-20-fresh-100-live-rerun/README.md) records purpose `89/100` (macro-F1 `0.7002285599360067`), area `62/94`, and `72/74` correct at confidence ≥ `0.8` with `74/100` coverage. The original purpose gate passes. This is the same historical sample, not new generalization evidence or grounds to change the area verdict. Execution recovered from a probability-accessor failure; the receipt distinguishes retained-response usage from unknown total usage. The checkpoint and optional-probability defect was subsequently fixed in [PR #19](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/19), without changing the historical evidence.
 
 ## Confidence-gated routing
 

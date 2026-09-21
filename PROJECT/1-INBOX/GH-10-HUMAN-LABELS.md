@@ -2,9 +2,10 @@
 gh_issue: 10
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/10
 title: Validate purpose classification against human labels
-status: Proposed (1-INBOX — not yet active)
+status: Protocol drafted; experiment not authorized
 created: 2026-09-20
 updated: 2026-09-20
+reviewed_after_merge: true
 owner: toolkit maintainer
 goal: Establish a prospective human reference and a pre-registered gate before unattended routing.
 doc_type: feedback
@@ -17,6 +18,8 @@ phases: 2
 # GH-10 — human-label validation
 
 The historical work-purpose labels are a three-model consensus, not human gold. Agreement among models does not prove correctness. This issue requires a newly sampled, independent human reference before a deployment claim.
+
+The proposed protocol now lives in [HUMAN-LABEL-PROTOCOL.md](../../HUMAN-LABEL-PROTOCOL.md). It remains a draft: no sample, human-label operation, live Jev run, or deployment decision has been authorized.
 
 ## Acceptance
 

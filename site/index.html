@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An unofficial, evidence-first toolkit for integrating TypeSafe Jev decisions with frozen questions, offline mocks, typed scoring, and deterministic policy.">
+  <meta name="theme-color" content="#0b1714">
+  <title>Jev unofficial toolkit · HiQS Labs</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-header>
+    <a class="brand" href="#top" aria-label="Jev unofficial toolkit home">
+      <span class="brand-mark" aria-hidden="true">J</span>
+      <span>Jev toolkit</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+      <span class="sr-only">Toggle navigation</span>
+      <span></span><span></span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary" data-nav>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#integrate">Integrate</a>
+      <a class="nav-cta" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit">View on GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span class="status-dot"></span> Unofficial · evidence first · mock safe</p>
+        <h1>Turn application state into <em>typed decisions.</em></h1>
+        <p class="hero-lede">A small Python toolkit around TypeSafe Jev with frozen questions, deterministic policy, offline replay, provenance hashes, and explicit evidence boundaries.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#quickstart">Run an offline example</a>
+          <a class="button button-secondary" href="https://github.com/HiQS-Labs/XYZ-forge">Explore XYZ Forge <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="hero-note">Jev makes a bounded judgment. Your code keeps control of permissions, actions, and fallbacks.</p>
+      </div>
+
+      <div class="decision-card reveal" aria-label="Illustrative typed Jev decision">
+        <div class="window-bar"><span></span><span></span><span></span><b>decision.json</b></div>
+        <pre><code><span class="muted">{</span>
+  <span class="key">"approval_mode"</span>: <span class="muted">{</span>
+    <span class="key">"type"</span>: <span class="string">"choice"</span>,
+    <span class="key">"choice"</span>: <span class="accent">"confirm"</span>,
+    <span class="key">"confidence"</span>: <span class="number">0.91</span>
+  <span class="muted">}</span>,
+  <span class="key">"risk_level"</span>: <span class="muted">{</span>
+    <span class="key">"type"</span>: <span class="string">"score"</span>,
+    <span class="key">"score"</span>: <span class="number">2.4</span>
+  <span class="muted">}</span>,
+  <span class="key">"scope_matches"</span>: <span class="muted">{</span>
+    <span class="key">"type"</span>: <span class="string">"noul"</span>,
+    <span class="key">"noul"</span>: <span class="number">0.62</span>
+  <span class="muted">}</span>
+<span class="muted">}</span></code></pre>
+        <div class="policy-row"><span>deterministic policy</span><strong>REQUEST CONFIRMATION</strong></div>
+      </div>
+    </section>
+
+    <section class="trust-strip" aria-label="Toolkit properties">
+      <div><strong>3</strong><span>typed primitives</span></div>
+      <div><strong>2</strong><span>pinned transports</span></div>
+      <div><strong>33</strong><span>offline tests</span></div>
+      <div><strong>0</strong><span>live CI calls</span></div>
+    </section>
+
+    <section class="section" id="capabilities">
+      <div class="section-heading reveal">
+        <p class="eyebrow">What ships</p>
+        <h2>A narrow decision layer with strong edges.</h2>
+        <p>The toolkit packages the controls around a model call: validation before spend, typed projection after response, and deterministic policy before action.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card reveal">
+          <span class="feature-index">01</span>
+          <h3>Typed questions</h3>
+          <p>Choice selects a label. Score returns a rubric value. Noul returns a yes probability. Frozen JSON and sidecar hashes keep wording reproducible.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-index">02</span>
+          <h3>Two pinned routes</h3>
+          <p>Use direct TypeSafe with <code>jev-1.13.0</code>, or the dedicated OpenRouter Decisions route with <code>typesafe/jev-1.13</code>.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-index">03</span>
+          <h3>Offline by default</h3>
+          <p>Ordered mocks, fixture replay, network-blocked tests, and explicit live flags let teams prove integration behavior before authorizing spend.</p>
+        </article>
+        <article class="feature-card reveal">
+          <span class="feature-index">04</span>
+          <h3>Evidence you can audit</h3>
+          <p>Canonical request and response hashes, frozen manifests, per-answer checkpoints, append-only decision logs, and strict text boundaries.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section workflow-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Operating model</p>
+        <h2>Model judgment stays inside ordinary software control.</h2>
+      </div>
+      <ol class="workflow" aria-label="Jev integration workflow">
+        <li class="reveal"><b>01</b><span><strong>Normalize state</strong><small>Send only approved fields.</small></span></li>
+        <li class="reveal"><b>02</b><span><strong>Apply hard rules</strong><small>Permissions and denylists run first.</small></span></li>
+        <li class="reveal"><b>03</b><span><strong>Ask Jev</strong><small>Receive bounded typed answers.</small></span></li>
+        <li class="reveal"><b>04</b><span><strong>Compose policy</strong><small>Combine answers with thresholds.</small></span></li>
+        <li class="reveal"><b>05</b><span><strong>Act or review</strong><small>Log the outcome without raw state.</small></span></li>
+      </ol>
+    </section>
+
+    <section class="section quickstart-section" id="quickstart">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Five minute start</p>
+        <h2>Run the repository without an API key.</h2>
+        <p>The harness uses only the Python standard library. These examples are offline and write to a new output directory.</p>
+      </div>
+      <div class="terminal reveal">
+        <div class="terminal-tabs" role="tablist" aria-label="Quickstart examples">
+          <button class="active" role="tab" aria-selected="true" data-command="replay">Replay</button>
+          <button role="tab" aria-selected="false" data-command="gate">Action gate</button>
+          <button role="tab" aria-selected="false" data-command="tests">Tests</button>
+          <button class="copy-button" type="button" data-copy>Copy</button>
+        </div>
+        <pre><code data-command-output>python3 -m jev replay --fixture examples/fixtures/fresh-100 --out results/fresh</code></pre>
+      </div>
+      <div class="callout reveal">
+        <strong>Live use is deliberately explicit.</strong>
+        <span>A live request needs a pinned manifest, a new output directory, an allowed public repository, the correct provider key, and <code>--live</code>. CI cannot make live calls.</span>
+      </div>
+    </section>
+
+    <section class="section evidence-section" id="evidence">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Evidence, with boundaries</p>
+        <h2>Recorded results are useful when read precisely.</h2>
+        <p>The work-classification reference is a three-model consensus, not independent human gold. The cards preserve exact denominators and avoid transferring results to new tasks.</p>
+      </div>
+      <div class="evidence-grid">
+        <article class="metric-card reveal">
+          <p>Fresh purpose sample</p>
+          <strong>88<span>/100</span></strong>
+          <small>Recorded sample · macro-F1 0.6868</small>
+        </article>
+        <article class="metric-card reveal">
+          <p>Confidence ≥ 0.8</p>
+          <strong>73<span>/75</span></strong>
+          <small>Correct · coverage 75/100</small>
+        </article>
+        <article class="metric-card warn reveal">
+          <p>Fresh area sample</p>
+          <strong>60<span>/94</span></strong>
+          <small>Not ready for unattended use</small>
+        </article>
+      </div>
+      <div class="boundary reveal">
+        <span class="boundary-mark" aria-hidden="true">!</span>
+        <div><strong>No result transfers automatically.</strong><p>New taxonomies, private data, future samples, and the three bounded judgment skill designs each need their own labels, frozen questions, and preregistered gate.</p></div>
+        <a href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/USE-CASES.md">Read the evidence ledger</a>
+      </div>
+    </section>
+
+    <section class="section integrate-section" id="integrate">
+      <div class="integration-panel reveal">
+        <div>
+          <p class="eyebrow">For app developers</p>
+          <h2>Build one useful Jev function in your existing app.</h2>
+          <p>The included agent skill finds one bounded decision, fits it to the app’s architecture, adds an offline mock, and leaves permissions and actions in deterministic code.</p>
+          <blockquote>“Use <code>jev-app-integration</code> to add a function that [decision] in [app path].”</blockquote>
+          <a class="button button-primary" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/skills/jev-app-integration/SKILL.md">Open the integration skill</a>
+        </div>
+        <div class="checklist" aria-label="Integration skill outputs">
+          <p><span>✓</span> One app-native function</p>
+          <p><span>✓</span> Frozen typed question</p>
+          <p><span>✓</span> Offline positive and negative controls</p>
+          <p><span>✓</span> Failure and low-confidence fallback</p>
+          <p><span>✓</span> Run and key-loading instructions</p>
+          <p><span>✓</span> Explicit model-quality limits</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="flagship-section">
+      <div class="flagship-inner reveal">
+        <p class="eyebrow">Flagship project</p>
+        <h2>Coordinate the whole engineering system with XYZ Forge.</h2>
+        <p>XYZ Forge is HiQS Labs’ local-first engineering operations system for coordinating multiple coding agents, collision-free work lanes, verification gates, and durable receipts.</p>
+        <a class="button button-light" href="https://github.com/HiQS-Labs/XYZ-forge">Visit HiQS-Labs/XYZ-forge <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="forge-mark" aria-hidden="true"><span>X</span><span>Y</span><span>Z</span></div>
+    </section>
+
+    <section class="section docs-section" id="docs">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Read deeper</p>
+        <h2>Documentation by question.</h2>
+      </div>
+      <div class="docs-grid">
+        <a class="doc-link reveal" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/README.md"><span>Start and operate</span><strong>README</strong><b>→</b></a>
+        <a class="doc-link reveal" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/FAQ.md"><span>Understand Jev</span><strong>FAQ</strong><b>→</b></a>
+        <a class="doc-link reveal" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/PROTOCOL.md"><span>Run experiments</span><strong>Protocol</strong><b>→</b></a>
+        <a class="doc-link reveal" href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/USE-CASES.md"><span>Judge evidence</span><strong>Use cases</strong><b>→</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Jev unofficial toolkit</strong><span>Built by HiQS Labs. Jev and TypeSafe are their owners’ marks.</span></div>
+    <div><a href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit">Repository</a><a href="https://github.com/HiQS-Labs/XYZ-forge">XYZ Forge</a><a href="https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/main/LICENSE">License</a></div>
+  </footer>
+</body>
+</html>
