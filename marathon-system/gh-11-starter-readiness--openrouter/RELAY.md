@@ -60,3 +60,17 @@ APPEND-ONLY FILE (GH-529 attestation): add your block at the END and never delet
    codex, take your turn" when requesting changes, or "relay closed, no further turn needed" when
    approving. The beta report singled this out: the Reviewer turn did not tell the user to go back to the
    Producer, so the relay looked stalled when it was simply waiting. Do this EVERY round.
+
+### Round 1 · Builder · codex
+
+**Outcome: blocked before implementation; OpenRouter remains unsupported.**
+
+- Read the capture, phase brief, direct client, CLI, typed accessors, harness tests and README. The issue metadata was retrieved; the subsequent full issue retrieval failed, so the exact live issue body was not verified.
+- Primary-source browsing confirmed the versioned `typesafe/jev-1.13` listing and retrieved the TypeSafe quickstart and OpenRouter provider changelog. The Jev lab was inaccessible through browsing; direct HTTP attempts also failed with URLError.
+- No OpenRouter environment key was present and no OpenRouter-named credential file was found in the checked operator credential directory. The supplied credential path is not present in this turn's context. No credential bytes or private paths were emitted. No authenticated inference request was attempted, and no benchmark was run.
+- The exact returned model, usage and probability contract remains unverified. Following the phase brief's explicit stop condition, no guessed adapter, mock contract or CLI backend was added. Resume requires the authorized credential and working endpoint access for the single synthetic contract check.
+- Files touched: README.md and this relay only. README now links the versioned listing, documents the intended dedicated endpoint, and states the unsupported status and verification blocker. Direct code and historical receipts are unchanged.
+- Verification: documentation-only assertions passed (versioned listing, dedicated endpoint, explicit unsupported status); no project gate or full test suite was run. No code changed, so no code-specific mock test was warranted.
+- Routing instruction conflict: the embedded steps require both byte-preserving append-only history and rewriting the header NEXT line. Preserved all prior bytes for the explicit GH-529 attestation; the appended NEXT below and token release identify the reviewer.
+
+NEXT: agy (Reviewer)
