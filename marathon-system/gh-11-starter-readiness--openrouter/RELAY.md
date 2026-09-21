@@ -1,5 +1,5 @@
 # Marathon Phase openrouter
-STATUS: Open
+STATUS: Approved
 NEXT: agy (Reviewer)
 
 <!-- marathon-drive: task=MARATHON-OPENROUTER-TURN-2 builder=codex reviewer=agy round-cap=5 -->
@@ -75,3 +75,56 @@ Implemented GH-9 in the five allowed artifact files: `jev/openrouter.py`, `jev/c
 Verification: `TMPDIR="$PWD/.relay-scratch" PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p test_jev_harness.py -v` — **25 tests passed**, with networking/process execution blocked by the test harness. Coverage includes exact wire hashes/routing, typed answers, usage totals, wrong identities, malformed responses, missing/separate keys, retry limits, CI refusal, text-free CLI projection, manifest/fixture isolation, direct behavior, and historical receipt equality. Output: `.relay-scratch/harness-tests-final.log`. An initial test incorrectly reused a mock after `finish()` consumed its unused response; the test now checks rejection on a separate client, without altering production mock semantics.
 
 No git commands or full project gate were run. Existing relay content is preserved except the explicitly required NEXT routing header. Ready for agy's artifact review; no human approval or performance gain claimed.
+
+
+### Round 1 · Reviewer · agy
+
+swept file: yes
+
+**Verdict:** Approved
+Basis: The builder fully implemented GH-9 according to the phase brief (`RELAY.md`), `GH-9-OPENROUTER-ACCESS.md`, and the authoritative synthetic response contract facts.
+
+Scope and whole-file sweep:
+- `jev/openrouter.py`: swept whole file (`jev/openrouter.py:1-126`).
+  - Pinned Decisions adapter targeting `https://openrouter.ai/api/alpha/decisions` with requested model `typesafe/jev-1.13` and concrete response model `typesafe/jev-1.13-20260917`.
+  - Enforces `provider == "TypeSafe"`; fails closed on moving aliases, other revisions, and non-Decisions routes.
+  - Strict key isolation: loads `OPENROUTER_API_KEY` or `--key-file` without fallback to direct TypeSafe credentials.
+  - Canonical request serialization reuses `client.direct_request_bytes` and binds the OpenRouter model before SHA-256 hashing.
+  - Full usage accounting: validates and accumulates `input_tokens`, `output_tokens`, and non-negative finite `cost`.
+  - Transport safety: bounded 3-attempt retry loop with `Retry-After` header parsing (capped at 60s budget), redirect refusal, and live request refusal when `CI` is set.
+  - Mock support: `OpenRouterMockClient` inherits client validation and enforces mock exhaustion via `finish()`.
+  - Pre-existing defects in touched file: None found (newly created file).
+- `jev/cli.py`: swept whole file (`jev/cli.py:1-234`).
+  - Added `--backend` option supporting `typesafe` and `openrouter`.
+  - Manifest validation verifies backend match and model binding.
+  - Validates entire batch state before dispatching any request.
+  - Per-record checkpointing preserves partial answers on failure; checkpoints and final results include `backend: openrouter` while stripping arbitrary provider extensions.
+  - OpenRouter report includes `provider: "TypeSafe"`, `output_tokens`, and `cost`.
+  - Historical fixtures require `typesafe` backend and preserve exact byte-for-byte receipt outputs (`if not fixture: completed[-1]["backend"] = backend`).
+  - Pre-existing defects in touched file: None found.
+- `jev/answers.py`: swept whole file (`jev/answers.py:1-65`).
+  - Subclassed by `OpenRouterAnswer` with `expected_model = RESPONSE_MODEL`.
+  - Strict typed accessors (`choice`, `score`, `noul`, `confidence`, `probabilities`) enforce bounds, non-empty values, and unitary probability distribution sums.
+  - Pre-existing defects in touched file: None found.
+- `tests/test_jev_harness.py`: swept whole file (`tests/test_jev_harness.py:1-470`).
+  - Comprehensive offline test suite (5 new tests, 25 total) covering wire hashes, usage totals, wrong model/provider rejection, key loading isolation, CI refusal, retry backoff, CLI text-free projection, manifest binding, and fixture isolation.
+  - All network and process execution remain blocked offline in the test harness.
+  - Pre-existing defects in touched file: None found.
+- `README.md`: swept whole file (`README.md:1-103`).
+  - Accurately documents OpenRouter setup, `--backend openrouter`, key management, Decisions endpoint, and model IDs.
+  - Explicitly bounds the synthetic Choice response contract verification, noting unverified live Score/Noul behavior and benchmark accuracy.
+  - Strictly disclaims human approval and performance claims.
+  - Pre-existing defects in touched file: None found.
+
+Probe verification (executed under `$TMPDIR` / `.relay-scratch/tmp/`, exit code 0):
+- Command: `python3 -c '<probe suite verifying contract constants, key loading isolation, OpenRouterMockClient contracts, CLI projection & text-free checkpoints, historical fixture refusal, and absence of credential/path leaks>'`
+- Exit status: 0
+- Decisive output:
+  - Contract Constants: MODEL (`typesafe/jev-1.13`), RESPONSE_MODEL (`typesafe/jev-1.13-20260917`), ENDPOINT (`https://openrouter.ai/api/alpha/decisions`) verified.
+  - Key Loading Isolation: `OPENROUTER_API_KEY` correctly isolated from `TYPESAFE_API_KEY`.
+  - Client & Answer Contracts: OpenRouterMockClient ask and finish verified with full usage tracking.
+  - CLI and Checkpoint Projection: Text-free checkpoints and `results.json` contain `backend: openrouter`, `provider: TypeSafe`, `output_tokens`, and `cost`.
+  - Historical Fixture Refusal: `replay --backend openrouter --fixture examples/fixtures/fresh-100` correctly refused with exit status 2.
+  - Secret & Path Leak Scan: No local user paths (`/Users/...`) or secret tokens found in any touched artifact.
+
+relay closed, no further turn needed
