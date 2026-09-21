@@ -14,7 +14,7 @@
 
 | What was just completed | What's next |
 |---|---|
-| Installed PDDA (2026-09-20). | Open a `PROJECT/**` doc for the first tracked effort and add its pointer here. |
+| #6 recovery, #9 OpenRouter adapter, and #10 protocol draft completed on one branch. | Review and merge the starter-readiness PR; later authorize a separate human-reference experiment. |
 
 ## Ledger
 
@@ -26,7 +26,7 @@
 
 - [GH-6 live answer recovery](PROJECT/2-WORKING/GH-6-PROBABILITY-CHECKPOINTS.md) — fix committed on the starter branch, awaiting review.
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — one-branch marathon tracking #6, #9 and #10 protocol.
-- [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — typed Decisions contract discovery and mock implementation.
+- [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — reviewed implementation awaiting PR merge.
 
 ### Completed
 

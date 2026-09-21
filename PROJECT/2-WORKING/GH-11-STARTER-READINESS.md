@@ -20,7 +20,7 @@ phases: 2
 
 | What was just completed | What's next |
 |---|---|
-| #6 fix committed and mock tests green; #9 and #10 contracts written and preflighted. | Dry-run the marathon plan, then execute the ready software/protocol phases. |
+| #6 fix committed; #9 adapter and #10 protocol reviewed by Agy; 25 offline tests pass. | Open the one-branch PR and keep #10 open for actual human labeling. |
 
 ## Table of contents
 

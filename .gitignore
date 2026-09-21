@@ -26,3 +26,6 @@ PROJECT/PDDA-ACTIVITY.jsonl
 /RELEASES.md
 /releases.db
 /releases.sql
+
+/relay-system/run-logs/
+/relay-system/logs/
