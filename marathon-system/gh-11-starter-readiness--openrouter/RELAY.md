@@ -128,3 +128,11 @@ Probe verification (executed under `$TMPDIR` / `.relay-scratch/tmp/`, exit code 
   - Secret & Path Leak Scan: No local user paths (`/Users/...`) or secret tokens found in any touched artifact.
 
 relay closed, no further turn needed
+
+### Attestation · relay-drive — 2026-09-21T03:12:57Z
+task: MARATHON-OPENROUTER-TURN-2
+reviewer: agy
+status: Approved
+reviewed-head: 9f04fb0f96ad01ff20ef0ae567c95a063863a9ae
+added-range: 10233+4491
+added-sha256: 281553f4ce2a35f541f9b20c329fbafcba18a7477c0e94be0d7ec8d47824aaf4
