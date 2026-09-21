@@ -4,7 +4,7 @@
 
 [Jev](https://docs.typesafe.ai/introduction) is TypeSafe's decision model: it evaluates state against typed questions and returns answers that software can use directly. Choice selects a label; Score returns a rubric value; both include confidence and probabilities. Noul returns a yes-probability without separate confidence. Jev is not a text generator. This independent toolkit adds provenance hashes, frozen questions and inputs, blind-label commitments, confidence gates, ordered mocks, and evaluation around the pinned `jev-1.13.0` endpoint.
 
-**Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. This repeated-sample check required recovery from the [probability-accessor defect](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); it is not a clean end-to-end CLI pass or a new unseen-sample result.
+**Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. That rerun required recovery from the [probability-accessor failure](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); this version now keeps completed answers per record and scores valid choices even when an optional probability map is invalid. The historical rerun remains a repeated-sample result, not an uninterrupted CLI pass or a new unseen-sample result.
 
 ## Getting Started
 
@@ -45,6 +45,8 @@ The API response bytes, per-record token usage, and probability distributions we
 ## CLI and input contract
 
 `python3 -m jev` is the single CLI, with `ask`, `eval`, and `replay` commands. Use `--mock-responses FILE` for an ordered JSON list of response objects. Missing answers, unsupported choices, exhausted mocks, unused mocks, duplicate IDs, empty records, and missing models are errors. Scoring does not require probabilities.
+
+Each completed response is also saved as `answer-0001.json`, `answer-0002.json`, and so on before the next request. If a later request fails, these text-free checkpoints remain in the reserved output directory; `answers.json` and `results.json` appear only after the batch completes. An invalid optional probability map is omitted and marked `probabilities_status: "invalid"`; the typed probability accessor still rejects it, and no probabilities are normalized or invented.
 
 - `ask --state FILE --questions NAME --out DIR` reads a JSON state value and returns typed answers. For a mock, supply an ordered response list containing only that request's response.
 - `eval --records FILE --labels FILE --questions NAME --manifest FILE --out DIR` evaluates a JSON list of `{id, repo, state}` records. Labels are a JSON list of `{id, purpose, area}` or the chosen question IDs. Use `null` for unknown truth. Add `--mock-responses FILE` for offline work.

@@ -132,9 +132,16 @@ def run(args):
             if kind in ("choice", "score"):
                 values[name]["confidence"] = answer.confidence(name)
                 if "probabilities" in answer.response["answers"][name]:
-                    values[name]["probabilities"] = answer.probabilities(name)
+                    try:
+                        values[name]["probabilities"] = answer.probabilities(name)
+                    except (ValueError, KeyError, TypeError):
+                        # Probabilities are optional for scoring. Keep the typed verdict
+                        # and disclose the rejected distribution without inventing one.
+                        values[name]["probabilities_status"] = "invalid"
         completed.append({"id": record["id"], "model": answer.model, "answers": values,
                           "request_sha256": answer.request_sha256, "response_sha256": answer.response_sha256})
+        # Preserve paid, completed answers even when a later request fails.
+        write_results(out / f"answer-{len(completed):04d}.json", completed[-1])
     if mock:
         client.finish()
     write_results(out / "answers.json", completed)

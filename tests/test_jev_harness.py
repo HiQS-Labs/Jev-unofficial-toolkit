@@ -54,6 +54,53 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             client.finish()
 
+    def test_invalid_optional_probabilities_and_partial_checkpoint(self):
+        questions = load_questions("work_purpose_v3")
+        records = [{"id": name, "repo": "HiQS-Labs/pub", "state": "synthetic"}
+                   for name in ("one", "two")]
+        labels = [{"id": name, "purpose": "bug_fix", "area": "integrations"}
+                  for name in ("one", "two")]
+        records_file = self.tmp / "records.json"
+        labels_file = self.tmp / "labels.json"
+        manifest_file = self.tmp / "manifest.json"
+        mocks_file = self.tmp / "mocks.json"
+        records_file.write_bytes(canonical(records))
+        labels_file.write_bytes(canonical(labels))
+        manifest_file.write_bytes(canonical({"model": MODEL,
+            "quiz_sha256": sha256(records_file.read_bytes()),
+            "questions_sha256": sha256(canonical(questions)), **commit(labels_file),
+            "gate": {"axis": "purpose", "confidence_floor": 0.8,
+                     "min_accuracy": 0.9, "min_coverage": 0.6}}))
+        def canned():
+            return {"model": MODEL, "answers": {
+                axis: {"type": "choice", "choice": choice, "confidence": 0.9}
+                for axis, choice in (("purpose", "bug_fix"), ("area", "integrations"))}}
+        first = canned()
+        first["answers"]["area"]["probabilities"] = {"integrations": 0.8, "ui": 0.1}
+        with self.assertRaises(ValueError):
+            MockClient([first]).ask("synthetic", questions).probabilities("area")
+        args = ["replay", "--records", str(records_file), "--labels", str(labels_file),
+                "--manifest", str(manifest_file), "--mock-responses", str(mocks_file)]
+        mocks_file.write_bytes(canonical([first, canned()]))
+        out = self.tmp / "completed"
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args + ["--out", str(out)]), 0)
+        answers = json.loads((out / "answers.json").read_text())
+        self.assertEqual(answers[0]["answers"]["area"]["probabilities_status"], "invalid")
+        self.assertNotIn("probabilities", answers[0]["answers"]["area"])
+        self.assertEqual(json.loads((out / "results.json").read_text())["axes"]["purpose"]["metrics"]["correct"], 2)
+        self.assertEqual(json.loads((out / "answer-0001.json").read_text()), answers[0])
+
+        failed = canned()
+        failed["model"] = "wrong-model"
+        mocks_file.write_bytes(canonical([first, failed]))
+        partial = self.tmp / "partial"
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+            main(args + ["--out", str(partial)])
+        self.assertTrue((partial / "answer-0001.json").exists())
+        self.assertFalse((partial / "answers.json").exists())
+        self.assertFalse((partial / "results.json").exists())
+
     def test_all_states_checked_before_first_request(self):
         records = [{"id": "one", "repo": "HiQS-Labs/pub", "state": "synthetic"},
                    {"id": "two", "repo": "HiQS-Labs/pub", "state": {}}]
