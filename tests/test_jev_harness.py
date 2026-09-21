@@ -67,7 +67,7 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaises(ValueError): client.ask("synthetic", questions)
 
     def test_openrouter_wrong_models_malformed_and_route_isolation(self):
-        for model in (None, MODEL, openrouter.MODEL, "~typesafe/jev-latest",
+        for model in (None, MODEL, openrouter.MODEL, "typesafe/jev-1.14",
                       "typesafe/jev-1.13-20990101"):
             canned = self.router_response(); canned["model"] = model
             with self.assertRaises(ValueError):
@@ -89,7 +89,7 @@ class HarnessTests(unittest.TestCase):
         with self.assertRaises(ValueError): openrouter.OpenRouterMockClient([response()]).ask("x", Q)
         for endpoint in ("https://api.typesafe.ai/v1/systemone", "https://openrouter.ai/api/v1/chat/completions"):
             with self.assertRaises(ValueError): openrouter.OpenRouterClient("test", endpoint=endpoint)
-        with self.assertRaises(ValueError): openrouter.OpenRouterClient("test", model="~typesafe/jev-latest")
+        with self.assertRaises(ValueError): openrouter.OpenRouterClient("test", model="typesafe/jev-1.14")
         with self.assertRaises(ValueError): JevClient("test", endpoint=openrouter.ENDPOINT)
 
     def test_openrouter_keys_and_ci(self):
