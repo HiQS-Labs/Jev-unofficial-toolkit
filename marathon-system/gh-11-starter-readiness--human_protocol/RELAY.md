@@ -1,5 +1,5 @@
 # Marathon Phase human_protocol
-STATUS: Open
+STATUS: Approved
 NEXT: agy (Reviewer)
 
 <!-- marathon-drive: task=MARATHON-HUMAN_PROTOCOL-TURN builder=codex reviewer=agy round-cap=5 -->
@@ -73,3 +73,34 @@ Verification: targeted offline `test_receipt_replays_and_labels_after_answers` p
 Files touched: HUMAN-LABEL-PROTOCOL.md and this relay. Existing relay content is preserved except the top NEXT routing line, updated as explicitly required by turn step 5; this build block is appended.
 
 Ready for agy's whole-file review. Handing off to agy — agy, take your turn.
+
+### Round 1 · Reviewer · agy
+
+swept file: yes
+
+**Verdict:** Approved
+Basis: The builder fully implemented the phase brief (`RELAY.md`), adhering strictly to GH-10 intake (`PROJECT/1-INBOX/GH-10-HUMAN-LABELS.md`), protocol rules (`PROTOCOL.md`), use-case boundaries (`USE-CASES.md`), and frozen rerun receipt evidence (`evidence/2026-09-20-fresh-100-live-rerun/README.md`).
+
+Scope and whole-file sweep:
+- `HUMAN-LABEL-PROTOCOL.md`: swept whole file (`HUMAN-LABEL-PROTOCOL.md:1-132`).
+  - Mandatory consensus statement: Confirmed verbatim presence of "**The published classification labels are a three-model consensus, not human gold.**" at line 5.
+  - Distinguishing readiness from results: Protocol readiness is explicitly bounded as a reviewed, frozen design; leaves issue #10 open for the actual human-label experiment; clarifies that passing the gate only makes purpose routing eligible for a separate operator deployment decision (lines 5, 13, 103, 119-131).
+  - Target population & sampling: English-language, non-PR issues within `[T0, T0 + 90 days)` across registered public HiQS-Labs repositories; runtime `PUBLIC` and owner checks required; forbidden sources (`BinoidCBD`, `LTVera`, `previous-org`) excluded; reproducible ranking via `SHA-256(seed + newline + stable ID)` (lines 25-29).
+  - Cohort design & rare-class coverage: 400-row representative cohort, 320-row challenge cohort (40 per provisional purpose stratum across 8 classes), and 100-row historical bridge cohort; metrics kept strictly separate with no unweighted pooling (lines 31-40).
+  - Labeler qualifications & calibration: Real human annotators with issue triage experience; 40-item disjoint calibration set requiring >= 36/40 overall and >= 4/5 per class; max one retraining; no AI agents or unqualified substitutes permitted (lines 43-46).
+  - Binding purpose boundaries: All 8 purpose definitions match `jev/questions/work_purpose_v3.json` verbatim (lines 49-59); untrusted evidence instruction preserved; Needle-fork #74 dependency explicitly addressed (lines 21, 60).
+  - Blinding, adjudication, and uncertainty: Strict blinding of H1/H2/H3 from model predictions, consensus, screening labels, and metadata; cryptographic commitments of label files before reveal; independent pre-adjudication by H3 before review; human uncertainty retained and accounted for as non-correct/errors in denominators (lines 64-70, 82-85, 101).
+  - Execution boundaries & frozen questions: Pinned model `jev-1.13.0`; verified canonical SHA-256 hash `21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821` matching `jev/guard.py:12`; dispatch capped at 720 requests with auto-retries disabled; pre-registered spend ceiling (lines 76-78).
+  - Pre-registered confidence gate: Multi-condition gate requiring integrity, human reference quality (agreement >= 0.80, kappa >= 0.70, uncertain <= 0.05), primary confidence gate (C/|S| >= 0.90, |S|/400 >= 0.60 at conf >= 0.8), rare-class support (>= 30 resolved true rows, >= 20 selected predicted rows per class), and rare-class performance (recall >= 0.80, selected precision >= 0.90) (lines 93-103).
+  - Privacy, audit, and stop rules: Raw text stored outside repository; 90-day retention deadline; text-free results writer enforced; immediate stop on privacy breach, blinding violation, or hash mismatch; debug-mantra discipline for faults; text-free audit receipts (lines 113-118).
+  - Pre-existing defects in touched file: None found (file was newly created in this phase).
+- Commit `4d53409`: Non-mutating probe verified that only `HUMAN-LABEL-PROTOCOL.md` and `marathon-system/gh-11-starter-readiness--human_protocol/RELAY.md` were touched.
+
+Probe verification (executed under `$TMPDIR` / `.relay-scratch/tmp/probe_review.py`, exit code 0):
+- Documentation & link verification: All 6 internal relative links (`PROJECT/1-INBOX/GH-10-HUMAN-LABELS.md`, `PROTOCOL.md`, `USE-CASES.md`, `evidence/2026-09-20-fresh-100-live-rerun/README.md`, `jev/questions/work_purpose_v3.json`, `examples/fixtures/fresh-100/labels.json`) exist on disk and resolve cleanly.
+- Question hash probe: Confirmed `work_purpose_v3.json` SHA-256 matches `21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821` and matches `jev/guard.py:12`.
+- Taxonomy probe: Confirmed all 8 purpose criteria sentences match `jev/questions/work_purpose_v3.json` criteria verbatim.
+- Privacy probe: Confirmed no private machine paths (`/Users/...`, `/home/...`), credentials, or raw issue bodies exist in `HUMAN-LABEL-PROTOCOL.md`.
+
+relay closed, no further turn needed
+
