@@ -96,7 +96,7 @@ Report separately for each prospective cohort:
 | --- | --- |
 | Integrity | Complete authorized run; all commitments verify; no blinding violation, unauthorized source, or model mismatch |
 | Human reference quality | In each prospective cohort, H1/H2 agreement >= 0.80 and kappa >= 0.70; final uncertain fraction <= 0.05 |
-| Primary confidence gate | At confidence >= 0.8, C/|S| >= 0.90 and |S|/400 >= 0.60 |
+| Primary confidence gate | At confidence >= 0.8, C/\|S\| >= 0.90 and \|S\|/400 >= 0.60 |
 | Rare-class support | Challenge cohort has at least 30 resolved human rows per true class and at least 20 selected predictions per predicted class |
 | Rare-class performance | In the challenge cohort, each class has recall >= 0.80 on resolved true-class rows, and selected precision >= 0.90; selected predictions with uncertain human truth count as precision errors |
 

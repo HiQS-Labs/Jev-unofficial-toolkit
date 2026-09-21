@@ -31,7 +31,7 @@ phases: 2
 
 Read `GH-9-OPENROUTER-ACCESS.md` and its primary-source discovery before coding. Implement only the verified typed Decisions API, with exact model and backend identity, safe key loading, mock tests and documentation. #6's checkpointing fix remains in place.
 
-QA: the offline suite passes, no direct-TypeSafe fixture changes, no key or source text in tracked files. A bounded synthetic live check may be run using the operator-provided key path only after the mock lane passes.
+QA: the offline suite passes, with no direct-TypeSafe fixture changes and no key or source text in tracked files.
 
 ## Human-reference protocol lane
 
