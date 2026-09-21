@@ -104,3 +104,11 @@ Probe verification (executed under `$TMPDIR` / `.relay-scratch/tmp/probe_review.
 
 relay closed, no further turn needed
 
+
+### Attestation · relay-drive — 2026-09-21T03:05:01Z
+task: MARATHON-HUMAN_PROTOCOL-TURN
+reviewer: agy
+status: Approved
+reviewed-head: 4d53409e7684282f4ad33782724651d963223421
+added-range: 8315+4557
+added-sha256: 1ebc7381fa78ace1bd16cd0448ef9e4b8b95e6ebf0ee6a2f45809a572252a251
