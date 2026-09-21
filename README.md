@@ -76,7 +76,7 @@ The client makes at most three attempts for rate limits and server errors, honor
 
 `work_purpose_v3` preserves the original taxonomy text and question hash. Its `ci_cd`, `skills`, and `ui` glosses were script-authored, not taxonomy definitions. `ate_triage_v1` is a new implementation of the [handoff requirements](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/PROJECT/GH-712-JEV-ATE-TRIAGE.md#requirements); it includes the required option union, crash override, and `expects_edits` condition. Supply the structured state described there, with the specified output tails. Historical canned answers do not validate the new question wording.
 
-Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES.md](USE-CASES.md) for evidence limits and untested hypotheses. The [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff) remains read-only and is not a runtime dependency.
+Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES.md](USE-CASES.md) for evidence limits and untested hypotheses. [FAQ.md](FAQ.md) answers background questions about Jev, Needle, and where each fits; it is orientation, not evidence. The [handoff snapshot](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/tree/9b37264/handoff) remains read-only and is not a runtime dependency.
 
 ## Other OSS projects — untested potential integrations
 

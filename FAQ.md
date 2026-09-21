@@ -1,0 +1,414 @@
+# FAQ: Jev, Needle, and Practical AI Model Use
+
+This FAQ collects the questions that come up when evaluating Jev and Needle for this toolkit's work. Answers reflect public vendor documentation as of 2026-09-20; Jev's internal architecture and parameter count are not publicly disclosed. For what this toolkit has actually measured, read [USE-CASES.md](USE-CASES.md).
+
+---
+
+## 1. What is the new Jev model, and how is it similar to and different from an LLM?
+
+**Jev** is TypeSafe AI's first "System One" model: a hosted AI decision model intended to turn unstructured application state into **typed, probabilistic decisions**. Instead of producing prose, code, or a token stream, it answers constrained questions such as:
+
+- Which category applies?
+- Is this statement true or false?
+- Where does this situation lie on a defined scale?
+
+Its documented primitives are:
+
+- **Choice** — selects one label from developer-defined criteria; returns the choice, a probability distribution, and a confidence.
+- **Score** — places the state on a developer-defined ordered scale; returns a float score, probabilities over the levels, and a confidence.
+- **Noul** — returns the probability that a yes/no statement is true, with no separate confidence.
+
+This toolkit pins `jev-1.13.0` and freezes question sets by hash; see [README.md](README.md) for the request and response contract it enforces.
+
+### Similarities to LLMs
+
+- Both are trained AI models that learn statistical/semantic patterns from data.
+- Both can take natural-language or structured context as input.
+- Both can generalize to inputs they did not see verbatim during training.
+- Both can be used inside agentic or automated software workflows.
+
+### Differences from a typical LLM
+
+| Dimension | Jev | Typical LLM |
+|---|---|---|
+| Main job | Typed choices, scores, and binary judgments | Language understanding and generation |
+| Output | Predeclared typed value plus probabilities | Generated text/tokens, sometimes constrained JSON |
+| Generation | No autoregressive text decoding | Usually autoregressive next-token decoding |
+| Best tasks | Routing, classification, scoring, gating, triage | Chat, code, writing, explanation, open-ended reasoning |
+| Schema safety | Cannot emit an output outside the declared answer space | May emit invalid/malformed/unexpected output unless constrained |
+| Confidence | Probability distribution is a first-class result | Confidence often requires additional design/evaluation |
+
+Jev is best viewed as a semantic decision component, not a chatbot replacement. It is useful when software must repeatedly make a narrow decision quickly and reliably enough to feed into ordinary program logic.
+
+---
+
+## 2. Would Jev be good for predicting whether an e-commerce site has a problem from changes in order velocity? What evidence and data would it need?
+
+**Yes, as a second-stage triage model—not as the primary anomaly detector.** Order velocity is an important signal, but it cannot by itself prove a site problem. Sales can change because of traffic, campaigns, seasonality, stockouts, pricing, promotions, payment issues, or random variation.
+
+### Recommended hybrid design
+
+```text
+Order/funnel data + technical telemetry
+        ↓
+Statistical/time-series anomaly detector
+        ↓
+Jev: typed incident classification and escalation recommendation
+        ↓
+Deterministic alert policy / human / stronger LLM for explanation
+```
+
+### Use statistics first
+
+Maintain 5-, 15-, 60-minute, or daily buckets depending on store volume. Compare observed paid orders with a context-specific expected level:
+
+```text
+expected orders = median or model prediction for comparable
+                  weekday + local hour + recent historical periods
+
+anomaly = observed orders versus expected range and historical variance
+```
+
+For count data, Poisson or negative-binomial models are generally more appropriate than assuming orders are normally distributed. Use change-point detection to find sustained shifts, especially after deployments.
+
+### Evidence needed for high-confidence diagnosis
+
+Do not page based on order count alone. Combine independent evidence:
+
+| Observed pattern | Likely interpretation |
+|---|---|
+| Orders down; sessions stable; checkout starts down | Checkout/cart flow problem |
+| Orders down; checkout starts stable; payment failures rise | Payment gateway, payment method, or fraud issue |
+| Orders and sessions both down proportionally | Traffic/campaign/channel change |
+| Orders down; top products out of stock | Inventory/catalog cause |
+| Orders down; synthetic checkout fails | Very strong direct site/checkout evidence |
+| Orders down; 5xx rate or page latency rises | Availability/performance incident |
+
+### Data volume and history
+
+| Typical store volume | Practical analysis window | First usable baseline | Stronger baseline |
+|---|---:|---:|---:|
+| Under 5 orders/day | Daily | 8–12 weeks | 12–24 months |
+| 5–30 orders/day | 6-hour or daily | 8–12 weeks | 6–12 months |
+| 30–100 orders/day | Hourly or 2-hour | 8–12 weeks | 6–12 months |
+| 100–500 orders/day | 15–60 minutes | 6–8 weeks | 6–12 months |
+| Over 500 orders/day | 5–15 minutes | 4–8 weeks | 3–6+ months |
+
+A practical minimum is about **8 weeks** of timestamped paid-order history for a preliminary weekday/hour baseline, with 12–16 weeks being more useful. At low volume, use daily/multi-day detection plus synthetic checkout tests; no ML model can make sparse events statistically rich.
+
+### What Jev returns, and what code adds
+
+Jev answers only the typed questions it was asked. For an incident bundle that is one answer per question, for example:
+
+```json
+{
+  "incident_class": {"type": "choice", "choice": "payment_or_fraud_incident", "confidence": 0.91},
+  "severity": {"type": "score", "score": 2.7, "confidence": 0.84},
+  "has_direct_failure_evidence": {"type": "noul", "noul": 0.97},
+  "should_escalate_now": {"type": "noul", "noul": 0.88}
+}
+```
+
+A recommended action, evidence codes such as `SYNTHETIC_CHECKOUT_FAILED`, and the page/notify/watch decision are composed by deterministic code from those answers plus the statistical thresholds. Keep actual paging and production actions deterministic. Jev can classify state and supply a probability; it should not be the sole authorization or safety boundary. Issue [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15) tracks this design.
+
+---
+
+## 3. Is Jev "artificial intelligence" or just a model? Does it have attention like GPT?
+
+Jev is both **AI** and a **model**. "Artificial intelligence" is the broad category; a model is a trained mathematical component used by an AI system.
+
+```text
+Artificial intelligence
+└── Machine learning
+    └── Neural-network models
+        ├── Generative language models / LLMs
+        └── Specialized decision models
+            └── Jev
+```
+
+Jev is an AI model because it learns patterns from data and makes probabilistic decisions for new inputs. A complete system can combine Jev with databases, rules, observability, tools, dashboards, and human escalation.
+
+### What attention means in GPT
+
+In GPT-style Transformers, self-attention lets tokens assign different relevance weights to other tokens in context. GPT uses **causal** self-attention: while generating a new token, it can attend to earlier tokens but not future output tokens. It generates one token at a time.
+
+### Does Jev have GPT-style attention?
+
+The responsible answer is: **the public documentation does not reveal enough implementation detail to confirm its exact internal attention architecture.** TypeSafe has publicly described the product as a new architecture using its RLCD training method and parallel typed-decision inference ([launch post](https://typesafe.ai/blog/introducing-system-one-models-and-jev)), but has not published weights, parameter count, a technical architecture paper, or an implementation specification.
+
+It is plausible that Jev uses neural attention or transformer-like components—many non-generative models do—but that should not be stated as confirmed. Jev does not use GPT's autoregressive next-token-generation loop for its published decision interface.
+
+"Attention" in machine learning is a mathematical weighting mechanism. Neither GPT nor Jev has human attention, awareness, consciousness, or intent.
+
+---
+
+## 4. Would Jev likely have billions of parameters?
+
+**It might, but the parameter count is unknown.** TypeSafe has not publicly released Jev's parameter count, model weights, training-data details, detailed architecture, or self-hosted model package.
+
+A model designed for bounded routing/classification/scoring can be useful at sizes far below a frontier generative LLM. Jev could plausibly be sub-billion, in the 1B–10B range, or larger—but public latency and cost claims do not establish which.
+
+| Size class | Parameter range | Plausibility |
+|---|---:|---|
+| Small | Under 1B | Plausible |
+| Mid-sized | 1B–10B | Plausible |
+| Large | 10B–70B+ | Possible, but less obviously aligned with its low-cost/low-latency positioning |
+| Frontier-scale | Hundreds of billions+ | Unverified and less likely from the public product framing |
+
+Fast service can result from a small model, but also from quantization, batching, optimized serving, specialized hardware, caching, or an architecture unlike standard LLM inference. Parameter count is therefore not proof of capability.
+
+For a real use case, measure decision quality, confidence calibration, latency, cost, stability under noisy/missing inputs, and operational value—not just parameter count.
+
+---
+
+## 5. How is Cactus Needle 3 different from Needle 2? Is Needle still an LLM?
+
+Needle 3 is a redesigned on-device automation model family from Cactus Compute. Needle 2 is a 45M-parameter model for tool calling, device use, and structured extraction. Needle 3 expands capacity, context, and deploy-time flexibility.
+
+| Dimension | Needle 2 | Needle 3 |
+|---|---:|---:|
+| Model capacity | 45M parameters | Approximately 29M–121M, depending on deployed depth ([Cactus](https://cactuscompute.com/needle)) |
+| File size | 14 MB | 8–29 MB |
+| Context | Around 256-token sliding window | Up to 8K tokens |
+| Depth | Fixed | One weight set usable at 2–20 layers |
+| Architecture | Earlier compact Needle architecture | "Laddered Simple Attention Network" |
+| Focus | Tool calling, device use, structured extraction | Same automation core, expanded flexible deployment |
+| Languages | Earlier release positioned mainly around English | Broader multilingual positioning |
+
+Needle 3's "intelligence laddering" means a single model artifact can run at different depths. Shallower variants trade quality for lower latency/footprint; deeper variants use more of the same trained network.
+
+### Is Needle still an LLM?
+
+**Broadly yes.** Needle accepts language-like input and emits token sequences, typically tool calls, arguments, or structured records. It is a very small, specialized, generative action model rather than a broad GPT/Claude/Gemini-style general-purpose assistant.
+
+"Automation foundation model" is the more useful label because its purpose is to control predefined functions and devices locally, not to conduct open-ended chat.
+
+### Needle versus Jev
+
+| | Needle 3 | Jev |
+|---|---|---|
+| Output | Generated tool calls / records | Typed choice, score, or binary probability |
+| Autoregressive generation | Yes, as a generative automation model | No text-generation interface |
+| Deployment | Open/local on constrained hardware | Proprietary hosted API |
+| Best role | Local function calling and argument extraction | Routing, scoring, classification, gating |
+
+---
+
+## 6. Would Needle 3 be a better classifier than Needle 2, which did not perform well in testing?
+
+**Possibly, but do not assume it.** Needle 3 is a credible model to retest because it can run at a higher-capacity 121M configuration, accept up to 8K tokens of context, produce constrained classification output, and supports fine-tuning. But an architecture update cannot solve poor labels, ambiguous classes, insufficient input state, or a task that actually requires substantial reasoning.
+
+For the developer/coding-agent next-action work, the critical limitation with Needle 2 may have been the 256-token context limit and the mismatch between a tiny tool-calling model and a difficult planning-like task. The Needle-fork repository this toolkit's evidence derives from tracks a Needle 3 rerun of that pilot in [Needle-fork #66](https://github.com/HiQS-Labs/Needle-fork/issues/66).
+
+### Why Needle 3 could improve
+
+- More capacity at deeper settings: up to about 121M parameters.
+- Longer context: task, plan, recent tool trace, test failure, and compact repository state can be supplied together.
+- Structured enum classification plus confidence.
+- Fine-tuning support for a narrow taxonomy.
+- Embeddings that enable a separate retrieval/classifier comparison.
+
+### Why it might still fail
+
+- Choosing the next coding action can require interpreting tests, diffs, code semantics, architectural constraints, and incomplete evidence.
+- A 44-label taxonomy can contain genuine ambiguity: several reasonable next actions may exist.
+- Valid enum output does not mean correct semantic classification.
+- Model confidence must be calibrated on your own held-out dataset.
+
+### Recommended evaluation
+
+Use the same session-grouped temporal holdout across all candidates. Compare:
+
+- Majority, repeat-last, and Markov baselines.
+- TF-IDF plus logistic regression or LightGBM.
+- Embeddings plus nearest-neighbor or linear classifier.
+- Fine-tuned ModernBERT-base classifier.
+- Needle 2.
+- Needle 3 at 8, 12, and 20 layers.
+- Optional fine-tuned Needle 3.
+- A frontier coding model as an upper-bound reference.
+
+Measure macro-F1, per-class precision/recall, top-3 accuracy, confusion matrices, selective accuracy at confidence thresholds, coverage, calibration, latency, and memory.
+
+A useful production pattern is confidence-gated routing:
+
+```text
+High-confidence Needle 3 result → offer/perform low-risk suggestion
+Low confidence or complex state → retrieval, stronger local model, frontier model, or human
+```
+
+For the existing 44-label next-action problem, Needle 3 should be considered a hypothesis to evaluate, not a safe standalone planner.
+
+---
+
+## 7. What are three practical skill-file ideas that use Jev?
+
+The most useful Jev skills are those in which Jev makes a narrow semantic judgment and deterministic code retains control of execution. All three below are tracked as issues [#13](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/13), [#14](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/14), and [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15), with the shared harness prerequisites in [#12](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/12). None has evidence yet; each needs its own baseline and pre-registered gate per [USE-CASES.md](USE-CASES.md).
+
+### Skill 1: `jev-agent-action-gate`
+
+**Purpose:** Evaluate proposed agent actions before risky, expensive, irreversible, or scope-sensitive operations.
+
+**Example input:**
+
+```json
+{
+  "agent": "codex",
+  "repo": "store-monitor",
+  "branch": "feature/checkout-retries",
+  "task": "Fix duplicate charges after a checkout retry timeout",
+  "operation": {
+    "type": "shell_command",
+    "command": "git push origin main --force"
+  },
+  "changed_files": [
+    ".github/workflows/deploy.yml",
+    "src/payments/retry.ts"
+  ],
+  "tests_status": "not_run"
+}
+```
+
+**Questions:**
+
+- Choice: `allow`, `confirm`, or `block`.
+- Score: local/reversible through destructive/production-sensitive risk.
+- Noul: "The operation is appropriately scoped to the stated task."
+- Noul: "The operation touches sensitive or production-affecting systems."
+
+**Policy:** Deterministic deny/allow rules always take precedence. Jev can trigger confirmation or flag semantic scope creep; it must not be the final authorization system.
+
+**Why it is useful:** It fits agent hooks, centralized prompt/activity logs, audit trails, and shadow-mode deployment.
+
+### Skill 2: `jev-next-step-router`
+
+**Purpose:** Route an agent state to the appropriate decision source instead of trying to make Jev itself a full coding planner.
+
+**Possible workflow modes:**
+
+```text
+inspect
+implement
+validate
+document_or_commit
+clarify_or_escalate
+```
+
+**Possible routing targets:**
+
+```text
+deterministic
+retrieval
+local_predictor
+frontier_model
+human
+```
+
+**Questions:**
+
+- Choice: which workflow mode applies?
+- Choice: which decision source should handle the next step?
+- Score: how sufficient is the available evidence?
+- Noul: does the current candidate set include a safe appropriate action?
+- Noul: does this decision need deeper code/debugging/architectural reasoning?
+
+**Why it is useful:** It turns the difficult "predict the one correct next action" problem into bounded judgments about ambiguity, evidence sufficiency, and escalation. It can govern when to trust local predictors, retrieval, or a stronger model.
+
+### Skill 3: `jev-commerce-incident-triage`
+
+**Purpose:** Turn quantitative e-commerce anomaly signals into a stable incident category and deterministic escalation decision.
+
+**Upstream data:**
+
+- Order anomaly probability and observed-versus-expected order rate.
+- Sessions, add-to-cart events, checkout starts, payment outcomes.
+- Synthetic product/cart/checkout test results.
+- Payment failure and HTTP error rates.
+- Inventory state, campaign changes, and recent deployment metadata.
+
+**Incident categories:**
+
+```text
+normal_variation
+traffic_or_marketing_change
+inventory_or_catalog_issue
+checkout_or_site_incident
+payment_or_fraud_incident
+needs_investigation
+```
+
+**Questions:**
+
+- Choice: incident category.
+- Score: severity from informational to critical.
+- Noul: is there direct functional/technical failure evidence?
+- Noul: should the system escalate now?
+
+**Policy:** Page/create an incident only when deterministic statistical and technical criteria agree with the Jev result—for example, a sustained extreme order anomaly, normal traffic, and a synthetic checkout failure or sharply increased payment failures.
+
+**Why it is useful:** It makes the semantic classification of a complex multi-signal event consistent, while leaving numerical baselines, threshold checks, and side effects in ordinary code.
+
+### Shared skill contract
+
+Use a common observable pattern for all Jev skills:
+
+```text
+Normalize state
+→ Apply deterministic preconditions
+→ Ask Jev a bundle of independent primitives
+→ Compose answers with deterministic policy
+→ Act / request review / escalate
+→ Write immutable decision log
+→ Store eventual outcome label
+```
+
+A useful log record includes skill/version, model/version, schema version, normalized input fingerprint, answers, probabilities, confidence, deterministic rule hits, final decision, human override, observed outcome, and latency.
+
+Use pinned model versions for evaluation and production. Evaluate a newer *pinned* version in shadow mode before changing behavior; this toolkit refuses the `jev-latest` alias by design ([PROTOCOL.md](PROTOCOL.md) rule 1), so a shadow run is a second exact version string, never the alias.
+
+---
+
+## 8. Does Jev have a neural network?
+
+**Yes, Jev is a neural-network-based AI model.** A model that turns input state into learned scores/probabilities over choices is a neural model, and TypeSafe describes Jev as a new model architecture trained with RLCD ("Reinforcement Learning for Calibrated Decisions"). It is not a hand-written if/then rules engine.
+
+At a high level, a Jev request works like this:
+
+```text
+State (text, JSON, logs, application facts)
+        ↓
+Learned neural representation / scoring computation
+        ↓
+Scores for developer-defined choices or scale points
+        ↓
+Probability distribution and typed decision
+```
+
+For a Choice primitive, the model evaluates the supplied state against the allowed criteria and returns a probability distribution across those options; the documented contract is that the distribution sums to one. How those probabilities are computed internally is not disclosed.
+
+### Important caveat
+
+TypeSafe has not publicly disclosed the details needed to characterize the network precisely. Its public materials confirm the product behavior—typed primitives, parallel decision evaluation, and non-autoregressive output—but do not disclose:
+
+- Parameter count.
+- Number of layers.
+- Exact neural architecture.
+- Whether it is a standard Transformer, encoder-only model, hybrid, or another design.
+- Exact attention mechanism, if any.
+- Training data, weights, or model card.
+
+So the defensible statement is:
+
+> Jev has a learned neural network, but its detailed architecture is proprietary and publicly undisclosed.
+
+It differs from GPT-style LLMs primarily in its output behavior: it does not expose a general token-generation decoder that writes arbitrary prose or code. Instead, it produces probabilities and typed answers over developer-defined output spaces in a parallel decision-oriented inference flow.
+
+---
+
+## Practical takeaway
+
+- Use **Jev** as a fast semantic decision layer: classify, route, score, gate, and triage.
+- Use ordinary statistics, deterministic code, and explicit thresholds for numeric truth, authorization, safety, and side effects.
+- Use stronger LLMs where you need code understanding, long-form explanations, broad reasoning, synthesis, or generation.
+- Use **Needle 3** as a local generative automation/tool-calling candidate; evaluate it carefully for classification instead of assuming it is a planner.
+- Measure every deployed decision system using task-specific accuracy, calibration, abstention/coverage, latency, cost, false positives, and ultimately operational outcome.
