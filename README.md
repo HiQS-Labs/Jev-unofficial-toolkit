@@ -4,15 +4,27 @@
 
 [Jev](https://docs.typesafe.ai/introduction) is TypeSafe's decision model: it evaluates state against typed questions and returns answers that software can use directly. Choice selects a label; Score returns a rubric value; both include confidence and probabilities. Noul returns a yes-probability without separate confidence. Jev is not a text generator. This independent toolkit adds provenance hashes, frozen questions and inputs, blind-label commitments, confidence gates, ordered mocks, and evaluation around the pinned `jev-1.13.0` endpoint.
 
-**Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. This repeated-sample check required recovery from the [probability-accessor defect](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); it is not a clean end-to-end CLI pass or a new unseen-sample result.
+**Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. That rerun required recovery from the [probability-accessor failure](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); this version now keeps completed answers per record and scores valid choices even when an optional probability map is invalid. The historical rerun remains a repeated-sample result, not an uninterrupted CLI pass or a new unseen-sample result.
 
 ## Getting Started
 
 **For this toolkit, get a TypeSafe API key.** Sign up or log in at the [TypeSafe console](https://console.typesafe.ai/), then obtain a key from the dashboard as described in the [official quick start](https://docs.typesafe.ai/introduction/quickstart). Store it in a private file outside the repository and pass its path with `--key-file`, or supply `TYPESAFE_API_KEY` in your environment for each live run. Never commit the key. Start with the offline examples below, then follow [Live use](#live-use-after-mock-acceptance) for the required manifest, input policy and explicit live flag.
 
-**To explore Jev through OpenRouter**, visit [OpenRouter](https://openrouter.ai/) and choose **Sign Up**. After signing in, create an API key on the [API keys page](https://openrouter.ai/settings/keys), then consult the [OpenRouter quickstart](https://openrouter.ai/docs/quickstart) and [TypeSafe Jev listing](https://openrouter.ai/~typesafe/jev-latest) for access and usage details.
+**To explore Jev through OpenRouter**, visit [OpenRouter](https://openrouter.ai/) and choose **Sign Up**. After signing in, create an API key on the [API keys page](https://openrouter.ai/settings/keys), then consult the [OpenRouter quickstart](https://openrouter.ai/docs/quickstart) and the [versioned TypeSafe Jev listing](https://openrouter.ai/typesafe/jev-1.13) for access and usage details.
 
-OpenRouter is a separate access route: its keys do not work with this toolkit's direct TypeSafe client, and an OpenRouter adapter has not been implemented or tested here. The linked listing follows the latest Jev version; this toolkit keeps its model pinned to `jev-1.13.0` for reproducibility.
+OpenRouter is a separate access route: use `--backend openrouter` with `OPENROUTER_API_KEY` or `--key-file` containing an OpenRouter key. The default `--backend typesafe` uses `TYPESAFE_API_KEY` or a TypeSafe key file; keys are never borrowed from the other backend.
+
+The adapter sends canonical `state`, `questions`, and `model` JSON to **`POST https://openrouter.ai/api/alpha/decisions`**, requesting **`typesafe/jev-1.13`** with bearer authentication. It never uses chat completions or the moving latest alias. The [provider changelog](https://github.com/OpenRouterTeam/ai-sdk-provider/blob/main/CHANGELOG.md) documents the dedicated Decisions route.
+
+An operator-authorized synthetic contract check returned the concrete model `typesafe/jev-1.13-20260917` and provider `TypeSafe`; the adapter accepts exactly that response identity and fails closed on other revisions. The typed `answers` retain Choice, Score, and Noul accessors. OpenRouter additionally returns `id`, `provider`, and usage fields `input_tokens`, `output_tokens`, and `cost`; the adapter validates and totals all three usage fields without retaining arbitrary response extensions. The live check established the Choice response contract, not Score/Noul live behavior or benchmark accuracy. No additional live call or historical benchmark was run for this implementation.
+
+For an authorized live request, use the same frozen-input and repository-policy requirements as the direct route:
+
+```sh
+python3 -m jev ask --backend openrouter --state STATE.json --questions work_purpose_v3 --repo HiQS-Labs/REPO --manifest MANIFEST.json --live --out results/openrouter-new
+```
+
+Supply `OPENROUTER_API_KEY` in the environment or add `--key-file FILE`. The manifest must specify `"backend": "openrouter"` and `"model": "typesafe/jev-1.13"`, plus the hashes below. For offline use, replace `--live` with `--mock-responses FILE` containing an ordered list of Decisions response objects with the concrete response model, provider, and usage fields above. New results and per-record checkpoints explicitly identify their backend; OpenRouter reports also include provider, output tokens and cost. The shipped historical fixtures remain TypeSafe-only and their receipt results remain unchanged.
 
 ## Use it without a key
 
@@ -46,6 +58,8 @@ The API response bytes, per-record token usage, and probability distributions we
 
 `python3 -m jev` is the single CLI, with `ask`, `eval`, and `replay` commands. Use `--mock-responses FILE` for an ordered JSON list of response objects. Missing answers, unsupported choices, exhausted mocks, unused mocks, duplicate IDs, empty records, and missing models are errors. Scoring does not require probabilities.
 
+Each completed response is also saved as `answer-0001.json`, `answer-0002.json`, and so on before the next request. If a later request fails, these text-free checkpoints remain in the reserved output directory; `answers.json` and `results.json` appear only after the batch completes. An invalid optional probability map is omitted and marked `probabilities_status: "invalid"`; the typed probability accessor still rejects it, and no probabilities are normalized or invented.
+
 - `ask --state FILE --questions NAME --out DIR` reads a JSON state value and returns typed answers. For a mock, supply an ordered response list containing only that request's response.
 - `eval --records FILE --labels FILE --questions NAME --manifest FILE --out DIR` evaluates a JSON list of `{id, repo, state}` records. Labels are a JSON list of `{id, purpose, area}` or the chosen question IDs. Use `null` for unknown truth. Add `--mock-responses FILE` for offline work.
 - `replay --mock-responses FILE --records FILE --labels FILE --manifest FILE --out DIR` uses the same evaluation path without network access. `--fixture DIR` selects the shipped, hash-pinned evidence fixtures instead.
@@ -54,7 +68,8 @@ A manifest contains:
 
 | Field | Contract |
 | --- | --- |
-| `model` | Exactly `jev-1.13.0`. |
+| `backend` | `typesafe` (default when absent), or `openrouter` explicitly. Must match `--backend`. |
+| `model` | `jev-1.13.0` for TypeSafe; `typesafe/jev-1.13` for OpenRouter. |
 | `quiz_sha256` | SHA-256 of the exact input file bytes (`--state` or `--records`). |
 | `questions_sha256` | SHA-256 of canonical question JSON; must match the frozen set. |
 | `labels_sha256` | Blind annotation commitment from `guard.commit(labels_file)`; checked only after responses finish. |
@@ -80,7 +95,7 @@ Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES
 
 ## Other OSS projects — untested potential integrations
 
-[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version's client is restricted to the pinned TypeSafe model and endpoint.
+[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version supports only the pinned TypeSafe and OpenRouter Decisions routes described above.
 
 ## Build a Jev function in your app
 
