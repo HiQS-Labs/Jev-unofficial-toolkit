@@ -82,6 +82,10 @@ Read [PROTOCOL.md](PROTOCOL.md) for the verbatim experiment rules and [USE-CASES
 
 [SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version's client is restricted to the pinned TypeSafe model and endpoint.
 
+## Build a Jev function in your app
+
+The [Jev app integration skill](skills/jev-app-integration/SKILL.md) helps a coding agent inspect your app, add one function for a specific Jev decision, and test it with an offline mock. Ask your agent: “Use `jev-app-integration` to add a function that [describe the decision] in [app path].” Bring a sample input and the action you want for each answer. The agent should give you the changed function, a focused test, and run instructions. New question wording and new app behavior still need their own labeled validation before you rely on model quality; live requests require your authorization.
+
 ## Licence
 
 The operator selected XYZ-forge's AGPL plus commercial setup, superseding this repository's original GPL licence. See [LICENSE](LICENSE), [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md), and [NOTICE](NOTICE). Needle-derived portions retain their [Apache licence](licenses/Apache-2.0.txt) and attribution. No XYZ-forge Jev implementation or TypeSafe SDK is vendored. Jev and TypeSafe are their owners' marks; this project is unofficial.
