@@ -321,6 +321,17 @@ class HarnessTests(unittest.TestCase):
         code, _ = self.bundle_eval(responses, labels, {"gate": {**gate_cfg["gate"], "axis": "scope_matches_task"},
                                                        "score_tolerance": 0.5, "noul_threshold": 0.5})
         self.assertEqual(code, 2)  # noul cannot be a gate axis
+        self.tmp = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
+        code, out = self.bundle_eval(responses, labels, {**gate_cfg, "scored_axes": ["approval_mode"], "score_tolerance": 0.5})
+        self.assertEqual(code, 2)  # gate axis excluded by scored_axes must refuse, not silently drop the gate
+        self.assertFalse((out / "answers.json").exists())
+
+    def test_frozen_set_with_valid_hash_but_invalid_shape_refused(self):
+        bad = canonical({"n": {"type": "noul", "instructions": "x", "criteria": []}})
+        (self.tmp / "bad.json").write_bytes(bad)
+        (self.tmp / "bad.sha256").write_text(sha256(bad) + "\n")
+        with patch.dict("jev.guard.FROZEN_QUESTIONS", {"bad": sha256(bad)}):
+            with self.assertRaises(ValueError): load_questions("bad", self.tmp)
 
     def test_decision_log_is_typed_and_append_only(self):
         q = load_questions("agent_action_gate_v1")

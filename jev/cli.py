@@ -153,6 +153,8 @@ def run(args):
         if "labels_sha256" not in manifest:
             raise ValueError("evaluation requires a blind label commitment")
         scored_questions = {k: v for k, v in questions.items() if k in manifest.get("scored_axes", questions)}
+        if config["axis"] not in scored_questions:
+            raise ValueError("gate axis must be among the scored axes")
         scoring = scoring_parameters(manifest, scored_questions)
     if manifest.get("mode") in ("confusion", "benchmark") and not fixture:
         raise ValueError("receipt-specific replay requires a pinned fixture")

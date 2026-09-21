@@ -5,7 +5,7 @@ import json
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-from .client import canonical, sha256
+from .client import canonical, sha256, validate_questions
 
 # Backstop against persisting source text; typed projection is the guarantee, this is the second line.
 DENIED = {"title", "description", "stderr", "stdout", "body",
@@ -25,15 +25,15 @@ def verify_freeze(directory, expected):
     return seen
 
 
-def load_questions(name):
-    directory = Path(__file__).parent / "questions"
+def load_questions(name, directory=None):
+    directory = Path(directory) if directory else Path(__file__).parent / "questions"
     if name not in FROZEN_QUESTIONS:
         raise ValueError("unknown frozen question set")
     expected = FROZEN_QUESTIONS[name]
     verify_freeze(directory, {name + ".json": expected})
     if (directory / (name + ".sha256")).read_text().strip() != expected:
         raise ValueError("question sidecar mismatch")
-    return json.loads((directory / (name + ".json")).read_text())
+    return validate_questions(json.loads((directory / (name + ".json")).read_text()))  # a frozen hash is not a valid shape
 
 
 def commit(labels_file):
