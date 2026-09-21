@@ -1,0 +1,10 @@
+[
+ {
+  "model": "jev-1.13.0",
+  "answers": {
+   "status": {"type": "choice", "choice": "fail", "confidence": 0.6},
+   "category": {"type": "choice", "choice": "crash", "confidence": 0.75},
+   "severity": {"type": "choice", "choice": "critical", "confidence": 0.7}
+  }
+ }
+]

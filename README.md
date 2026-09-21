@@ -4,7 +4,7 @@
 
 [Jev](https://docs.typesafe.ai/introduction) is TypeSafe's decision model: it evaluates state against typed questions and returns answers that software can use directly. Choice selects a label; Score returns a rubric value; both include confidence and probabilities. Noul returns a yes-probability without separate confidence. Jev is not a text generator. This independent toolkit adds provenance hashes, frozen questions and inputs, blind-label commitments, confidence gates, ordered mocks, and evaluation around the pinned `jev-1.13.0` endpoint.
 
-**Build status:** all 18 offline tests and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. This repeated-sample check required recovery from the [probability-accessor defect](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); it is not a clean end-to-end CLI pass or a new unseen-sample result.
+**Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. This repeated-sample check required recovery from the [probability-accessor defect](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); it is not a clean end-to-end CLI pass or a new unseen-sample result.
 
 ## Getting Started
 
@@ -16,14 +16,17 @@ OpenRouter is a separate access route: its keys do not work with this toolkit's 
 
 ## Use it without a key
 
-Run from the repository root; the harness and tests use only the Python standard library. No SDK installation is required.
+Run from the repository root with Python 3.7 or later; the harness and tests use only the Python standard library. No SDK installation is required.
 
 ```sh
 python3 -m jev replay --fixture examples/fixtures/fresh-100 --out results/fresh
 python3 -m jev replay --fixture examples/fixtures/purpose-40 --out results/holdout
 python3 -m jev replay --fixture examples/fixtures/ate-benchmark --out results/ate
+python3 -m jev ask --state examples/ask/ate-state.json --questions ate_triage_v1 --mock-responses examples/ask/ate-mock-response.json --out results/ask
 python3 -m unittest discover -s tests -v
 ```
+
+The `ask` line shows the structured ATE state shape (`command`, `exit_code`, `signal`, `expects_edits`, `edit_applied`, `stdout_tail`, `stderr_tail`) on a synthetic run that exits `0` with a crash signature in `stderr_tail`. Its mock response is illustrative, not a recorded Jev answer; `results/ask/answers.json` receives typed choices and hashes only, never the state.
 
 Each output directory must be new. Tests block Python networking and external process execution, while transport tests use canned HTTP responses. The live client also refuses requests when `CI` is set. Nothing runs a live experiment in CI.
 
@@ -33,7 +36,7 @@ The reproduced receipt metrics and their limits are:
 | --- | --- | --- |
 | [Fresh sample](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-19-jev-fresh-sample/jev/results.json) | Purpose `88/100`; macro-F1 `0.6868054177836787`; at confidence ≥ `0.8`, `73/75` correct and coverage `75/100` | Recompute from consensus labels and retained choices/confidences, including both axes and annotator agreement. Historical metadata is carried unchanged for a byte-comparison against the original results. |
 | [Older holdout](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-18-jev-purpose-zero-shot/results.json) | Purpose `37/40`; area `32/38` | Recompute metrics from stored confusion matrices. Ordered prediction replay is separate; unpublished per-ID truth and confidence-bucket correctness are not reconstructed. |
-| [ATE benchmark](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/TESTS-RESULTS/2026-09-18+GH-712/benchmark/summary.json) | FN `1`, FP `0`; historical `fn_zero_threshold` `0.48` | Recompute argmax confusion, FN/FP, and Tier-1 agreement. The threshold is retained as a cited historical value, not an independent recomputation: the rows have no `P(fail)`. |
+| [ATE benchmark](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/xyz-forge/TESTS-RESULTS/2026-09-18+GH-712/benchmark/summary.json) | FN `1`, FP `0`; historical `fn_zero_threshold` `0.48` | Recompute argmax confusion, FN/FP, and Tier-1 agreement. The threshold is retained as a cited historical value, not an independent recomputation: the rows have no `P(fail)`. The fixture manifest's gate requires perfect `status` accuracy at floor `0.0`, so replay prints `met=False`; the historical zero-FN floor is reported separately as `fn_floor_met` under `benchmark`. |
 
 The API response bytes, per-record token usage, and probability distributions were not retained. Mocks contain only recorded typed choices and confidence, with no invented probabilities. `answers.json` hashes the reconstructed requests/responses; `replay.json` separately identifies the historical hashes. Copied run dates, token totals, script hashes, and visibility in reconstructed historical results describe the original experiment, not this mock run.
 

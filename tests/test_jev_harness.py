@@ -196,9 +196,11 @@ class HarnessTests(unittest.TestCase):
 
     def test_visibility_is_fail_closed(self):
         def runner(cmd, **kwargs):
-            return type("Result", (), {"returncode": 0, "stdout": "PUBLIC\n" if cmd[3].endswith("/pub") else "PRIVATE\n"})()
+            return type("Result", (), {"returncode": 0, "stdout": "PUBLIC\n" if cmd[3].casefold().endswith("/pub") else "PRIVATE\n"})()
         vis = repo_visibility(["HiQS-Labs/pub", "HiQS-Labs/private", "BinoidCBD/pub", "former-org/pub"], runner=runner)
         self.assertEqual(vis, {"HiQS-Labs/pub": "PUBLIC", "HiQS-Labs/private": "DENIED", "BinoidCBD/pub": "DENIED", "former-org/pub": "DENIED"})
+        policy = {"allowed_owners": ["HiQS-Labs"], "denied_owners": [], "denied_repos": ["HiQS-Labs/pub"]}
+        self.assertEqual(repo_visibility(["hiqs-labs/PUB"], policy, runner=runner), {"hiqs-labs/PUB": "DENIED"})
 
     def test_agreement_and_binary_threshold(self):
         file = self.tmp / "annotator.json"; file.write_text('{"one":"a","two":"b"}')
@@ -218,6 +220,18 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(set(triage["severity"]["criteria"]), {"none", "low", "medium", "high", "critical"})
         self.assertEqual(set(triage["category"]["criteria"]), {"crash", "auth_failure", "bad_diff", "timeout", "no_edit", "config_error", "env_failure", "env_missing", "ok"})
         self.assertIn("even with exit_code 0", triage["status"]["instructions"])
+
+    def test_ask_example_runs_offline_without_persisting_state(self):
+        out = self.tmp / "ask"
+        args = ["ask", "--state", str(ROOT / "examples/ask/ate-state.json"), "--questions", "ate_triage_v1",
+                "--mock-responses", str(ROOT / "examples/ask/ate-mock-response.json"), "--out", str(out)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(args), 0)
+        answers = json.loads((out / "answers.json").read_text())
+        self.assertEqual(answers[0]["answers"]["status"]["choice"], "fail")
+        self.assertNotIn("probabilities", answers[0]["answers"]["status"])
+        for name in ("answers.json", "results.json"):
+            self.assertNotIn("Segmentation fault", (out / name).read_text())
 
     def test_receipt_replays_and_labels_after_answers(self):
         for name, correct in [("purpose-40", 37), ("fresh-100", 88)]:

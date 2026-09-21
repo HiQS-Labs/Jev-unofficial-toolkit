@@ -1,0 +1,9 @@
+{
+ "command": "python3 -m pytest tests/test_widget.py",
+ "exit_code": 0,
+ "signal": null,
+ "expects_edits": true,
+ "edit_applied": true,
+ "stdout_tail": "collected 3 items\n...\n3 passed in 0.41s",
+ "stderr_tail": "Fatal Python error: Segmentation fault\n\nCurrent thread 0x00007f3a (most recent call first):\n  File \"widget.py\", line 12 in render"
+}

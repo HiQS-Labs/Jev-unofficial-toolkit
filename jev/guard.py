@@ -48,12 +48,13 @@ def repo_visibility(repos, policy=POLICY, runner=None):
     if any(not isinstance(repo, str) or not repo.strip() for repo in repos):
         raise ValueError("repository names must be nonempty strings")
     runner = runner or subprocess.run
+    allowed = {x.casefold() for x in policy["allowed_owners"]}
+    denied = {x.casefold() for x in policy["denied_owners"]}
+    denied_repos = {x.casefold() for x in policy["denied_repos"]}
     result = {}
     for repo in sorted(set(repos)):
         owner, sep, name = repo.partition("/")
-        allowed = {x.casefold() for x in policy["allowed_owners"]}
-        denied = {x.casefold() for x in policy["denied_owners"]}
-        if not sep or not name or owner.casefold() not in allowed or owner.casefold() in denied or repo in policy["denied_repos"]:
+        if not sep or not name or owner.casefold() not in allowed or owner.casefold() in denied or repo.casefold() in denied_repos:
             result[repo] = "DENIED"
             continue
         proc = runner(["gh", "repo", "view", repo, "--json", "visibility", "-q", ".visibility"],

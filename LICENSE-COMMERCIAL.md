@@ -1,4 +1,4 @@
-# Commercial License
+# Commercial Licence
 
 Jev unofficial toolkit is dual-licensed. This file describes the second option.
 Most users need only the first. This setup is adapted from HiQS-Labs/XYZ-forge
@@ -7,9 +7,9 @@ by the operator's instruction; it does not change third-party licence terms.
 The classification labels discussed in this project are a three-model consensus,
 not human gold. This is an evidence caveat, not a licence condition.
 
-## Which license applies to you
+## Which licence applies to you
 
-**The AGPL-3.0-only license in [LICENSE](./LICENSE) applies by default.**
+**The AGPL-3.0-only licence in [LICENSE](./LICENSE) applies by default.**
 You may use, study, modify, self-host, and redistribute the toolkit under that
 licence. You do not need a commercial licence for internal use or for
 redistribution that complies with the AGPL.
@@ -28,7 +28,7 @@ modified copies also apply. Using the toolkit internally as part of your own
 development workflow is distinct from offering a modified toolkit to third
 parties as a service.
 
-## What a commercial license grants
+## What a commercial licence grants
 
 A separately negotiated agreement can grant relief from AGPL reciprocal
 obligations for code the licensor has sufficient rights to license that way.
