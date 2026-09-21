@@ -161,63 +161,86 @@ For a real use case, measure decision quality, confidence calibration, latency, 
 
 ---
 
-## 5. How is Cactus Needle 3 different from Needle 2? Is Needle still an LLM?
+## 5. Is Needle a competitor to Jev? In which use cases?
 
-Needle 3 is a redesigned on-device automation model family from Cactus Compute. Needle 2 is a 45M-parameter model for tool calling, device use, and structured extraction. Needle 3 expands capacity, context, and deploy-time flexibility.
+**In some use cases, yes.** Cactus Compute's Needle is an open, on-device automation model family; Jev is a hosted decision API. They overlap wherever software needs a bounded, structured judgment from a small taxonomy: routing, enum classification, gating, extraction of a fixed schema. They diverge on where the model runs, how confidence is produced, and what the output primitive is.
+
+### What Needle is
 
 | Dimension | Needle 2 | Needle 3 |
 |---|---:|---:|
-| Model capacity | 45M parameters | Approximately 29M–121M, depending on deployed depth ([Cactus](https://cactuscompute.com/needle)) |
-| File size | 14 MB | 8–29 MB |
+| Model capacity | 45M parameters | Approximately 29M-121M, depending on deployed depth ([Cactus](https://cactuscompute.com/needle)) |
+| File size | 14 MB | 8-29 MB |
 | Context | Around 256-token sliding window | Up to 8K tokens |
-| Depth | Fixed | One weight set usable at 2–20 layers |
+| Depth | Fixed | One weight set usable at 2-20 layers |
 | Architecture | Earlier compact Needle architecture | "Laddered Simple Attention Network" |
 | Focus | Tool calling, device use, structured extraction | Same automation core, expanded flexible deployment |
 | Languages | Earlier release positioned mainly around English | Broader multilingual positioning |
 
-Needle 3's "intelligence laddering" means a single model artifact can run at different depths. Shallower variants trade quality for lower latency/footprint; deeper variants use more of the same trained network.
+Needle 3's "intelligence laddering" means a single model artifact can run at different depths: shallower variants trade quality for lower latency and footprint; deeper variants use more of the same trained network.
 
-### Is Needle still an LLM?
+Needle is still, broadly, an LLM: it accepts language-like input and emits token sequences, typically tool calls, arguments, or structured records. It is a very small, specialized, generative action model, not a general assistant; "automation foundation model" is the more useful label.
 
-**Broadly yes.** Needle accepts language-like input and emits token sequences, typically tool calls, arguments, or structured records. It is a very small, specialized, generative action model rather than a broad GPT/Claude/Gemini-style general-purpose assistant.
+### Where Needle can compete with Jev
 
-"Automation foundation model" is the more useful label because its purpose is to control predefined functions and devices locally, not to conduct open-ended chat.
+| Use case | Why Needle can win | What Jev offers instead |
+|---|---|---|
+| Data that must not leave the device or network | Runs locally; no API, no egress, no per-call cost | Hosted only; every state is sent to TypeSafe |
+| Offline, edge, or constrained hardware (phones, wearables, microcontrollers) | 8-29 MB, 2-bit, runs in tens of MB of RAM | Requires network round-trip; 70-500 ms reported latency |
+| Very high call volume at near-zero marginal cost | No metering once deployed | Metered per request (cheap, but nonzero) |
+| Structured extraction of several fields from one input | Generative output can fill a whole record in one pass | One typed answer per declared question; free-form fields are out of scope |
+| Local tool/function calling | Its native task | Not a tool caller; it selects among declared options |
+| Narrow taxonomies you can fine-tune for | Open weights, fine-tuning supported | No fine-tuning; you shape behaviour through question wording |
 
-### Needle versus Jev
+### Where Needle does not compete
+
+| Requirement | Jev | Needle |
+|---|---|---|
+| Calibrated probability distribution as a first-class output | Documented contract for Choice and Score; Noul is itself a probability | A generated label; any confidence must be derived and calibrated on your own holdout |
+| Output guaranteed inside the declared answer space | By construction; no text decoding | Constrained decoding helps, but the model still generates tokens and can drift |
+| Many independent questions over one state in one call | Parallel evaluation; adding questions barely changes latency | One generation per prompt; multiple questions mean multiple passes or a composite schema |
+| No model hosting, serving, or quantization work | Managed API | You own deployment, updates, and depth selection |
+| Semantic judgment over long or messy state | Hosted capacity | 45M-121M parameters is small; capacity is the first thing to test |
+
+### Needle versus Jev at a glance
 
 | | Needle 3 | Jev |
 |---|---|---|
 | Output | Generated tool calls / records | Typed choice, score, or binary probability |
 | Autoregressive generation | Yes, as a generative automation model | No text-generation interface |
 | Deployment | Open/local on constrained hardware | Proprietary hosted API |
-| Best role | Local function calling and argument extraction | Routing, scoring, classification, gating |
+| Best role | Local function calling, extraction, on-device bounded classification | Routing, scoring, classification, gating with calibrated probabilities |
+
+The honest framing: Needle competes on **where** the decision runs and **what it costs**; Jev competes on **how trustworthy the probability is** and **how little serving work you take on**. A team that needs a bounded decision on private, offline, or high-volume data should evaluate both.
 
 ---
 
-## 6. Would Needle 3 be a better classifier than Needle 2, which did not perform well in testing?
+## 6. Would Needle 3 beat Jev as a classifier? How would you find out?
 
-**Possibly, but do not assume it.** Needle 3 is a credible model to retest because it can run at a higher-capacity 121M configuration, accept up to 8K tokens of context, produce constrained classification output, and supports fine-tuning. But an architecture update cannot solve poor labels, ambiguous classes, insufficient input state, or a task that actually requires substantial reasoning.
+**Only a head-to-head measurement can say.** Needle 2 did not perform well in this toolkit's parent work (a six-action coding-core pilot in [Needle-fork](https://github.com/HiQS-Labs/Needle-fork)); the critical limitations were probably the 256-token context limit and the mismatch between a tiny tool-calling model and a planning-like task. Needle 3 is a credible rerun candidate, tracked in [Needle-fork #66](https://github.com/HiQS-Labs/Needle-fork/issues/66), because it can run at a higher-capacity 121M configuration, accept up to 8K tokens of context, produce constrained classification output, and be fine-tuned. An architecture update cannot solve poor labels, ambiguous classes, insufficient input state, or a task that requires substantial reasoning.
 
-For the developer/coding-agent next-action work, the critical limitation with Needle 2 may have been the 256-token context limit and the mismatch between a tiny tool-calling model and a difficult planning-like task. The Needle-fork repository this toolkit's evidence derives from tracks a Needle 3 rerun of that pilot in [Needle-fork #66](https://github.com/HiQS-Labs/Needle-fork/issues/66).
+### The bar Jev has already set
 
-### Why Needle 3 could improve
+This toolkit's recorded Jev evidence on the work-purpose taxonomy is purpose `88/100` (macro-F1 `0.687`) and, at confidence >= `0.8`, `73/75` correct with `75/100` coverage ([USE-CASES.md](USE-CASES.md)). A Needle 3 challenger on the same frozen sample and labels would need to match that accuracy *and* supply a confidence signal that gates as cleanly; without the second half it is a classifier, not a substitute.
+
+### Why Needle 3 could close the gap
 
 - More capacity at deeper settings: up to about 121M parameters.
 - Longer context: task, plan, recent tool trace, test failure, and compact repository state can be supplied together.
-- Structured enum classification plus confidence.
-- Fine-tuning support for a narrow taxonomy.
+- Structured enum classification, with a confidence you calibrate yourself.
+- Fine-tuning support for a narrow taxonomy, which Jev does not offer.
 - Embeddings that enable a separate retrieval/classifier comparison.
 
-### Why it might still fail
+### Why it might still lose
 
 - Choosing the next coding action can require interpreting tests, diffs, code semantics, architectural constraints, and incomplete evidence.
 - A 44-label taxonomy can contain genuine ambiguity: several reasonable next actions may exist.
 - Valid enum output does not mean correct semantic classification.
-- Model confidence must be calibrated on your own held-out dataset.
+- Model confidence must be calibrated on your own held-out dataset; Jev's is a documented contract.
 
-### Recommended evaluation
+### Recommended head-to-head
 
-Use the same session-grouped temporal holdout across all candidates. Compare:
+Use the same session-grouped temporal holdout, the same frozen question wording, and the same blind labels for every candidate, with the gate pre-registered before the sample is drawn (the rules in [PROTOCOL.md](PROTOCOL.md)). Compare:
 
 - Majority, repeat-last, and Markov baselines.
 - TF-IDF plus logistic regression or LightGBM.
@@ -226,18 +249,19 @@ Use the same session-grouped temporal holdout across all candidates. Compare:
 - Needle 2.
 - Needle 3 at 8, 12, and 20 layers.
 - Optional fine-tuned Needle 3.
+- Jev, pinned, through this toolkit.
 - A frontier coding model as an upper-bound reference.
 
-Measure macro-F1, per-class precision/recall, top-3 accuracy, confusion matrices, selective accuracy at confidence thresholds, coverage, calibration, latency, and memory.
+Measure macro-F1, per-class precision/recall, top-3 accuracy, confusion matrices, selective accuracy at confidence thresholds, coverage, calibration, latency, memory, and cost per decision.
 
-A useful production pattern is confidence-gated routing:
+A useful production pattern is confidence-gated routing, whichever model wins:
 
 ```text
-High-confidence Needle 3 result → offer/perform low-risk suggestion
-Low confidence or complex state → retrieval, stronger local model, frontier model, or human
+High-confidence result -> offer/perform low-risk suggestion
+Low confidence or complex state -> retrieval, stronger local model, frontier model, or human
 ```
 
-For the existing 44-label next-action problem, Needle 3 should be considered a hypothesis to evaluate, not a safe standalone planner.
+For the existing 44-label next-action problem, Needle 3 is a hypothesis to evaluate against Jev, not a safe standalone planner.
 
 ---
 
@@ -410,5 +434,5 @@ It differs from GPT-style LLMs primarily in its output behavior: it does not exp
 - Use **Jev** as a fast semantic decision layer: classify, route, score, gate, and triage.
 - Use ordinary statistics, deterministic code, and explicit thresholds for numeric truth, authorization, safety, and side effects.
 - Use stronger LLMs where you need code understanding, long-form explanations, broad reasoning, synthesis, or generation.
-- Use **Needle 3** as a local generative automation/tool-calling candidate; evaluate it carefully for classification instead of assuming it is a planner.
+- Treat **Needle 3** as a possible Jev competitor for on-device, offline, private, or high-volume bounded classification; decide by head-to-head measurement on the same frozen sample, not by assumption, and never treat it as a planner.
 - Measure every deployed decision system using task-specific accuracy, calibration, abstention/coverage, latency, cost, false positives, and ultimately operational outcome.
