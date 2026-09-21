@@ -50,18 +50,35 @@ def _holds(cond, answers, rule_hits):
     if "rule" in cond:
         return cond["rule"] in rule_hits
     answer = answers.get(cond["axis"])
-    if not isinstance(answer, dict) or answer.get("type") not in answer:
+    if not isinstance(answer, dict):
         return False  # Unknown axis or malformed projection never satisfies a condition.
-    value = answer[answer["type"]]
+    kind = answer.get("type")
+    if kind not in ("choice", "score", "noul") or kind not in answer:
+        return False
+    value = answer[kind]
+    try:
+        if kind == "choice":
+            if not isinstance(value, str) or not value:
+                return False
+        elif kind in ("score", "noul"):
+            value = number(value, unit=kind == "noul")
+        else:
+            return False
+    except ValueError:
+        return False
     checks = []
     if "choice" in cond:
         checks.append(value == cond["choice"])
     if "min" in cond:
-        checks.append(isinstance(value, (int, float)) and value >= cond["min"])
+        checks.append(kind in ("score", "noul") and value >= cond["min"])
     if "max" in cond:
-        checks.append(isinstance(value, (int, float)) and value <= cond["max"])
+        checks.append(kind in ("score", "noul") and value <= cond["max"])
     if "min_confidence" in cond:
-        checks.append("confidence" in answer and answer["confidence"] >= cond["min_confidence"])
+        try:
+            confidence = number(answer["confidence"], unit=True)
+        except (KeyError, ValueError):
+            return False
+        checks.append(kind in ("choice", "score") and confidence >= cond["min_confidence"])
     return all(checks)
 
 

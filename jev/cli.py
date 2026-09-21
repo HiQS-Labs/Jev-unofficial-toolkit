@@ -5,6 +5,7 @@ import os
 from collections import Counter
 from pathlib import Path
 
+from . import openrouter
 from .answers import MODEL, number
 from .client import JevClient, MockClient, canonical, load_key, request_bytes, sha256
 from .eval import (agreement, binary_counts, confidence_table, gate, hit_equal, metrics,
@@ -67,6 +68,9 @@ def score(rows, labels, questions, gate_config, annotators=None, scoring=None):
             continue
         conf = [r["answers"][axis]["confidence"] for r in rows]
         if kind == "score":
+            if any(value is not None and not 0 <= number(value) <= len(question["criteria"]) - 1
+                   for value in truth):
+                raise ValueError("score truth outside rubric range")
             hits[axis] = within(scoring["score_tolerance"])
             axes[axis] = {"metrics": score_metrics(truth, pred, scoring["score_tolerance"]),
                           "confidence_buckets": confidence_table(truth, pred, conf, hits[axis])}
@@ -92,8 +96,12 @@ def score(rows, labels, questions, gate_config, annotators=None, scoring=None):
 
 
 def run(args):
+    backend = args.backend
+    model = openrouter.MODEL if backend == "openrouter" else MODEL
     fixture = Path(args.fixture) if args.fixture else None
     if fixture:
+        if backend != "typesafe":
+            raise ValueError("historical fixtures require the TypeSafe backend")
         if args.command != "replay":
             raise ValueError("fixtures are for replay only")
         verify_freeze(fixture, {k: v for k, v in FROZEN_FIXTURES[fixture.name].items()
@@ -117,22 +125,24 @@ def run(args):
     if args.command == "replay" and not mock:
         raise ValueError("replay requires --mock-responses or --fixture")
     if manifest:
-        if manifest["model"] != MODEL or manifest["questions_sha256"] != sha256(canonical(questions)):
+        if manifest.get("backend", "typesafe") != backend:
+            raise ValueError("manifest backend mismatch")
+        if manifest["model"] != model or manifest["questions_sha256"] != sha256(canonical(questions)):
             raise ValueError("manifest model/questions mismatch")
         if manifest["quiz_sha256"] != sha256(Path(input_path).read_bytes()):
             raise ValueError("input freeze mismatch")
     if not mock:
         if os.environ.get("CI"):
             raise ValueError("live requests are disabled in CI")
-        key = load_key(args.key_file)
+        key = (openrouter.load_key if backend == "openrouter" else load_key)(args.key_file)
         if not args.live or not manifest:
             raise ValueError("live use requires --live and a frozen --manifest")
-        client = JevClient(key)
+        client = (openrouter.OpenRouterClient if backend == "openrouter" else JevClient)(key)
         policy = read_json(args.policy) if args.policy else POLICY
         visibility = repo_visibility([r["repo"] for r in records], policy)
         sendable = [r for r in records if visibility[r["repo"]] == "PUBLIC"]
     else:
-        client = MockClient(read_json(args.mock_responses))
+        client = (openrouter.OpenRouterMockClient if backend == "openrouter" else MockClient)(read_json(args.mock_responses))
         visibility, sendable = {}, records
     if not sendable:
         raise ValueError("no eligible records")
@@ -152,7 +162,16 @@ def run(args):
             number(config[field], unit=True)
         if "labels_sha256" not in manifest:
             raise ValueError("evaluation requires a blind label commitment")
-        scored_questions = {k: v for k, v in questions.items() if k in manifest.get("scored_axes", questions)}
+        selected_axes = manifest.get("scored_axes")
+        if selected_axes is None:
+            scored_questions = questions
+        else:
+            if (not isinstance(selected_axes, list) or not selected_axes
+                    or any(not isinstance(axis, str) or not axis for axis in selected_axes)
+                    or len(set(selected_axes)) != len(selected_axes)
+                    or not set(selected_axes) <= set(questions)):
+                raise ValueError("scored_axes must be a nonempty list of unique question IDs")
+            scored_questions = {axis: questions[axis] for axis in selected_axes}
         if config["axis"] not in scored_questions:
             raise ValueError("gate axis must be among the scored axes")
         scoring = scoring_parameters(manifest, scored_questions)
@@ -166,12 +185,20 @@ def run(args):
         values = answer.project(questions)  # Typed fields only; never state, API extensions, or error text.
         completed.append({"id": record["id"], "model": answer.model, "answers": values,
                           "request_sha256": answer.request_sha256, "response_sha256": answer.response_sha256})
+        if not fixture:
+            completed[-1]["backend"] = backend
+        # Preserve paid, completed answers even when a later request fails.
+        write_results(out / f"answer-{len(completed):04d}.json", completed[-1])
     if mock:
         client.finish()
     write_results(out / "answers.json", completed)
-    report = {"model_requested": MODEL, "models_seen": sorted(client.models_seen),
+    report = {"model_requested": model, "models_seen": sorted(client.models_seen),
               "input_tokens": client.input_tokens, "records": len(records), "sent": len(completed),
               "skipped_ids": skipped, "visibility": visibility, "questions_sha256": sha256(canonical(questions))}
+    if not fixture:
+        report["backend"] = backend
+    if backend == "openrouter":
+        report.update(provider="TypeSafe", output_tokens=client.output_tokens, cost=client.cost)
     if fixture:
         # Recheck all fixture bytes only after responses are finalized, including labels.
         verify_freeze(fixture, FROZEN_FIXTURES[fixture.name])
@@ -224,6 +251,7 @@ def main(argv=None):
     parser.add_argument("command", choices=("ask", "eval", "replay"))
     for name in ("state", "records", "labels", "mock-responses", "manifest", "fixture", "key-file", "policy", "repo"):
         parser.add_argument("--" + name)
+    parser.add_argument("--backend", choices=("typesafe", "openrouter"), default="typesafe")
     parser.add_argument("--questions", default="work_purpose_v3")
     parser.add_argument("--out", required=True)
     parser.add_argument("--live", action="store_true")

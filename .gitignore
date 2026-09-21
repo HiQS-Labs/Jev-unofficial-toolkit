@@ -6,3 +6,26 @@ __pycache__/
 *.key
 results/
 /temp/
+PROJECT/PDDA-ACTIVITY.jsonl
+.pdda-gh-state.tsv
+
+# Local XYZ / PDDA triage install (not part of toolkit source)
+/.xyz/
+/.tick/
+/utils/pdda/
+/utils/py/pdda_*.py
+/.claude/skills/pdda/
+/PROJECT/PDDA.md
+/PROJECT/*/blank.md
+/.pdda-mode
+/.pdda-quad
+/ROUTER.md
+/AGENTS.md
+/GUIDING-PRINCIPLES.md
+/CHANGELOG.md
+/RELEASES.md
+/releases.db
+/releases.sql
+
+/relay-system/run-logs/
+/relay-system/logs/

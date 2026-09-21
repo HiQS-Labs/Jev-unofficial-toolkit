@@ -23,8 +23,10 @@ def number(value, unit=False):
 
 
 class Answer:
+    expected_model = MODEL
+
     def __init__(self, response, request_sha256, response_sha256):
-        if not isinstance(response, dict) or response.get("model") != MODEL:
+        if not isinstance(response, dict) or response.get("model") != self.expected_model:
             raise ValueError("response must identify the pinned model")
         if not isinstance(response.get("answers"), dict) or not response["answers"]:
             raise ValueError("response has no answers")
@@ -68,7 +70,12 @@ class Answer:
             if kind in ("choice", "score"):
                 values[name]["confidence"] = self.confidence(name)
                 if "probabilities" in self.response["answers"][name]:
-                    values[name]["probabilities"] = self.probabilities(name)
+                    try:
+                        values[name]["probabilities"] = self.probabilities(name)
+                    except (ValueError, KeyError, TypeError):
+                        # Probabilities are optional for scoring. Keep the typed verdict
+                        # and disclose the rejected distribution without inventing one.
+                        values[name]["probabilities_status"] = "invalid"
         return values
 
     def probabilities(self, name) -> dict:
