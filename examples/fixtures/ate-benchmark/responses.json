@@ -1,0 +1,1482 @@
+[
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.93,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.96,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_missing",
+    "confidence": 0.48,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_failure",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.95,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_failure",
+    "confidence": 0.76,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.96,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_missing",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.91,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "timeout",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_missing",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 0.64,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.96,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "env_failure",
+    "confidence": 0.47,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.24,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "ok",
+    "confidence": 0.5,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.88,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 0.11,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.75,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "none",
+    "confidence": 0.79,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "pass",
+    "confidence": 0.05,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "crash",
+    "confidence": 0.75,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 0.31,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.96,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 1.0,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.96,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 0.79,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.97,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ },
+ {
+  "answers": {
+   "category": {
+    "choice": "config_error",
+    "confidence": 0.99,
+    "type": "choice"
+   },
+   "severity": {
+    "choice": "critical",
+    "confidence": 0.98,
+    "type": "choice"
+   },
+   "status": {
+    "choice": "fail",
+    "confidence": 1.0,
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0"
+ }
+]

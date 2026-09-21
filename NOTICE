@@ -1,0 +1,26 @@
+Jev unofficial toolkit is distributed under AGPL-3.0 (see LICENSE), with commercial licensing described
+in LICENSE-COMMERCIAL.md.
+
+Portions of jev/client.py, jev/eval.py, jev/guard.py, the work_purpose_v3
+question set, and tests/test_jev_harness.py derive from HiQS-Labs/Needle-fork:
+https://github.com/HiQS-Labs/Needle-fork/tree/f7c7047
+  spike/work_classification/jev_zero_shot.py
+  spike/work_classification/jev_fresh_eval.py
+  spike/work_classification/fresh_sample.py (manifest design only)
+  tests/test_jev_zero_shot.py
+These sources were distributed under Apache-2.0; its terms are retained in
+licenses/Apache-2.0.txt. The source files contained no individual copyright
+header. Attribution to the Needle-fork contributors is retained here and
+in derived Python files. Modifications consolidate transport and scoring,
+add validation, commitments, safe output, and stdlib mock tests.
+
+Text-free experimental receipts and derived fixtures originate from
+Needle-fork at the same revision and the operator-supplied XYZ-forge GH-712
+receipts at 6f9983d5. Their source snapshot is toolkit handoff commit 9b37264;
+fixture manifests identify exact files. Receipts and plan documents are
+HiQS-Labs material supplied by the operator. The handoff snapshot is unchanged.
+The root LICENSE and LICENSE-COMMERCIAL.md setup is adapted from
+HiQS-Labs/XYZ-forge by explicit operator instruction. No XYZ-forge Jev
+implementation code or TypeSafe SDK is included.
+ATE questions are newly authored from the handoff GH-712 Requirements and are not an
+exact reconstruction of XYZ-forge's historical question set.

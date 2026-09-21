@@ -1,0 +1,14 @@
+name: mock-only tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run stdlib tests with networking blocked in the test process
+        run: python3 -m unittest discover -s tests -v
+        env:
+          CI: 'true'
+          TYPESAFE_API_KEY: ''

@@ -1,0 +1,20 @@
+{
+ "gate": {
+  "axis": "purpose",
+  "confidence_floor": 0.8,
+  "min_accuracy": 0.9,
+  "min_coverage": 0.6
+ },
+ "mode": "confusion",
+ "model": "jev-1.13.0",
+ "original_responses_available": false,
+ "probabilities_retained": false,
+ "questions": "work_purpose_v3",
+ "questions_sha256": "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821",
+ "quiz_sha256": "221a5e6bddaaf69b4e67c3fd0cc2b650dfc680c3464ab60cf5bf4134e569e8ee",
+ "reproduction_scope": "Both axes metrics from stored confusion counts; ordered recorded predictions replay separately. No per-ID truth or confidence-bucket recomputation.",
+ "source": "https://github.com/HiQS-Labs/Jev-unofficial-toolkit/blob/9b37264/handoff/needle-fork/TESTS-RESULTS/2026-09-18-jev-purpose-zero-shot",
+ "source_requests_sha256": "1e3914fa54f9cc9fdd666f8c7bdc83c5df86cf2b501bc486989671afa28f03d2",
+ "source_results_sha256": "1d690ef9038bf637f6ac263a3405929e22a03cb8a38d37b8e9327d1bfa29fa18",
+ "usage_per_record_retained": false
+}

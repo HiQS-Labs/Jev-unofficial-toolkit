@@ -1,0 +1,34 @@
+{
+ "area_glosses_by_script": [
+  "ci_cd",
+  "skills",
+  "ui"
+ ],
+ "freeze": {
+  "holdout-labels.json": "70aa61d43044c7f33664474e8ee3a6717402b81c590dcc8adf81c956c5207bd4",
+  "holdout.json": "24995fe28edf56d3c77be41d9e0baec958006f987889efc51369fa77e5eedf26",
+  "taxonomy.md": "2a373c3b08cb78779be6b14d433bf353f99d40365d0014447f05fdd72f0c8891"
+ },
+ "holdout_id_list_sha256": "8910623f39c6659634fa509e8ba91dc5c05b5ec38b1d04a047521d8e8fb4f218",
+ "input_tokens": 55579,
+ "model_requested": "jev-1.13.0",
+ "models_seen": [
+  "jev-1.13.0"
+ ],
+ "questions_sha256": "21094cd4f260f09986f70626d8991be8e9650c103bb107d3740d57219aed2821",
+ "records": 40,
+ "script_sha256": "0740582603468547081f4fd0ee3883e5c1331d1b1056522e7652c9e4cca6a643",
+ "sent": 40,
+ "skipped_ids": [],
+ "utc_finished": "2026-09-18T23:34:58.264822+00:00",
+ "utc_started": "2026-09-18T23:34:47.965845+00:00",
+ "visibility": {
+  "HiQS-Labs/AEGIS-Sleuth-Slackbot": "PUBLIC",
+  "HiQS-Labs/Model-catalog": "PUBLIC",
+  "HiQS-Labs/Needle-fork": "PUBLIC",
+  "HiQS-Labs/Orion-fork": "PUBLIC",
+  "HiQS-Labs/XYZ-code-RAG": "PUBLIC",
+  "HiQS-Labs/XYZ-forge": "PUBLIC",
+  "HiQS-Labs/rebalanceOS": "PUBLIC"
+ }
+}

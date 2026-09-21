@@ -1,0 +1,502 @@
+[
+ {
+  "area": "telemetry",
+  "id": "fresh-001",
+  "purpose": "maintenance"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-002",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-003",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-004",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-005",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "telemetry",
+  "id": "fresh-006",
+  "purpose": "merge_closeout"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-007",
+  "purpose": "merge_closeout"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-008",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-009",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "integrations",
+  "id": "fresh-010",
+  "purpose": "maintenance"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-011",
+  "purpose": "documentation"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-012",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-013",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "integrations",
+  "id": "fresh-014",
+  "purpose": "planning_design"
+ },
+ {
+  "area": "ui",
+  "id": "fresh-015",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-016",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-017",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-018",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-019",
+  "purpose": "merge_closeout"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-020",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-021",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-022",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-023",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-024",
+  "purpose": "planning_design"
+ },
+ {
+  "area": null,
+  "id": "fresh-025",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": null,
+  "id": "fresh-026",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-027",
+  "purpose": "documentation"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-028",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-029",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ui",
+  "id": "fresh-030",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-031",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-032",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-033",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "telemetry",
+  "id": "fresh-034",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-035",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-036",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-037",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-038",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-039",
+  "purpose": "documentation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-040",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-041",
+  "purpose": "maintenance"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-042",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-043",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": null,
+  "id": "fresh-044",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-045",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-046",
+  "purpose": "planning_design"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-047",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-048",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "dependencies",
+  "id": "fresh-049",
+  "purpose": "maintenance"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-050",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ui",
+  "id": "fresh-051",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "telemetry",
+  "id": "fresh-052",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ui",
+  "id": "fresh-053",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-054",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-055",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-056",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-057",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-058",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-059",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-060",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "telemetry",
+  "id": "fresh-061",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-062",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-063",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-064",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-065",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-066",
+  "purpose": "documentation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-067",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-068",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-069",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-070",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-071",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "documentation_policy",
+  "id": "fresh-072",
+  "purpose": "documentation"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-073",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": null,
+  "id": "fresh-074",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "integrations",
+  "id": "fresh-075",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-076",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-077",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "telemetry",
+  "id": "fresh-078",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-079",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-080",
+  "purpose": "planning_design"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-081",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-082",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-083",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-084",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-085",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-086",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-087",
+  "purpose": "maintenance"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-088",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ingestion_sync",
+  "id": "fresh-089",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": "model_inference",
+  "id": "fresh-090",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": null,
+  "id": "fresh-091",
+  "purpose": "research_evaluation"
+ },
+ {
+  "area": null,
+  "id": "fresh-092",
+  "purpose": "planning_design"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-093",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "core_harness",
+  "id": "fresh-094",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-095",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-096",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "integrations",
+  "id": "fresh-097",
+  "purpose": "feature_enhancement"
+ },
+ {
+  "area": "ledger",
+  "id": "fresh-098",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "ci_cd",
+  "id": "fresh-099",
+  "purpose": "bug_fix"
+ },
+ {
+  "area": "skills",
+  "id": "fresh-100",
+  "purpose": "feature_enhancement"
+ }
+]
