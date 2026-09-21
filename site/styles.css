@@ -52,6 +52,16 @@ h1 em { color: var(--green); font-style: normal; }
 .button-light { color: #173023; background: var(--cream); }
 .hero-note { margin-top: 1rem; color: #71867d; font-size: .82rem; }
 
+.clone-module { max-width: 680px; }
+.clone-module label { display: block; margin-bottom: .55rem; color: #a7bbb2; font: 700 .68rem var(--mono); letter-spacing: .09em; text-transform: uppercase; }
+.clone-module-hero { margin-top: 1.45rem; }
+.clone-control { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow: hidden; background: rgba(3, 9, 7, .58); border: 1px solid rgba(135, 240, 179, .22); border-radius: 7px; }
+.clone-control:focus-within { border-color: rgba(135, 240, 179, .72); box-shadow: 0 0 0 3px rgba(135, 240, 179, .09); }
+.clone-control input { min-width: 0; padding: .86rem 1rem; color: #cce8dc; background: transparent; border: 0; outline: 0; font: .76rem var(--mono); }
+.clone-control button { min-width: 76px; padding: .75rem 1rem; color: #092116; background: var(--green); border: 0; border-left: 1px solid rgba(135, 240, 179, .2); cursor: pointer; font: 750 .78rem var(--sans); }
+.clone-control button:hover { background: #a1f7c3; }
+.clone-control button:focus-visible { outline: 2px solid var(--cream); outline-offset: -4px; }
+
 .decision-card { max-width: 540px; width: 100%; justify-self: end; overflow: hidden; background: rgba(13, 27, 23, .9); border: 1px solid rgba(135, 240, 179, .23); border-radius: 12px; box-shadow: 0 28px 80px rgba(0, 0, 0, .38); transform: rotate(1.3deg); }
 .window-bar { display: flex; align-items: center; gap: .45rem; padding: .7rem .9rem; background: rgba(255, 255, 255, .035); border-bottom: 1px solid var(--line); }
 .window-bar span { width: 8px; height: 8px; background: #45554f; border-radius: 50%; }
@@ -134,6 +144,11 @@ blockquote code { color: var(--green); }
 .doc-link { display: grid; grid-template-columns: 1fr auto; gap: .3rem 1rem; padding: 1.6rem; background: var(--surface); text-decoration: none; }
 .doc-link span { grid-column: 1; color: var(--muted); font-size: .76rem; }.doc-link strong { grid-column: 1; font-size: 1.25rem; }.doc-link b { grid-column: 2; grid-row: 1 / 3; align-self: center; color: var(--green); font-size: 1.4rem; transition: transform .2s; }.doc-link:hover b { transform: translateX(5px); }
 
+.clone-section { display: grid; grid-template-columns: minmax(0, .8fr) minmax(420px, 1.2fr); align-items: end; gap: clamp(2rem, 7vw, 7rem); padding: clamp(4rem, 7vw, 7rem) clamp(1.2rem, 7vw, 8rem); background: #0d1b17; border-top: 1px solid var(--line); }
+.clone-section h2 { margin: 0; font-size: clamp(2.3rem, 4vw, 4rem); line-height: 1; letter-spacing: -.05em; }
+.clone-section-copy > p:last-child { max-width: 520px; margin: 1rem 0 0; color: var(--muted); }
+.clone-module-bottom { width: 100%; max-width: none; }
+
 footer { display: flex; justify-content: space-between; gap: 2rem; padding: 2.5rem clamp(1.2rem, 7vw, 8rem); color: #71867d; background: #050b09; border-top: 1px solid var(--line); font-size: .82rem; }
 footer > div { display: flex; gap: 1rem; } footer strong { color: #bbcbc4; } footer a:hover { color: var(--green); }
 
@@ -151,7 +166,7 @@ footer > div { display: flex; gap: 1rem; } footer strong { color: #bbcbc4; } foo
   .decision-card { justify-self: start; max-width: 650px; transform: none; }
   .workflow { grid-template-columns: 1fr; }.workflow li { min-height: auto; padding: 1rem 0; border-right: 0; border-bottom: 1px solid var(--line); }.workflow li::after { display: none; }
   .evidence-grid { grid-template-columns: 1fr; }.metric-card > strong { font-size: 4rem; }
-  .integration-panel, .flagship-section { grid-template-columns: 1fr; }.forge-mark { position: absolute; right: 2rem; bottom: -3rem; }
+  .integration-panel, .flagship-section, .clone-section { grid-template-columns: 1fr; }.forge-mark { position: absolute; right: 2rem; bottom: -3rem; }
 }
 
 @media (max-width: 620px) {
@@ -159,5 +174,7 @@ footer > div { display: flex; gap: 1rem; } footer strong { color: #bbcbc4; } foo
   .feature-grid, .docs-grid { grid-template-columns: 1fr; }
   .callout, .boundary { grid-template-columns: 1fr; }.boundary-mark { display: none; }
   .terminal-tabs button { padding-inline: .45rem; font-size: .62rem; }
+  .clone-control { grid-template-columns: 1fr; }
+  .clone-control button { border-top: 1px solid rgba(135, 240, 179, .2); border-left: 0; }
   footer, footer > div { flex-direction: column; }
 }

@@ -34,11 +34,47 @@ document.querySelectorAll("[data-command]").forEach(button => {
   });
 });
 
+const copyText = async text => {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+  } catch {
+    // Fall back for browsers that deny clipboard access.
+  }
+  const fallback = document.createElement("textarea");
+  fallback.value = text;
+  fallback.setAttribute("readonly", "");
+  fallback.style.position = "fixed";
+  fallback.style.opacity = "0";
+  document.body.append(fallback);
+  fallback.select();
+  document.execCommand("copy");
+  fallback.remove();
+};
+
 document.querySelector("[data-copy]").addEventListener("click", async event => {
-  await navigator.clipboard.writeText(output.textContent);
+  await copyText(output.textContent);
   const button = event.currentTarget;
   button.textContent = "Copied";
   window.setTimeout(() => { button.textContent = "Copy"; }, 1400);
+});
+
+document.querySelectorAll("[data-clone-module]").forEach(module => {
+  const input = module.querySelector("[data-clone-input]");
+  const button = module.querySelector("[data-clone-copy]");
+  const status = module.querySelector("[data-clone-status]");
+
+  button.addEventListener("click", async () => {
+    await copyText(input.value);
+    button.textContent = "Copied";
+    status.textContent = "Clone command copied to clipboard.";
+    window.setTimeout(() => {
+      button.textContent = "Copy";
+      status.textContent = "";
+    }, 1400);
+  });
 });
 
 const observer = new IntersectionObserver(entries => {

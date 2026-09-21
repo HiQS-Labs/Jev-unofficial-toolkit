@@ -42,78 +42,7 @@ Jev is best viewed as a semantic decision component, not a chatbot replacement. 
 
 ---
 
-## 2. Would Jev be good for predicting whether an e-commerce site has a problem from changes in order velocity? What evidence and data would it need?
-
-**Yes, as a second-stage triage model—not as the primary anomaly detector.** Order velocity is an important signal, but it cannot by itself prove a site problem. Sales can change because of traffic, campaigns, seasonality, stockouts, pricing, promotions, payment issues, or random variation.
-
-### Recommended hybrid design
-
-```text
-Order/funnel data + technical telemetry
-        ↓
-Statistical/time-series anomaly detector
-        ↓
-Jev: typed incident classification and escalation recommendation
-        ↓
-Deterministic alert policy / human / stronger LLM for explanation
-```
-
-### Use statistics first
-
-Maintain 5-, 15-, 60-minute, or daily buckets depending on store volume. Compare observed paid orders with a context-specific expected level:
-
-```text
-expected orders = median or model prediction for comparable
-                  weekday + local hour + recent historical periods
-
-anomaly = observed orders versus expected range and historical variance
-```
-
-For count data, Poisson or negative-binomial models are generally more appropriate than assuming orders are normally distributed. Use change-point detection to find sustained shifts, especially after deployments.
-
-### Evidence needed for high-confidence diagnosis
-
-Do not page based on order count alone. Combine independent evidence:
-
-| Observed pattern | Likely interpretation |
-|---|---|
-| Orders down; sessions stable; checkout starts down | Checkout/cart flow problem |
-| Orders down; checkout starts stable; payment failures rise | Payment gateway, payment method, or fraud issue |
-| Orders and sessions both down proportionally | Traffic/campaign/channel change |
-| Orders down; top products out of stock | Inventory/catalog cause |
-| Orders down; synthetic checkout fails | Very strong direct site/checkout evidence |
-| Orders down; 5xx rate or page latency rises | Availability/performance incident |
-
-### Data volume and history
-
-| Typical store volume | Practical analysis window | First usable baseline | Stronger baseline |
-|---|---:|---:|---:|
-| Under 5 orders/day | Daily | 8–12 weeks | 12–24 months |
-| 5–30 orders/day | 6-hour or daily | 8–12 weeks | 6–12 months |
-| 30–100 orders/day | Hourly or 2-hour | 8–12 weeks | 6–12 months |
-| 100–500 orders/day | 15–60 minutes | 6–8 weeks | 6–12 months |
-| Over 500 orders/day | 5–15 minutes | 4–8 weeks | 3–6+ months |
-
-A practical minimum is about **8 weeks** of timestamped paid-order history for a preliminary weekday/hour baseline, with 12–16 weeks being more useful. At low volume, use daily/multi-day detection plus synthetic checkout tests; no ML model can make sparse events statistically rich.
-
-### What Jev returns, and what code adds
-
-Jev answers only the typed questions it was asked. For an incident bundle that is one answer per question, for example:
-
-```json
-{
-  "incident_class": {"type": "choice", "choice": "payment_or_fraud_incident", "confidence": 0.91},
-  "severity": {"type": "score", "score": 2.7, "confidence": 0.84},
-  "has_direct_failure_evidence": {"type": "noul", "noul": 0.97},
-  "should_escalate_now": {"type": "noul", "noul": 0.88}
-}
-```
-
-A recommended action, evidence codes such as `SYNTHETIC_CHECKOUT_FAILED`, and the page/notify/watch decision are composed by deterministic code from those answers plus the statistical thresholds. Keep actual paging and production actions deterministic. Jev can classify state and supply a probability; it should not be the sole authorization or safety boundary. Issue [#15](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/15) tracks this design.
-
----
-
-## 3. Is Jev "artificial intelligence" or just a model? Does it have attention like GPT?
+## 2. Is Jev "artificial intelligence" or just a model? Does it have attention like GPT?
 
 Jev is both **AI** and a **model**. "Artificial intelligence" is the broad category; a model is a trained mathematical component used by an AI system.
 
@@ -139,6 +68,43 @@ The responsible answer is: **the public documentation does not reveal enough imp
 It is plausible that Jev uses neural attention or transformer-like components—many non-generative models do—but that should not be stated as confirmed. Jev does not use GPT's autoregressive next-token-generation loop for its published decision interface.
 
 "Attention" in machine learning is a mathematical weighting mechanism. Neither GPT nor Jev has human attention, awareness, consciousness, or intent.
+
+---
+
+## 3. Does Jev have a neural network?
+
+**Yes, Jev is a neural-network-based AI model.** A model that turns input state into learned scores/probabilities over choices is a neural model, and TypeSafe describes Jev as a new model architecture trained with RLCD ("Reinforcement Learning for Calibrated Decisions"). It is not a hand-written if/then rules engine.
+
+At a high level, a Jev request works like this:
+
+```text
+State (text, JSON, logs, application facts)
+        ↓
+Learned neural representation / scoring computation
+        ↓
+Scores for developer-defined choices or scale points
+        ↓
+Probability distribution and typed decision
+```
+
+For a Choice primitive, the model evaluates the supplied state against the allowed criteria and returns a probability distribution across those options; the documented contract is that the distribution sums to one. How those probabilities are computed internally is not disclosed.
+
+### Important caveat
+
+TypeSafe has not publicly disclosed the details needed to characterize the network precisely. Its public materials confirm the product behavior—typed primitives, parallel decision evaluation, and non-autoregressive output—but do not disclose:
+
+- Parameter count.
+- Number of layers.
+- Exact neural architecture.
+- Whether it is a standard Transformer, encoder-only model, hybrid, or another design.
+- Exact attention mechanism, if any.
+- Training data, weights, or model card.
+
+So the defensible statement is:
+
+> Jev has a learned neural network, but its detailed architecture is proprietary and publicly undisclosed.
+
+It differs from GPT-style LLMs primarily in its output behavior: it does not expose a general token-generation decoder that writes arbitrary prose or code. Instead, it produces probabilities and typed answers over developer-defined output spaces in a parallel decision-oriented inference flow.
 
 ---
 
@@ -392,40 +358,19 @@ Use pinned model versions for evaluation and production. Evaluate a newer *pinne
 
 ---
 
-## 8. Does Jev have a neural network?
+## 8. What are six practical applications for Jev?
 
-**Yes, Jev is a neural-network-based AI model.** A model that turns input state into learned scores/probabilities over choices is a neural model, and TypeSafe describes Jev as a new model architecture trained with RLCD ("Reinforcement Learning for Calibrated Decisions"). It is not a hand-written if/then rules engine.
+**Support routing.** Classify an incoming request by topic, urgency, and destination team, then route only high-confidence results automatically. Send ambiguous or sensitive cases to a person.
 
-At a high level, a Jev request works like this:
+**CI failure triage.** Turn exit codes, test summaries, and approved log fields into a bounded failure category and severity score. Let deterministic code select the runbook or escalation channel.
 
-```text
-State (text, JSON, logs, application facts)
-        ↓
-Learned neural representation / scoring computation
-        ↓
-Scores for developer-defined choices or scale points
-        ↓
-Probability distribution and typed decision
-```
+**Agent action review.** Judge whether a proposed tool action matches the stated task, appears unusually risky, or needs confirmation. Keep permissions, denylists, and execution authority in ordinary code.
 
-For a Choice primitive, the model evaluates the supplied state against the allowed criteria and returns a probability distribution across those options; the documented contract is that the distribution sums to one. How those probabilities are computed internally is not disclosed.
+**Document intake.** Sort contracts, applications, or operational forms into a fixed workflow and flag records that appear incomplete. Use field validation and human review for final acceptance decisions.
 
-### Important caveat
+**Data quality monitoring.** Classify anomalous records by likely cause, such as missing fields, format drift, duplication, or upstream feed failure. Combine the result with measured thresholds before opening an incident.
 
-TypeSafe has not publicly disclosed the details needed to characterize the network precisely. Its public materials confirm the product behavior—typed primitives, parallel decision evaluation, and non-autoregressive output—but do not disclose:
-
-- Parameter count.
-- Number of layers.
-- Exact neural architecture.
-- Whether it is a standard Transformer, encoder-only model, hybrid, or another design.
-- Exact attention mechanism, if any.
-- Training data, weights, or model card.
-
-So the defensible statement is:
-
-> Jev has a learned neural network, but its detailed architecture is proprietary and publicly undisclosed.
-
-It differs from GPT-style LLMs primarily in its output behavior: it does not expose a general token-generation decoder that writes arbitrary prose or code. Instead, it produces probabilities and typed answers over developer-defined output spaces in a parallel decision-oriented inference flow.
+**Trust and safety queues.** Prioritize reports into a predefined review taxonomy and estimate whether immediate escalation is warranted. Never use the model as the sole basis for punitive, legal, or safety-critical action.
 
 ---
 
