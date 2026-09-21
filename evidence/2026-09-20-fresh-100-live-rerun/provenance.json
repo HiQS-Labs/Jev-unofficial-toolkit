@@ -1,0 +1,30 @@
+{
+ "authorization": "https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/1#issuecomment-5752039443",
+ "code_commit": "4867236b56d83303f28105850e2d2f56856a61cc",
+ "execution": "JevClient plus cli.score; per-record checkpoints, not a successful uninterrupted CLI eval",
+ "finished_utc": "2026-09-20T19:21:55.045386+00:00",
+ "independent_unseen_sample": false,
+ "kind": "operator-authorized repeated-sample live check with recovery",
+ "labels": "three-model consensus, not human gold",
+ "original_receipts_modified": false,
+ "prior_attempts": [
+  {
+   "attempt": "initial CLI",
+   "outcome": "failed before final persistence; request count and usage unknown"
+  },
+  {
+   "attempt": "instrumented CLI",
+   "outcome": "13 retained responses; probability accessor rejected area on record 14"
+  },
+  {
+   "attempt": "diagnostic",
+   "outcome": "record 14 queried again; valid response retained"
+  }
+ ],
+ "probabilities_omitted": true,
+ "recovery_started_utc": "2026-09-20T19:21:27.487646+00:00",
+ "request_hashes_verified": true,
+ "source_commit": "f7c7047",
+ "source_quiz_sha256": "cb9e961692b0abbed103c995ea26ec3745d5c91b56b74e1aa6db283a1511be99",
+ "source_repo": "HiQS-Labs/Needle-fork"
+}
