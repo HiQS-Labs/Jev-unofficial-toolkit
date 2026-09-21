@@ -64,14 +64,17 @@ document.querySelector("[data-copy]").addEventListener("click", async event => {
 document.querySelectorAll("[data-clone-module]").forEach(module => {
   const input = module.querySelector("[data-clone-input]");
   const button = module.querySelector("[data-clone-copy]");
+  const label = module.querySelector("[data-copy-label]");
   const status = module.querySelector("[data-clone-status]");
 
   button.addEventListener("click", async () => {
     await copyText(input.value);
-    button.textContent = "Copied";
+    label.textContent = "Copied";
+    button.setAttribute("aria-label", "Clone command copied");
     status.textContent = "Clone command copied to clipboard.";
     window.setTimeout(() => {
-      button.textContent = "Copy";
+      label.textContent = "Copy";
+      button.setAttribute("aria-label", "Copy clone command");
       status.textContent = "";
     }, 1400);
   });

@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#0b1714">
   <title>Jev unofficial toolkit · HiQS Labs</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=20260921-2">
+  <script src="app.js?v=20260921-2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -45,7 +45,13 @@
           <label for="hero-clone-command">Clone repo</label>
           <div class="clone-control">
             <input id="hero-clone-command" data-clone-input type="text" value="git clone https://github.com/HiQS-Labs/Jev-unofficial-toolkit.git" readonly spellcheck="false">
-            <button type="button" data-clone-copy>Copy</button>
+            <button type="button" data-clone-copy aria-label="Copy clone command">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 5.5h8.5A1.5 1.5 0 0 1 19 7v11.5a1.5 1.5 0 0 1-1.5 1.5H9a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 9 5.5Z"></path>
+                <path d="M15.5 5.5V4A1.5 1.5 0 0 0 14 2.5H5.5A1.5 1.5 0 0 0 4 4v11.5A1.5 1.5 0 0 0 5.5 17H7"></path>
+              </svg>
+              <span data-copy-label>Copy</span>
+            </button>
           </div>
           <span class="sr-only" aria-live="polite" data-clone-status></span>
         </div>
@@ -218,19 +224,27 @@
       </div>
     </section>
 
-    <section class="clone-section">
-      <div class="clone-section-copy">
-        <p class="eyebrow">Start locally</p>
-        <h2>Clone the toolkit.</h2>
-        <p>Run the offline examples and inspect every decision boundary in your own checkout.</p>
-      </div>
-      <div class="clone-module clone-module-bottom" data-clone-module>
-        <label for="bottom-clone-command">Clone repo</label>
-        <div class="clone-control">
-          <input id="bottom-clone-command" data-clone-input type="text" value="git clone https://github.com/HiQS-Labs/Jev-unofficial-toolkit.git" readonly spellcheck="false">
-          <button type="button" data-clone-copy>Copy</button>
+    <section class="section clone-section">
+      <div class="clone-panel">
+        <div class="clone-section-copy">
+          <p class="eyebrow">Start locally</p>
+          <h2>Clone the toolkit.</h2>
+          <p>Run the offline examples and inspect every decision boundary in your own checkout.</p>
         </div>
-        <span class="sr-only" aria-live="polite" data-clone-status></span>
+        <div class="clone-module clone-module-bottom" data-clone-module>
+          <label for="bottom-clone-command">Clone repo</label>
+          <div class="clone-control">
+            <input id="bottom-clone-command" data-clone-input type="text" value="git clone https://github.com/HiQS-Labs/Jev-unofficial-toolkit.git" readonly spellcheck="false">
+            <button type="button" data-clone-copy aria-label="Copy clone command">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 5.5h8.5A1.5 1.5 0 0 1 19 7v11.5a1.5 1.5 0 0 1-1.5 1.5H9a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 9 5.5Z"></path>
+                <path d="M15.5 5.5V4A1.5 1.5 0 0 0 14 2.5H5.5A1.5 1.5 0 0 0 4 4v11.5A1.5 1.5 0 0 0 5.5 17H7"></path>
+              </svg>
+              <span data-copy-label>Copy</span>
+            </button>
+          </div>
+          <span class="sr-only" aria-live="polite" data-clone-status></span>
+        </div>
       </div>
     </section>
   </main>
