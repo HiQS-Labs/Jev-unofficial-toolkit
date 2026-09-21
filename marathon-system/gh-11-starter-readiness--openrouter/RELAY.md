@@ -98,3 +98,11 @@ Probe verification (executed under `$TMPDIR` / `.relay-scratch/tmp/probe.sh`, ex
 All requirements of the brief and acceptance criteria are satisfied in accordance with the documented stop condition.
 
 relay closed, no further turn needed
+
+### Attestation · relay-drive — 2026-09-21T02:58:18Z
+task: MARATHON-OPENROUTER-TURN
+reviewer: agy
+status: Approved
+reviewed-head: 04790663f5fa48856fcdf7a4c31a67ac33158816
+added-range: 8928+2728
+added-sha256: 283017f4daa2e4aaf3c22beac802feeb1acc7773f58d16f878125c81d8081e42
