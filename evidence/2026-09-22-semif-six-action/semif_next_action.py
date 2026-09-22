@@ -8,7 +8,11 @@ import json
 import math
 import platform
 import statistics
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 from jev.eval import confidence_table, metrics
 from jev.guard import write_results
