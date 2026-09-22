@@ -25,10 +25,10 @@
 ### In progress
 
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
-- [GH-22 SemIf six-action comparison](PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md) — canonical receipt, final Codex QA, and the 46-test gate are published in PR #24; review and merge remain.
 
 ### Completed
 
+- [GH-22 SemIf six-action comparison](PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md) — merged in PR #24 with canonical 24/100 receipt, final Codex QA, and green local/hosted gates.
 - [GH-6 live answer recovery](PROJECT/2-WORKING/GH-6-PROBABILITY-CHECKPOINTS.md) — closed after checkpoint and optional-probability recovery shipped in PR #19.
 - [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — closed after the pinned Decisions adapter and mock coverage shipped in PR #19.
 - GH-12 judgment harness prerequisites — closed after Score/Noul scoring, schema validation, policy composition, and decision logging shipped in PR #20. No local project doc was created for this issue.

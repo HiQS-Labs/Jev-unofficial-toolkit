@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: PR #24 open; awaiting review and merge
+status: Completed; merged in PR #24
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| PR #24 publishes the approved receipt; branch head, base, and hosted checks were requested for verification. | Review and merge PR #24; close #22 through the linked merge. |
+| PR #24 merged as `5696175`; issue #22 closed and the primary checkout fast-forwarded to the landing. | No further work; retain the receipt as the canonical SemIf comparison. |
 
 ## Observed problem and decision boundary
 
