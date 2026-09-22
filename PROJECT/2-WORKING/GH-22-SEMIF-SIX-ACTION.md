@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: Plan approved; implementation in progress
+status: Implementation complete; final QA in progress
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| Codex approved the revised plan in relay round 2; the frozen contract and red controls are ready. | Run the exact data/baseline preflight, then implement the reviewed receipt-local runner and tests. |
+| The exact 100-row source-precision MLX run scored 24/100; the typed receipt independently verifies and the SemIf/focused gates are green. | Obtain final Codex relay approval, run the repository full gate once, and publish the PR. |
 
 ## Observed problem and decision boundary
 
@@ -112,3 +112,9 @@ Rationale, 2026-09-22: the operator explicitly requested an adjacent comparison 
 Round 1: Changes requested. Accepted one blocker and two should-fix findings: define and test the fixed text-safe projection, gate phase-backoff alongside the other baselines, and validate source-precision model identity with wrong-revision/quantization red controls. No scope expansion was accepted.
 
 Round 2: **Approved** by Codex and attested against commit `9af18991de13e33ba2f7d338ce1500530f6fcc40`; no unresolved scope, safety, or implementation decision remains. Thread: `relay-system/2026-09-22/gh22-semif-plan-qa.md`.
+
+## Execution record
+
+The frozen preflight reproduced all 100 rows, support counts, the holdout SHA-256, and the four registered baselines. SemIf commit `1f2dea3e25379f9dfc98cb83c324f00ab5deda37` passed `78` tests with `1` skipped, its complete published raw checksum manifest, and `69` published-summary claims. Its owned three-row MLX smoke completed before the canonical run.
+
+The one canonical `direct` / MLX / source-precision pass scored `24/100` with macro-F1 `0.16750572534154626`, no skipped rows, and raw-output SHA-256 `df2754fc413d85df80de922d6807933e4505ac8f5d9e68e5cf56401d88713777`. The independent verifier reproduced the confusion matrix, per-label counts, probability buckets, and aggregate metrics from the committed allowlisted projection. Full interpretation and provenance are in `evidence/2026-09-22-semif-six-action/README.md`.
