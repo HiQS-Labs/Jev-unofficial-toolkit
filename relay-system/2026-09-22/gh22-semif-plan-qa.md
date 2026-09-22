@@ -240,4 +240,12 @@ Pre-existing defects outside the round-1 findings: none found in the complete 11
 
 Relay closed (Approved), no further turn needed.
 
+
+### Attestation · relay-drive — 2026-09-22T19:13:00Z
+task: RELAY-gh22-semif-plan-qa-20260922
+reviewer: codex
+status: Approved
+reviewed-head: 9af18991de13e33ba2f7d338ce1500530f6fcc40
+added-range: 14522+2984
+added-sha256: 6d4f696026db93d79a2de7320eba1ee200148d003685c8e28ccd1c08f5cf3b15
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
