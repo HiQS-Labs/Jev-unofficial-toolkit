@@ -45,7 +45,7 @@ The result is a bounded repeated-sample comparison, not an integration or promot
 
 ## Frozen contract
 
-- Toolkit base: merged `origin/main` commit `5696175f081f1be8f1b0f3532dedda5b3f30efda` in a fresh full clone.
+- Toolkit base: reconciled `origin/main` commit `d61566ae345d9f5556f3918c30b0c3d534ea3d07` in a fresh full clone (includes PR #24 merge commit `5696175f081f1be8f1b0f3532dedda5b3f30efda`).
 - Needle source: `HiQS-Labs/Needle-fork` commit `d3be2058230cee6dc69f85c074a41bba5c8ecf61` in the retained full data clone.
 - Dataset: `nebius/SWE-rebench-openhands-trajectories` revision `35455389ab51bf5e2306bfd436ef72d0f98bf882`, CC BY 4.0.
 - Holdout SHA-256: `f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587`; 100 rows; support `read 29 / run_command 26 / edit 19 / search 19 / run_tests 7 / git 0`.
