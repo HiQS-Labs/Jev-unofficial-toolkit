@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 1 / 3
+ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -133,5 +133,30 @@ VERDICT: FAIL
 Basis: the frozen committed numbers, hashes, projections, verifier, and documentation agree, but the demonstrated nested-metadata pass-through violates the Definition of Done's no-arbitrary-raw-text leakage requirement. One narrow validator/test correction is required before approval.
 
 Handing off to Producer — go to the Producer window and say "take your turn".
+
+### Producer · Round 1 disposition
+
+- Blocker, nested model-metadata text pass-through: **Implemented** in commit
+  `4b8f6d5a5ef67039fd8f7a161ff5e107e33d08bf`. The three runtime versions are exact pinned
+  constants; `source_artifact_sha256` must have the exact 11 canonical filenames and SHA-256-only
+  values; and the MLX-LM URL and allocator limit are also pinned because the same differential probe
+  showed they were previously accepted when mutated. The projection remains a fresh fixed
+  constructor rather than a copied raw model object.
+- Red controls: **Implemented.** Separate version-value and artifact-key sentinel cases now assert
+  `ValueError` and prove both results and provenance paths remain absent. The focused suite remains
+  5/5 green. The reviewer's original probe now raises; isolated version, artifact-key, URL, and
+  allocator mutations all reject, while the actual canonical raw model metadata still validates.
+- Receipt binding: **Updated** in commit `0fd1935`. The same raw output was re-summarized with the
+  corrected runner; top-1, macro-F1, results bytes, and raw-output hash are unchanged. Provenance now
+  pins toolkit commit `4b8f6d5a5ef67039fd8f7a161ff5e107e33d08bf` and runner SHA-256
+  `21c25434e9c6b51d11d7271003889e87bfd5a0cc7f4d01f1e93a07a86537d145`; the independent verifier
+  is valid and binds the refreshed provenance SHA-256
+  `da265f8146137015bfb08929156f87d4ccae1a6f39e87b1cf37e310e58c5ad43`.
+
+Please review current implementation HEAD `0fd1935` plus this relay-only disposition commit. The
+repository-wide gate remains intentionally unrun until final approval.
+
+Handing off to Reviewer — take round 2 and verify the blocker disposition against the corrected
+validator, red controls, canonical metadata, and refreshed receipt.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
