@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 1 / 3
 
@@ -114,5 +114,24 @@ adapter, extra benchmark arms, calibration work, model changes, or a generalized
 6. The relay ends on **Approved** (Reviewer only). End each turn by committing just this file; no push.
 
 ## Log
+
+### Reviewer · Round 1
+
+swept file: yes
+
+- [Blocker] The closed top-level raw schema still permits arbitrary raw text to cross the committed-evidence boundary through model metadata. `_validate_model` accepts any nonempty `mlx_version`, `mlx_lm_version`, and `transformers_version`, accepts arbitrary slash-free `source_artifact_sha256` keys, then copies those values into both `results.json` and `provenance.json` (`evidence/2026-09-22-semif-six-action/semif_next_action.py:201-239,327-350`). That contradicts the plan's fixed-constructor/no-arbitrary-raw-dictionary contract (`PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md:83`) and the acceptance requirement that no state/query/issue text can enter committed results (`PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md:97`). Probe command: `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; python3 -c 'import importlib.util; p="/Users/noelsaw/marathon-clones/jev-gh22-semif-six-action/evidence/2026-09-22-semif-six-action/semif_next_action.py"; s=importlib.util.spec_from_file_location("probe_semif",p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); sentinel="GH22-PRIVATE-STATE-SENTINEL-7f53"; raw={"source":m.MODEL_SOURCE,"revision":m.MODEL_REVISION,"backend":"mlx","mlx_version":sentinel,"mlx_lm_version":"0.32.0","transformers_version":"5.17.0","mlx_lm_source":{"url":"https://example.invalid/repo.git","vcs_info":{"vcs":"git","commit_id":m.MLX_LM_COMMIT,"requested_revision":m.MLX_LM_COMMIT}},"allocator_cache_limit_bytes":0,"dtype":list(m.DTYPES),"quantization":None,"source_artifact_sha256":{sentinel:"0"*64},"serving_config":"mlx-direct-v1"}; out=m._validate_model(raw); print({"accepted":True,"sentinel_in_projected_identity":sentinel in repr(out),"mlx_version":out["mlx_version"],"artifact_names":list(out["source_artifact_sha256"])})'`; exit `0`; decisive output: `{'accepted': True, 'sentinel_in_projected_identity': True, 'mlx_version': 'GH22-PRIVATE-STATE-SENTINEL-7f53', 'artifact_names': ['GH22-PRIVATE-STATE-SENTINEL-7f53']}`. Fix: validate the three runtime versions against the canonical pinned values, construct the artifact map from an exact allowlist of expected filenames while accepting only their SHA-256 values, and add a red control that injects the sentinel separately into an allowed version value and an artifact-map key and proves failure before either result file exists.
+  Observed input: the raw model object in the quoted probe, with `GH22-PRIVATE-STATE-SENTINEL-7f53` in `mlx_version` and as a `source_artifact_sha256` key, is accepted and returned verbatim by `_validate_model`.
+  Affected scope: any otherwise schema-valid raw SemIf row whose allowed model-metadata strings or source-artifact names contain state, prompt, issue, local-machine, or other arbitrary text.
+  Falsifier: after the fix, the same probe raises `ValueError`, the synthetic sentinel red controls leave both result paths absent, and the canonical metadata currently shown at `results.json:96-123` still validates unchanged.
+- [Pass] The committed receipt itself is internally consistent: `results.json:11-168,2071-2089` reports 100/100, 24 correct, macro-F1 `0.16750572534154626`, the documented confusion/per-label/prediction counts, probability buckets, timing, and probability semantics; `verification.json:3-131` independently repeats the registered aggregates and binds results/provenance with their exact hashes; `README.md:3-35` reports the same values and comparison limits.
+- [Pass] The main raw-result path otherwise fails closed before writes: exact input/raw/model field sets, sequential IDs, option order, finite normalized probabilities, timing, pinned source/revision/backend/dtype/quantization/readout, and run-wide identity are checked at `semif_next_action.py:189-278,297-314`; only after all rows validate do the create-only writes occur at `semif_next_action.py:352-353`. Registered red controls cover the frozen holdout/baselines, raw schema, revision, quantization, missing/duplicate IDs, option drift, and metric tampering at `tests/test_semif_evidence.py:125-180`.
+- [Pass] Verification is meaningfully separate for the promised aggregate scope: independent implementations recompute confusion, accuracy, macro-F1, per-label counts, and probability buckets from committed typed projections at `semif_next_action.py:357-430`; the receipt accurately calls this aggregate reproduction at `README.md:7,37-44` rather than claiming byte-identical requests or broader model validation.
+- [Pass] Provenance and prose are appropriately bounded: exact data/model/source revisions and hashes are recorded at `provenance.json:9-58`, the same-task-but-not-byte-identical and uncalibrated-probability limits are prominent at `README.md:24-31`, and the two-trajectory/repeated-sample/no-git-support limits are explicit at `README.md:46-48` and repository `README.md:135-137`. The footprint is additive and proportionate; no unrelated runtime/API behavior change was found. No additional pre-existing defects were found in the swept files.
+
+VERDICT: FAIL
+
+Basis: the frozen committed numbers, hashes, projections, verifier, and documentation agree, but the demonstrated nested-metadata pass-through violates the Definition of Done's no-arbitrary-raw-text leakage requirement. One narrow validator/test correction is required before approval.
+
+Handing off to Producer — go to the Producer window and say "take your turn".
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
