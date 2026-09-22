@@ -374,6 +374,12 @@ Use pinned model versions for evaluation and production. Evaluate a newer *pinne
 
 ---
 
+## 9. Are there open source projects similar to Jev?
+
+[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version supports only the pinned TypeSafe and OpenRouter Decisions routes described in the [README](README.md).
+
+---
+
 ## Practical takeaway
 
 - Use **Jev** as a fast semantic decision layer: classify, route, score, gate, and triage.
