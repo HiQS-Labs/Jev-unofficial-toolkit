@@ -132,9 +132,9 @@ Four pieces are ported from the MIT-licensed [jbt95/jev-toolkit](https://github.
 
 Routing and identity questions are built per call, so they cannot be frozen; failure text and tasks always travel in state, never in question wording.
 
-## Other OSS projects — untested potential integrations
+## Other OSS projects — bounded evidence and untested potential integrations
 
-[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version supports only the pinned TypeSafe and OpenRouter Decisions routes described above.
+[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects. A pinned SemIf/Qwen3.5-4B direct-MLX arm scored [`24/100` on the same six-action holdout](evidence/2026-09-22-semif-six-action/README.md) used in issue #21: above Jev's recorded `21/100` original result but below the `26/100` majority baseline. The serializers and readouts differ, so this is not a byte-identical request comparison, adapter validation, or drop-in compatibility claim. Laya remains untested. This version's runtime integrations still support only the pinned TypeSafe and OpenRouter Decisions routes described above.
 
 ## Build a Jev function in your app
 
