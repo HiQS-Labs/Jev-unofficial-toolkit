@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 1 / 3
+ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -178,5 +178,24 @@ canonical-stop conditions outside the concrete red-control/preflight design.
 Pre-existing defects outside the findings above: none found in the complete 109-line plan sweep.
 
 Handing off to Producer — go to the claude-a window and say "take your turn".
+
+### Producer · Round 1 disposition
+
+- Blocker, text-safety proof: **Implemented.** The plan now fixes the complete accepted raw row
+  schema, rejects unexpected raw keys, fixes the committed per-row/top-level projection, constructs
+  provenance/verification from known scalars rather than raw dictionaries, and requires a sentinel
+  absence control across all three committed JSON artifacts.
+- Should, phase-backoff preflight: **Implemented.** Step 1 now hard-gates all four exact values,
+  including phase-backoff 42, with a phase-backoff-41 red control while the other baselines match.
+- Should, model identity/source precision: **Implemented.** The plan now validates exact source,
+  revision, MLX backend, direct serving config, null quantization, BF16+FP32 dtype set, pinned MLX-LM
+  commit, and prompt version before creating committed results; wrong-revision and quantized rows are
+  explicit red controls.
+- Pass findings: acknowledged; no changes needed.
+
+Scope remains one receipt-local standard-library runner and one focused unittest module. No adapter,
+framework, training, calibration, or multi-run machinery was added to the plan.
+
+Handing off to Reviewer — take round 2 and verify the three dispositions against the revised plan.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->

@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: Plan QA pending
+status: Plan QA round 2 pending
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| Issue #22, fresh full clones, exact source/model revisions, comparison contract, and recon are recorded. | Obtain Codex plan approval before adding the runner or sending rows through SemIf. |
+| Issue #22, fresh full clones, exact source/model revisions, comparison contract, recon, and round-1 dispositions are recorded. | Obtain Codex round-2 plan approval before adding the runner or sending rows through SemIf. |
 
 ## Observed problem and decision boundary
 
@@ -77,9 +77,13 @@ Rationale, 2026-09-22: the operator explicitly requested an adjacent comparison 
 
 ## Ordered implementation and verification
 
-1. Regenerate train/holdout in the disposable Needle full clone. Run `baselines.py` and stop unless the full holdout hash, support, row count, and majority/repeat-last/Markov-1 values match the frozen contract.
+1. Regenerate train/holdout in the disposable Needle full clone. Run `baselines.py` and stop unless the full holdout hash, support, row count, and all four references match exactly: majority 26, repeat-last 22, Markov-1 37, and phase-backoff 42.
 2. Add one receipt-local standard-library runner under `evidence/2026-09-22-semif-six-action/`. It has two bounded operations: prepare an untracked SemIf JSONL from the pinned holdout, and summarize an existing SemIf JSONL into a typed, create-only result using `jev.eval` and `jev.guard`. It refuses malformed/duplicate/missing IDs, option-order drift, non-finite probabilities, probabilities that do not sum within tolerance, out-of-enum choices, and any row-count mismatch.
-3. Add one focused unittest module with tiny synthetic rows. Red controls: changed holdout hash and a missing/duplicate/out-of-enum result must fail. Green control: deterministic conversion plus independent metric recomputation must pass. No new dependency or test framework.
+
+   The raw SemIf row schema is closed, not pass-through: `id`, `option_ids`, `probabilities`, `option_logits`, `answer_token_ids`, `input_tokens`, `input_ids_sha256`, `prompt_sha256`, `prompt_version`, `model`, `readout`, `probability_status`, `forward_seconds`, and `total_seconds`; any other key is rejected. The committed per-row projection is allowlisted to `index`, `gold`, `choice`, `probabilities`, `max_option_probability`, `input_tokens`, `input_ids_sha256`, `prompt_sha256`, `forward_seconds`, and `total_seconds`. Aggregate result keys are limited to schema/arm identity, labels, row counts, metrics/confusion, per-label and prediction counts, probability buckets, timings, validated model identity, hashes, and those projections. Provenance and verification use fixed constructors from known scalar/hash inputs rather than copying arbitrary raw dictionaries.
+
+   Every raw row must carry one identical model identity: source `Qwen/Qwen3.5-4B`, revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`, backend `mlx`, serving config `mlx-direct-v1`, quantization `null`, dtype exactly `mlx.core.bfloat16` plus `mlx.core.float32`, and pinned MLX-LM commit `a63e24c389382619eb6d9af656e3b46024be217a`. `prompt_version` must be `direct-options-v1`. A mismatch aborts before any committed result is created.
+3. Add one focused unittest module with tiny synthetic rows. Red controls: changed holdout hash; missing/duplicate/out-of-enum result; phase-backoff 41 with the other three baselines correct; wrong model revision; non-null quantization; and an unexpected raw field must fail before result creation. The text-safety control places a unique sentinel in synthetic holdout `query` and derived SemIf `state`, then proves the sentinel is absent from serialized `results.json`, `provenance.json`, and `verification.json`. Green control: deterministic conversion plus independent metric recomputation must pass. No new dependency or test framework.
 4. Commit the runner/tests and freeze their bytes before the model run. Create an isolated Python 3.11 environment, install the exact local SemIf source with `[test,mlx]`, run its focused/core tests, and verify a one-row owned smoke input before the holdout.
 5. Run exactly one canonical direct/MLX/source-precision pass into a new raw-output path. Do not overwrite or resume a partial path as a completed run.
 6. Summarize into `results.json` and `provenance.json`; independently recompute the aggregates into `verification.json`. Write `README.md` with the decision, results table, per-label behavior, run envelope, provenance, and limitations. Update the repository `README.md` only to link the receipt and replace the now-false blanket “SemIf untested” claim.
@@ -105,5 +109,4 @@ Rationale, 2026-09-22: the operator explicitly requested an adjacent comparison 
 
 ## Plan QA record
 
-Pending Codex relay review. Reviewer must grade this local, one-run evidence task against the frozen contract and commensurate complexity; speculative integration or generalized benchmark machinery is out of scope.
-
+Round 1: Changes requested. Accepted one blocker and two should-fix findings: define and test the fixed text-safe projection, gate phase-backoff alongside the other baselines, and validate source-precision model identity with wrong-revision/quantization red controls. No scope expansion was accepted. Round 2 is pending.
