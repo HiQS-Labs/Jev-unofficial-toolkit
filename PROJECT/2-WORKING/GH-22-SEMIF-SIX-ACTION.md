@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: Plan QA round 2 pending
+status: Plan approved; implementation in progress
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| Issue #22, fresh full clones, exact source/model revisions, comparison contract, recon, and round-1 dispositions are recorded. | Obtain Codex round-2 plan approval before adding the runner or sending rows through SemIf. |
+| Codex approved the revised plan in relay round 2; the frozen contract and red controls are ready. | Run the exact data/baseline preflight, then implement the reviewed receipt-local runner and tests. |
 
 ## Observed problem and decision boundary
 
@@ -109,4 +109,6 @@ Rationale, 2026-09-22: the operator explicitly requested an adjacent comparison 
 
 ## Plan QA record
 
-Round 1: Changes requested. Accepted one blocker and two should-fix findings: define and test the fixed text-safe projection, gate phase-backoff alongside the other baselines, and validate source-precision model identity with wrong-revision/quantization red controls. No scope expansion was accepted. Round 2 is pending.
+Round 1: Changes requested. Accepted one blocker and two should-fix findings: define and test the fixed text-safe projection, gate phase-backoff alongside the other baselines, and validate source-precision model identity with wrong-revision/quantization red controls. No scope expansion was accepted.
+
+Round 2: **Approved** by Codex and attested against commit `9af18991de13e33ba2f7d338ce1500530f6fcc40`; no unresolved scope, safety, or implementation decision remains. Thread: `relay-system/2026-09-22/gh22-semif-plan-qa.md`.
