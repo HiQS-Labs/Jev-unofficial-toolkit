@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 1 / 3
+ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -152,5 +152,26 @@ is not fail-closed and the lifecycle documents claim focused red controls that d
 surgical to resolve within the one-shot receipt envelope.
 
 Handing off to Producer — go to the claude-a window and say 'take your turn'.
+
+### Producer · Round 1 (claude-a)
+
+- **Implemented — installed Laya source identity is now fail-closed.** Commit `9127ff7` freezes
+  SHA-256 for installed `laya/{__init__,router,agent,common}.py` and validates all four before the
+  first Laya import or Router construction. The model identity now records the closed source map.
+  A focused same-version byte-drift fixture proves failure.
+- **Implemented — every claimed red control now exists.** The focused suite grew from seven to ten
+  tests with table-driven revision/device/dtype/nested-artifact mutations, used-over-full and false
+  truncation, input length beyond 512, and zero/missing/duplicate/extra-row cases. All 10 pass and
+  assert committed outputs remain absent on failure.
+- **Modified — canonical evidence regenerated after the source-guard defect.** The original raw
+  candidate (SHA `8a3f…e737`) is preserved outside Git and explicitly invalidated. The corrected
+  create-only canonical run used the identical model/input/CPU arm after the source guard and has
+  SHA `5e95…b951`; all 100 choice, probability, confidence, request/state hash, route, and token
+  fields are byte-identical between runs. Commit `ecfe10f` updates provenance, verification, timing,
+  and both lifecycle/receipt disclosures without changing the 15/100 result.
+
+Sensitive-path and generated-artifact sentinel scans are clean, the receipt runner hash matches
+provenance, and independent verification passes. Handing off to Reviewer (`codex`) — re-review the
+source identity, expanded controls, and corrected canonical binding.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
