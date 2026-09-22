@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 1 / 3
 
@@ -80,5 +80,77 @@ Return graded findings with exact `file:line` citations. Every requested behavio
 6. The relay ends on **Approved** (Reviewer only). End each turn by committing just this file; no push.
 
 ## Log
+
+### Reviewer · Round 1 (codex)
+
+swept file: yes
+
+- [Should] The frozen Laya source commit is asserted, not enforced. `LAYA_COMMIT` is a constant at
+  `evidence/2026-09-22-laya-six-action/laya_next_action.py:57`, while `_model_identity` checks model
+  artifact hashes and distribution versions but unconditionally emits that commit
+  (`laya_next_action.py:281-295`); `run` imports and executes the installed package without inspecting
+  any Laya source path or digest (`laya_next_action.py:332-353`). A same-version modified
+  `laya==0.3.6` therefore passes the pre-inference identity gate and is recorded as source commit
+  `c752770...`, contrary to the source-drift stop claim at
+  `PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:233-235`. Concrete fix: before routing/loading, verify
+  a small frozen hash manifest for the installed Laya files that define the exercised path (at least
+  `router.py`, `agent.py`, and `common.py`, plus any directly executed local model module), or require
+  and verify an equivalent immutable source-tree identity; test same-version source drift.
+  Observed input: `_model_identity` at lines 281-295 receives only `model_dir`; no installed Laya
+  source identity is an input to that function or any later pre-inference check.
+  Affected scope: environments whose Laya distribution metadata is `0.3.6` but whose installed source
+  bytes differ from commit `c7527708f9f5220c669d8aa385077cd28d04708a`.
+  Falsifier: a focused fixture that exposes a same-version altered Laya module and demonstrates that
+  `run` aborts before `Router` construction; expected result is an identity mismatch. No such check is
+  present in the swept runner.
+
+- [Should] The recorded focused-test evidence overclaims the actual suite. The acceptance matrix says
+  the focused test mutates revision/device/dtype/nested model keys, token relations, and
+  zero/missing/duplicate/101-row inputs (`PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:220-229`), but
+  `tests/test_laya_evidence.py:130-226` contains only six tests; its model/schema table changes an
+  extra raw key, `laya_version`, probability sum, choice, and maximum (`test_laya_evidence.py:157-180`),
+  with no claimed model-identity, token-relation, or row-cardinality cases. The README then calls the
+  suite coverage complete at `evidence/2026-09-22-laya-six-action/README.md:44`. Concrete fix: add
+  compact table-driven cases for the claimed red controls, or narrow the plan/README claims to the
+  cases that genuinely exist; do not leave completed checkboxes asserting absent evidence.
+  Observed input: the complete focused module at `tests/test_laya_evidence.py:1-230` has no mutation of
+  `revision`, `device`, `dtype`, nested artifact keys, `state_tokens_used > state_tokens_full`, false
+  truncation, input length above 512, duplicate IDs, or 101 rows.
+  Affected scope: only GH-25's statements about focused regression evidence and the missing cases they
+  promise; the canonical 100-row measurement is not disputed by this finding.
+  Falsifier: source citations to existing focused cases exercising each named mutation and asserting
+  the applicable output remains absent; expected result would make the plan's matrix truthful.
+
+- [Pass] The canonical receipt is internally bound and agrees on the measured result: the runner hash
+  in provenance (`provenance.json:19`) matches the swept runner, verification binds results and
+  provenance (`verification.json:167-169`), and result/README report 15/100, macro-F1
+  `0.11129932869063304`, 100 English routes, and zero truncations (`results.json:132-136`,
+  `results.json:2407-2436`; receipt README:3-7,21,30-42). Narrow probe command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; shasum -a 256 evidence/2026-09-22-laya-six-action/{laya_next_action.py,results.json,provenance.json}; jq -r '[.rows,.scored,.skipped,.metrics.correct,.metrics.raw_accuracy,.metrics.macro_f1,.route_counts.english,.state_truncation.truncated_rows] | @json' evidence/2026-09-22-laya-six-action/results.json`.
+  Exit `0`; decisive output was runner/results/provenance hashes
+  `f0df0681145e9f01137f163d66841b32c364d8f22a2761019c3082158af2c4a3`,
+  `a402dd6428da172962bd077fff9582c8453fac7828ab69cbb53e60b908567ea2`, and
+  `5a0b37944c3df699fba6873c6386ca0089b24333692b419a4a19268b6e023e17`, plus
+  `[100,100,0,15,0.15,0.11129932869063304,100,0]`.
+
+- [Pass] The closed raw projection and independent reprojection reject extra fields, invalid
+  probability/choice/token/route relations, bind raw state hashes to the frozen holdout, and compare
+  the complete reconstructed results/provenance before writing verification
+  (`laya_next_action.py:421-469`, `676-760`). A text-boundary scan of the committed JSON/receipt found
+  no local/cache path, sentinel, or forbidden source-bearing JSON key; command
+  `rg -n '/Users/|/private/|\\.cache|snapshot|GH25-PRIVATE-STATE-SENTINEL|"(state|query|text|content|prompt|command|task|summary|body|stdout|stderr)"\\s*:' evidence/2026-09-22-laya-six-action/*.json evidence/2026-09-22-laya-six-action/README.md`
+  exited `0` with only the receipt's prose word `snapshot` matched by the broader probe wrapper.
+
+- [Unverified — needs clone run] Per relay policy, this turn did not execute the focused suite, native
+  Laya scripts, repository gate, pytest, or fixtures. The reported `343` native checks and the final
+  full gate remain harness/clone evidence, not re-verified here.  [Unverified — no citation]
+
+VERDICT: FAIL
+
+Basis: the published measurement and committed bindings are coherent, but exact Laya source identity
+is not fail-closed and the lifecycle documents claim focused red controls that do not exist. Both are
+surgical to resolve within the one-shot receipt envelope.
+
+Handing off to Producer — go to the claude-a window and say 'take your turn'.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
