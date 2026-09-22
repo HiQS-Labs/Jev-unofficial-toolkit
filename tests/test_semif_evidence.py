@@ -67,20 +67,20 @@ class SemIfEvidenceTests(unittest.TestCase):
             "source": semif.MODEL_SOURCE,
             "revision": semif.MODEL_REVISION,
             "backend": "mlx",
-            "mlx_version": "0.32.2",
-            "mlx_lm_version": "0.32.0",
-            "transformers_version": "5.17.0",
+            "mlx_version": semif.MLX_VERSION,
+            "mlx_lm_version": semif.MLX_LM_VERSION,
+            "transformers_version": semif.TRANSFORMERS_VERSION,
             "mlx_lm_source": {
-                "url": "https://github.com/ml-explore/mlx-lm.git",
+                "url": semif.MLX_LM_URL,
                 "vcs_info": {"vcs": "git", "commit_id": commit,
                              "requested_revision": commit},
             },
-            "allocator_cache_limit_bytes": 268435456,
+            "allocator_cache_limit_bytes": semif.ALLOCATOR_CACHE_LIMIT_BYTES,
             "dtype": list(semif.DTYPES),
             "quantization": None,
             "source_artifact_sha256": {
-                "model.safetensors": hashlib.sha256(b"model").hexdigest(),
-                "config.json": hashlib.sha256(b"config").hexdigest(),
+                name: hashlib.sha256(name.encode()).hexdigest()
+                for name in semif.SOURCE_ARTIFACT_NAMES
             },
             "serving_config": "mlx-direct-v1",
         }
@@ -151,11 +151,19 @@ class SemIfEvidenceTests(unittest.TestCase):
         quantized = self._raw_rows()
         quantized[0]["model"]["quantization"] = {"bits": 4, "group_size": 64, "mode": "affine"}
         cases.append(("quantized", quantized, "model identity or source precision mismatch"))
+        version_text = self._raw_rows()
+        version_text[0]["model"]["mlx_version"] = self.sentinel
+        cases.append(("version-text", version_text, "model identity or source precision mismatch"))
+        artifact_name = self._raw_rows()
+        digest = artifact_name[0]["model"]["source_artifact_sha256"].pop("config.json")
+        artifact_name[0]["model"]["source_artifact_sha256"][self.sentinel] = digest
+        cases.append(("artifact-name", artifact_name, "invalid source artifact hashes"))
         for stem, rows, message in cases:
             with self.subTest(stem=stem):
                 with self.assertRaisesRegex(ValueError, message):
                     self._summarize(rows, stem)
                 self.assertFalse((self.root / (stem + "-results.json")).exists())
+                self.assertFalse((self.root / (stem + "-provenance.json")).exists())
 
     def test_missing_duplicate_and_option_drift_fail_closed(self):
         missing = self._raw_rows()[:-1]

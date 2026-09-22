@@ -48,7 +48,19 @@ DATASET_REVISION = "35455389ab51bf5e2306bfd436ef72d0f98bf882"
 MODEL_SOURCE = "Qwen/Qwen3.5-4B"
 MODEL_REVISION = "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
 MLX_LM_COMMIT = "a63e24c389382619eb6d9af656e3b46024be217a"
+MLX_LM_URL = "https://github.com/ml-explore/mlx-lm.git"
+MLX_VERSION = "0.32.2"
+MLX_LM_VERSION = "0.32.0"
+TRANSFORMERS_VERSION = "5.17.0"
+ALLOCATOR_CACHE_LIMIT_BYTES = 268435456
 DTYPES = ["mlx.core.bfloat16", "mlx.core.float32"]
+SOURCE_ARTIFACT_NAMES = {
+    "chat_template.jinja", "config.json", "merges.txt",
+    "model.safetensors-00001-of-00002.safetensors",
+    "model.safetensors-00002-of-00002.safetensors",
+    "model.safetensors.index.json", "preprocessor_config.json", "tokenizer.json",
+    "tokenizer_config.json", "video_preprocessor_config.json", "vocab.json",
+}
 READOUT = "native last-position logits restricted to declared answer slots; no generated tokens"
 PROBABILITY_STATUS = "conditional option score; uncalibrated as decision confidence"
 
@@ -202,12 +214,13 @@ def _validate_model(value):
     if not isinstance(value, dict) or set(value) != MODEL_FIELDS:
         raise ValueError("unexpected model metadata field")
     source_artifacts = value["source_artifact_sha256"]
-    if (not isinstance(source_artifacts, dict) or not source_artifacts
-            or any(not isinstance(name, str) or not name or "/" in name or "\\" in name
-                   or not _is_sha256(digest) for name, digest in source_artifacts.items())):
+    if (not isinstance(source_artifacts, dict)
+            or set(source_artifacts) != SOURCE_ARTIFACT_NAMES
+            or any(not _is_sha256(digest) for digest in source_artifacts.values())):
         raise ValueError("invalid source artifact hashes")
     direct = value["mlx_lm_source"]
-    if not isinstance(direct, dict) or set(direct) != {"url", "vcs_info"}:
+    if (not isinstance(direct, dict) or set(direct) != {"url", "vcs_info"}
+            or direct["url"] != MLX_LM_URL):
         raise ValueError("invalid MLX-LM source metadata")
     vcs = direct["vcs_info"]
     if (not isinstance(vcs, dict)
@@ -218,15 +231,12 @@ def _validate_model(value):
     expected = {
         "source": MODEL_SOURCE, "revision": MODEL_REVISION, "backend": "mlx",
         "serving_config": "mlx-direct-v1", "quantization": None, "dtype": DTYPES,
+        "mlx_version": MLX_VERSION, "mlx_lm_version": MLX_LM_VERSION,
+        "transformers_version": TRANSFORMERS_VERSION,
+        "allocator_cache_limit_bytes": ALLOCATOR_CACHE_LIMIT_BYTES,
     }
     if any(value[key] != expected[key] for key in expected):
         raise ValueError("model identity or source precision mismatch")
-    if (not isinstance(value["mlx_version"], str) or not value["mlx_version"]
-            or not isinstance(value["mlx_lm_version"], str) or not value["mlx_lm_version"]
-            or not isinstance(value["transformers_version"], str) or not value["transformers_version"]
-            or type(value["allocator_cache_limit_bytes"]) is not int
-            or value["allocator_cache_limit_bytes"] < 0):
-        raise ValueError("invalid runtime model metadata")
     return {
         "source": value["source"], "revision": value["revision"], "backend": value["backend"],
         "serving_config": value["serving_config"], "dtype": list(value["dtype"]),
