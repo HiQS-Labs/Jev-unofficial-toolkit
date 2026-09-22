@@ -27,7 +27,7 @@ Laya predicted `run_tests` 63 times, `read` 17, `search` 9, `run_command` 7, and
 - Task: predict one of `edit`, `git`, `read`, `run_command`, `run_tests`, or `search` from the same rows, q1 state, prescriptive instruction, and option descriptions as #21/#22.
 - Laya: commit `c7527708f9f5220c669d8aa385077cd28d04708a`, package `0.3.6`, recommended `Router`, default English arm.
 - Model: `convaiinnovations/laya` root checkpoint at revision `1c5edc17a7acd8701df6fc341c0d179f1c62c982`; CPU; `torch.float32`; no tuning, shortlisting, alternate checkpoint, or context-budget change.
-- Input/output hashes: `11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024` / `8a3f42ab667d4851108672bcc6e58503ac759acf1b91a28e7119ad099397e737`.
+- Input/output hashes: `11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024` / `5e959db11532815ee89491cd4d7de7f0e85ab4aa3f0b53eef7bf6ac1b4b9b951`.
 
 The semantic task/state/options are the same, but the requests are not byte-identical: Laya uses its own typed-question serializer, ModernBERT tokenizer/encoder, marker-token decision head, temperature buckets, and four-decimal probability rounding. The full instruction used `90/90` tokens and the six rendered options used `8/8`, `9/9`, `8/8`, `14/14`, `15/15`, and `8/8`. States ranged from `172` to `235` tokens (median `204`); all 100 fit, so the shipped 512-token context did not truncate this sample.
 
@@ -39,7 +39,9 @@ Laya also returns normalized-entropy confidence, rounded to four decimals. Confi
 
 ## Run envelope and verification
 
-The 100 forward passes reported `35.86918766699819s` summed elapsed time (`0.3552836875005596s` median, `0.3214803330010909s` minimum, `0.456771374996606s` maximum). Model loading, snapshot validation, routing, and token preflight occurred outside those per-row timers. The environment was Darwin arm64, Python `3.11.15`, Laya `0.3.6`, torch `2.14.0`, Transformers `5.17.0`, safetensors `0.8.0`, Hugging Face Hub `1.32.0`, and NumPy `2.4.6`.
+The 100 forward passes reported `36.313884418003s` summed elapsed time (`0.3655369999996765s` median, `0.31295925000085845s` minimum, `0.3956822079999256s` maximum). Model loading, snapshot validation, routing, and token preflight occurred outside those per-row timers. The environment was Darwin arm64, Python `3.11.15`, Laya `0.3.6`, torch `2.14.0`, Transformers `5.17.0`, safetensors `0.8.0`, Hugging Face Hub `1.32.0`, and NumPy `2.4.6`. Before importing Laya, the runner also matched installed `__init__.py`, `router.py`, `agent.py`, and `common.py` against the frozen source hashes from commit `c752770…`.
+
+Final QA invalidated an earlier pre-QA candidate because that runner asserted the Laya commit without enforcing installed source bytes. Its raw file is preserved outside Git at SHA-256 `8a3f42ab667d4851108672bcc6e58503ac759acf1b91a28e7119ad099397e737`. The corrected canonical pass added only the source-identity guard, used the same model/input/CPU arm, and produced byte-identical choices, probabilities, confidence, hashes, routes, and token fields across all 100 rows; only timings and the newly recorded source-hash map differ. No tuning or result-dependent arm change occurred.
 
 Seven offline Laya test-script entrypoints passed 343 checks before inference. The all-checkpoint `test_local_e2e.py` was not run because it requires English, multilingual, and typed-decisions checkpoints while this arm deliberately downloads only the root English checkpoint. A direct `pytest -q` attempt printed `34 passed, 0 failed` from `test_criteria.py` and then aborted collection because that script calls `sys.exit(0)` at import; the documented script entrypoints were therefore used individually. The receipt-local focused suite covers frozen inputs/baselines, head preservation, closed schemas, model identity, probability rounding and tie behavior, raw mutation reprojection, text-safety, and binding verification.
 

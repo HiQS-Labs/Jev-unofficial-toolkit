@@ -5,7 +5,7 @@
   "phase_backoff": 42,
   "repeat_last": 22
  },
- "created_utc": "2026-09-22T23:07:18.207953+00:00",
+ "created_utc": "2026-09-22T23:35:14.250366+00:00",
  "dataset": "nebius/SWE-rebench-openhands-trajectories",
  "dataset_license": "CC BY 4.0",
  "dataset_revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
@@ -14,9 +14,9 @@
   "holdout_sha256": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
   "laya_choice_contract_sha256": "6a268fefffc807cb1013765c5e23e9b668326f69704c0a65389989e7ca2f8edb",
   "laya_input_sha256": "11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024",
-  "laya_output_sha256": "8a3f42ab667d4851108672bcc6e58503ac759acf1b91a28e7119ad099397e737",
+  "laya_output_sha256": "5e959db11532815ee89491cd4d7de7f0e85ab4aa3f0b53eef7bf6ac1b4b9b951",
   "question_sha256": "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7",
-  "runner_sha256": "f0df0681145e9f01137f163d66841b32c364d8f22a2761019c3082158af2c4a3",
+  "runner_sha256": "53706def3b54f503a8e548dcdfdf05f3f2462d75654b49a461a9f0de2933b650",
   "train_sha256": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
  },
  "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
@@ -26,6 +26,12 @@
   "dtype": "torch.float32",
   "huggingface_hub_version": "1.32.0",
   "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
+  "laya_source_sha256": {
+   "__init__.py": "f6d6368e68a5570382481f2d87b165865e062dd1672c9003b47577cd362a7a65",
+   "agent.py": "128567096446c5d39af8e4a3a7c4dd9e32a134a1b099ce5a5eed383beeff1b89",
+   "common.py": "f231d42fcec84da203222fcaa89c083b22776e00341e66e118183d754e1dcabf",
+   "router.py": "1bdb5f3eda41a9dafddc3cd0cde150538b1bd36fbc1dba9f9d06ea00c774efa1"
+  },
   "laya_version": "0.3.6",
   "numpy_version": "2.4.6",
   "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
@@ -48,5 +54,5 @@
   "python": "3.11.15"
  },
  "schema": "laya-six-action-provenance-v1",
- "toolkit_commit": "dd574178082b648aceabac9cc7e7ae3e017717a0"
+ "toolkit_commit": "9127ff774bfb6924025fa1bfe1034b6f55e11048"
 }
