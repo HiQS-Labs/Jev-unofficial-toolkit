@@ -52,7 +52,7 @@ ROUND: 1 / 3
    was merely waiting looked stalled. A turn that ends without this line is not finished.
 
 ## Setup
-- Artifact under review: the complete `origin/main..b00cde7` implementation diff. Read `evidence/2026-09-22-laya-six-action/`, `tests/test_laya_evidence.py`, `PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md`, `README.md`, and `ROADMAP.md` in full, including committed prediction rows and JSON contracts where material. Ignore this temporary relay transcript itself.
+- Artifact under review: `evidence/2026-09-22-laya-six-action/` plus the complete origin/main-through-`b00cde7` implementation diff. Read that directory, `tests/test_laya_evidence.py`, `PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md`, `README.md`, and `ROADMAP.md` in full, including committed prediction rows and JSON contracts where material. Ignore this temporary relay transcript itself.
 - Reviewer: codex   ·   Producer: claude-a
 - Started: 2026-09-22
 - Goal: determine whether GH-25 truthfully and reproducibly publishes the one canonical Laya run authorized by the approved plan.
