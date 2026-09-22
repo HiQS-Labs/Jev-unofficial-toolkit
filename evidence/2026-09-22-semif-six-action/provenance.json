@@ -5,7 +5,7 @@
   "phase_backoff": 42,
   "repeat_last": 22
  },
- "created_utc": "2026-09-22T19:34:20.476499+00:00",
+ "created_utc": "2026-09-22T19:51:16.313298+00:00",
  "dataset": "nebius/SWE-rebench-openhands-trajectories",
  "dataset_license": "CC BY 4.0",
  "dataset_revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
@@ -13,7 +13,7 @@
   "baselines_sha256": "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00",
   "holdout_sha256": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
   "question_sha256": "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7",
-  "runner_sha256": "773ee7bb2dcf9d6d8c4f041a3f49b64f32ca350f05a70a1015641558fc55e39e",
+  "runner_sha256": "21c25434e9c6b51d11d7271003889e87bfd5a0cc7f4d01f1e93a07a86537d145",
   "semif_input_sha256": "11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024",
   "semif_output_sha256": "df2754fc413d85df80de922d6807933e4505ac8f5d9e68e5cf56401d88713777",
   "train_sha256": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
@@ -55,5 +55,5 @@
  },
  "schema": "semif-six-action-provenance-v1",
  "semif_commit": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
- "toolkit_commit": "6d57d671fa89d943fa90feeeb7b6c78cb397c4f3"
+ "toolkit_commit": "4b8f6d5a5ef67039fd8f7a161ff5e107e33d08bf"
 }
