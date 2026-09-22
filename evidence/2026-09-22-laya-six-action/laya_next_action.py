@@ -51,6 +51,7 @@ TRAIN_SHA256 = "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776
 BASELINES_SHA256 = "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00"
 QUESTION_SHA256 = "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7"
 LAYA_CHOICE_CONTRACT_SHA256 = "6a268fefffc807cb1013765c5e23e9b668326f69704c0a65389989e7ca2f8edb"
+LAYA_INPUT_SHA256 = "11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024"
 SUPPORT = {"edit": 19, "git": 0, "read": 29, "run_command": 26,
            "run_tests": 7, "search": 19}
 BASELINES = {"majority": 26, "repeat_last": 22, "markov_1": 37, "phase_backoff": 42}
@@ -71,7 +72,11 @@ LAYA_SOURCE_SHA256 = {
     "__init__.py": "f6d6368e68a5570382481f2d87b165865e062dd1672c9003b47577cd362a7a65",
     "agent.py": "128567096446c5d39af8e4a3a7c4dd9e32a134a1b099ce5a5eed383beeff1b89",
     "common.py": "f231d42fcec84da203222fcaa89c083b22776e00341e66e118183d754e1dcabf",
+    "email.py": "481440b9f4dfc1d8c0c297322581ec2ba567f4286c1988c6e0b5163889f32088",
+    "lang.py": "59589b1476b02a54e64926399a012e49b9615a668309fe429f440bf4af19a43b",
+    "presets.py": "2a3370f587cae29696bfa487edcc51caf47a211518733fdb192cf6d4eddbf1ea",
     "router.py": "1bdb5f3eda41a9dafddc3cd0cde150538b1bd36fbc1dba9f9d06ea00c774efa1",
+    "shortlist.py": "0d5a2a0f59ceb3e7fbf1f087864fcce41bb73eb039cf73357792976c10bfdb76",
 }
 MODEL_VERSIONS = {
     "laya_version": "0.3.6", "torch_version": "2.14.0",
@@ -274,6 +279,16 @@ def _validate_input(rows, holdout=None):
             raise ValueError("Laya input state drift")
 
 
+def _load_run_input(path, expected_sha=LAYA_INPUT_SHA256, expected_rows=100):
+    if sha256_file(path) != expected_sha:
+        raise ValueError("canonical Laya input hash mismatch")
+    rows = read_jsonl(path)
+    _validate_input(rows)
+    if len(rows) != expected_rows:
+        raise ValueError("canonical Laya input row-count mismatch")
+    return rows
+
+
 def _snapshot_hashes(model_dir):
     model_dir = Path(model_dir)
     actual_files = {
@@ -358,15 +373,15 @@ def _request_sha(row_id, state_sha):
 
 
 def run(laya_input_path, model_dir, output_path):
-    # Laya and its inference dependencies are imported only by this command.
+    # Freeze the complete request before importing any Laya code.
+    _validate_contract_constants()
+    rows = _load_run_input(laya_input_path)
     laya_source_hashes = _laya_source_hashes()
+    # Laya and its inference dependencies are imported only after the input/source gates.
     from laya.common import build_sequence
     from laya.router import Router
     from transformers import AutoTokenizer
 
-    _validate_contract_constants()
-    rows = read_jsonl(laya_input_path)
-    _validate_input(rows)
     identity = _model_identity(model_dir, laya_source_hashes)
     router = Router(models={"english": str(model_dir)}, device="cpu", default="english")
     routes = [router.route(row["state"], QUESTIONS)["model"] for row in rows]

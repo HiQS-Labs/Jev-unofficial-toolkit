@@ -160,15 +160,27 @@ class LayaEvidenceTests(unittest.TestCase):
         package = self.root / "laya"
         package.mkdir()
         expected = {}
-        for name in ("__init__.py", "agent.py", "common.py", "router.py"):
+        for name in ("__init__.py", "agent.py", "common.py", "email.py", "lang.py",
+                     "presets.py", "router.py", "shortlist.py"):
             path = package / name
             path.write_text("frozen {}\n".format(name), encoding="utf-8")
             expected[name] = laya.sha256_file(path)
         with patch.object(laya, "LAYA_SOURCE_SHA256", expected):
             self.assertEqual(laya._laya_source_hashes(package), expected)
-            (package / "router.py").write_text("same version, changed bytes\n", encoding="utf-8")
+            (package / "lang.py").write_text("def analyse(state): return {}\n", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "source identity mismatch"):
                 laya._laya_source_hashes(package)
+
+    def test_run_preflight_rejects_one_state_drift_before_laya_import(self):
+        original_sha = laya.sha256_file(self.laya_input)
+        self.assertEqual(len(laya._load_run_input(
+            self.laya_input, expected_sha=original_sha, expected_rows=6)), 6)
+        rows = laya.read_jsonl(self.laya_input)
+        rows[0]["state"] = "DRIFTED STATE ACCEPTED BEFORE INFERENCE"
+        drifted = self.root / "drifted-input.jsonl"
+        self._write_jsonl(drifted, rows)
+        with self.assertRaisesRegex(ValueError, "canonical Laya input hash mismatch"):
+            laya._load_run_input(drifted, expected_sha=original_sha, expected_rows=6)
 
     def test_raw_schema_model_and_probability_relations_fail_closed(self):
         cases = []
