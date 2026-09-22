@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 2 / 3
 
@@ -173,5 +173,85 @@ Handing off to Producer — go to the claude-a window and say 'take your turn'.
 Sensitive-path and generated-artifact sentinel scans are clean, the receipt runner hash matches
 provenance, and independent verification passes. Handing off to Reviewer (`codex`) — re-review the
 source identity, expanded controls, and corrected canonical binding.
+
+### Reviewer · Round 2 (codex)
+
+swept file: yes
+
+- [Blocker] `run` does not bind the prepared states to the frozen holdout before inference. It reads
+  the supplied JSONL and calls `_validate_input(rows)` without a holdout or expected file hash
+  (`evidence/2026-09-22-laya-six-action/laya_next_action.py:360-370`); that validator accepts any
+  non-empty `state` when IDs/question/options have the right shape (`laya_next_action.py:262-274`).
+  The canonical prepared-input hash appears only later in provenance
+  (`evidence/2026-09-22-laya-six-action/provenance.json:12-20`), while the plan claims the exact
+  holdout is revalidated before loading Laya
+  (`PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:168-176`). Probe command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; python3 -c
+  'import importlib.util,pathlib; p=pathlib.Path("evidence/2026-09-22-laya-six-action/laya_next_action.py");
+  s=importlib.util.spec_from_file_location("probe",p); m=importlib.util.module_from_spec(s);
+  s.loader.exec_module(m); r={"id":"row-000","state":"DRIFTED STATE ACCEPTED BEFORE INFERENCE",
+  "question":m.QUESTION,"options":[dict(x) for x in m.OPTIONS]}; m._validate_input([r]);
+  print("ACCEPTED:",r["state"])'` exited `0`; decisive output was
+  `ACCEPTED: DRIFTED STATE ACCEPTED BEFORE INFERENCE`. Concrete fix: freeze and check the canonical
+  prepared-input SHA-256 before any Laya import/Router construction (or give `run` the frozen holdout
+  and compare every state), add a one-state-drift red control, then regenerate the raw/result/
+  provenance/verification receipt because the runner hash changes.
+  Observed input: a row with canonical ID, question, and options but state
+  `DRIFTED STATE ACCEPTED BEFORE INFERENCE` passes the exact validator used by `run`.
+  Affected scope: any same-cardinality prepared JSONL whose state bytes differ from the frozen
+  holdout while IDs/question/options remain valid.
+  Falsifier: mutate one prepared state and invoke the `run` preflight; expected result is rejection
+  before Router/Agent construction with the create-only output absent.
+
+- [Blocker] The source-identity repair still omits code executed by the routed arm. The frozen map
+  contains only `__init__.py`, `agent.py`, `common.py`, and `router.py`
+  (`laya_next_action.py:70-75`), and `_laya_source_hashes` checks only those keys
+  (`laya_next_action.py:289-305`), but pinned `laya/router.py:34` imports `analyse` from `lang.py` and
+  `laya/router.py:291` executes it for every route. The committed identity records the same incomplete
+  map (`evidence/2026-09-22-laya-six-action/provenance.json:28-34`), despite the plan's source-drift
+  stop claim (`PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:231-236`). Probe command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; python3 -c
+  'import importlib.util,pathlib,tempfile,shutil; p=pathlib.Path("evidence/2026-09-22-laya-six-action/laya_next_action.py");
+  s=importlib.util.spec_from_file_location("probe",p); m=importlib.util.module_from_spec(s);
+  s.loader.exec_module(m); d=pathlib.Path(tempfile.mkdtemp(dir=pathlib.Path.cwd()/".relay-scratch/tmp"));
+  q=d/"laya"; shutil.copytree("/Users/noelsaw/Documents/GH Repos/laya/laya",q);
+  (q/"lang.py").write_text("def analyse(state): return {}\\n");
+  print("ACCEPTED_AFTER_LANG_DRIFT:",sorted(m._laya_source_hashes(q)))'` exited `0`; decisive output was
+  `ACCEPTED_AFTER_LANG_DRIFT: ['__init__.py', 'agent.py', 'common.py', 'router.py']`. Concrete fix:
+  freeze `lang.py` at minimum; the small, less brittle fix is the complete eight-file package Python
+  manifest because `laya/__init__.py:13-24` imports `email`, `lang`, `presets`, and `shortlist` too.
+  Add a `lang.py` drift red control and regenerate the bound receipt/source disclosures.
+  Observed input: an otherwise byte-identical pinned package whose `lang.py` is replaced by
+  `def analyse(state): return {}` is accepted by `_laya_source_hashes`.
+  Affected scope: same-version Laya installations with changed bytes in `lang.py` (and other imported
+  package modules absent from the four-file map).
+  Falsifier: alter only `lang.py` in a package fixture; expected result is a source-identity mismatch
+  before importing Laya or constructing Router.
+
+- [Pass] The previously overstated focused controls are now materially present: same-version source
+  drift, revision/device/dtype/nested-artifact changes, token relations, cardinality/duplicate cases,
+  raw route/head/choice/probability mutations, and committed binding drift are all represented in
+  `tests/test_laya_evidence.py:159-294`. The source-drift case itself remains too narrow for the
+  directly executed `lang.py`, as graded above.
+
+- [Pass] The committed result remains internally coherent: it reports 15/100 and macro-F1
+  `0.11129932869063304` (`results.json:132-136`), 100 English routes and zero truncations
+  (`results.json:2413-2435`), while verification binds the current results, provenance, and raw hashes
+  (`verification.json:167-169`). No additional pre-existing defect was found in the swept scoped
+  files beyond the two blockers above.
+
+- [Unverified — needs clone run] Per relay policy, this turn did not execute the focused suite,
+  native Laya scripts, pytest, fixtures, or the repository-wide gate. The receipt's native/focused
+  claims remain at `evidence/2026-09-22-laya-six-action/README.md:42-50`; the final full gate remains
+  explicitly pending at `PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:203-215`.
+
+VERDICT: FAIL
+
+Basis: the expanded controls and regenerated 15/100 receipt are coherent, but the executable arm
+still accepts state drift before inference and still labels an incomplete four-file subset as the
+pinned Laya source identity. Both violate explicit fail-closed Definition-of-Done requirements and
+require one more corrected canonical regeneration.
+
+Handing off to Producer — go to the claude-a window and say 'take your turn'.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
