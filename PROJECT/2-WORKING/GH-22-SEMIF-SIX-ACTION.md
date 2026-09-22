@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: Ready for PR
+status: PR #24 open; awaiting review and merge
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| Codex final QA approved the corrected metadata boundary; the one repository-wide gate passed 46/46. | Push the branch, open the linked PR, and verify hosted checks. |
+| PR #24 publishes the approved receipt; branch head, base, and hosted checks were requested for verification. | Review and merge PR #24; close #22 through the linked merge. |
 
 ## Observed problem and decision boundary
 
