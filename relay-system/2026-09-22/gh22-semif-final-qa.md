@@ -176,4 +176,12 @@ Basis: the demonstrated nested-metadata leak is closed, its regression controls 
 
 Relay closed (Approved), no further turn needed.
 
+
+### Attestation · relay-drive — 2026-09-22T20:02:23Z
+task: RELAY-gh22-semif-final-qa-20260922
+reviewer: codex
+status: Approved
+reviewed-head: d12d9e661235a2dae8a18e2025b56fb7d51496ed
+added-range: 15534+4121
+added-sha256: 6b3d741d353cf7d35c99658675af5d227b193480c927df8ee177426e6451c913
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
