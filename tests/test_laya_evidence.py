@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,6 +81,7 @@ class LayaEvidenceTests(unittest.TestCase):
             "device": "cpu", "dtype": "torch.float32",
             "config_sha256": laya.MODEL_ARTIFACT_SHA256["rl_agent_config.json"],
             "source_artifact_sha256": dict(laya.MODEL_ARTIFACT_SHA256),
+            "laya_source_sha256": dict(laya.LAYA_SOURCE_SHA256),
         }
 
     @staticmethod
@@ -154,6 +156,20 @@ class LayaEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "instruction or option text is truncated"):
             laya._head_tokenization(FakeTokenizer(option_tokens=60))
 
+    def test_same_version_laya_source_drift_is_rejected(self):
+        package = self.root / "laya"
+        package.mkdir()
+        expected = {}
+        for name in ("__init__.py", "agent.py", "common.py", "router.py"):
+            path = package / name
+            path.write_text("frozen {}\n".format(name), encoding="utf-8")
+            expected[name] = laya.sha256_file(path)
+        with patch.object(laya, "LAYA_SOURCE_SHA256", expected):
+            self.assertEqual(laya._laya_source_hashes(package), expected)
+            (package / "router.py").write_text("same version, changed bytes\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "source identity mismatch"):
+                laya._laya_source_hashes(package)
+
     def test_raw_schema_model_and_probability_relations_fail_closed(self):
         cases = []
         extra = self._raw_rows()
@@ -162,6 +178,18 @@ class LayaEvidenceTests(unittest.TestCase):
         version = self._raw_rows()
         version[0]["model"]["laya_version"] = "0.0.0"
         cases.append(("version", version, "model identity mismatch"))
+        revision = self._raw_rows()
+        revision[0]["model"]["revision"] = "0" * 40
+        cases.append(("revision", revision, "model identity mismatch"))
+        device = self._raw_rows()
+        device[0]["model"]["device"] = "mps"
+        cases.append(("device", device, "model identity mismatch"))
+        dtype = self._raw_rows()
+        dtype[0]["model"]["dtype"] = "torch.float16"
+        cases.append(("dtype", dtype, "model identity mismatch"))
+        artifact = self._raw_rows()
+        artifact[0]["model"]["source_artifact_sha256"]["extra.bin"] = "0" * 64
+        cases.append(("nested-artifact", artifact, "model artifact hash mismatch"))
         drift = self._raw_rows()
         drift[0]["probabilities"] = [0.1] * 6
         drift[0]["max_option_probability"] = 0.1
@@ -176,6 +204,46 @@ class LayaEvidenceTests(unittest.TestCase):
             with self.subTest(stem=stem):
                 with self.assertRaisesRegex(ValueError, message):
                     self._summarize(rows, stem)
+                self.assertFalse((self.root / (stem + "-results.json")).exists())
+                self.assertFalse((self.root / (stem + "-provenance.json")).exists())
+
+    def test_token_relations_fail_closed(self):
+        cases = []
+        used = self._raw_rows()
+        used[0]["state_tokens_full"] = 9
+        cases.append(("used-over-full", used, "state truncation relation"))
+        flag = self._raw_rows()
+        flag[0]["state_tokens_used"] = 9
+        flag[0]["input_tokens"] -= 1
+        cases.append(("false-truncation", flag, "state truncation relation"))
+        length = self._raw_rows()
+        length[0]["state_tokens_full"] = 500
+        length[0]["state_tokens_used"] = 500
+        length[0]["input_tokens"] = self._input_tokens(state=500)
+        cases.append(("over-model-max", length, "input token count mismatch"))
+        for stem, rows, message in cases:
+            with self.subTest(stem=stem):
+                with self.assertRaisesRegex(ValueError, message):
+                    self._summarize(rows, stem)
+                self.assertFalse((self.root / (stem + "-results.json")).exists())
+                self.assertFalse((self.root / (stem + "-provenance.json")).exists())
+
+    def test_zero_missing_duplicate_and_extra_rows_fail_closed(self):
+        rows = self._raw_rows()
+        cases = []
+        cases.append(("zero", [], "no rows"))
+        cases.append(("missing", rows[:-1], "row-count mismatch"))
+        duplicate = copy.deepcopy(rows)
+        duplicate[1]["id"] = duplicate[0]["id"]
+        cases.append(("duplicate", duplicate, "raw ID or option order mismatch"))
+        extra = copy.deepcopy(rows)
+        extra.append(copy.deepcopy(rows[-1]))
+        extra[-1]["id"] = "row-006"
+        cases.append(("extra-row", extra, "row-count mismatch"))
+        for stem, values, message in cases:
+            with self.subTest(stem=stem):
+                with self.assertRaisesRegex(ValueError, message):
+                    self._summarize(values, stem)
                 self.assertFalse((self.root / (stem + "-results.json")).exists())
                 self.assertFalse((self.root / (stem + "-provenance.json")).exists())
 

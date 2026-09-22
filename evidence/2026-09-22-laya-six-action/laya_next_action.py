@@ -5,6 +5,7 @@ import collections
 import datetime
 import hashlib
 import importlib.metadata
+import importlib.util
 import json
 import math
 import platform
@@ -66,6 +67,12 @@ MODEL_ARTIFACT_SHA256 = {
     "tokenizer/tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
     "tokenizer/tokenizer_config.json": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12",
 }
+LAYA_SOURCE_SHA256 = {
+    "__init__.py": "f6d6368e68a5570382481f2d87b165865e062dd1672c9003b47577cd362a7a65",
+    "agent.py": "128567096446c5d39af8e4a3a7c4dd9e32a134a1b099ce5a5eed383beeff1b89",
+    "common.py": "f231d42fcec84da203222fcaa89c083b22776e00341e66e118183d754e1dcabf",
+    "router.py": "1bdb5f3eda41a9dafddc3cd0cde150538b1bd36fbc1dba9f9d06ea00c774efa1",
+}
 MODEL_VERSIONS = {
     "laya_version": "0.3.6", "torch_version": "2.14.0",
     "transformers_version": "5.17.0", "safetensors_version": "0.8.0",
@@ -88,6 +95,7 @@ MODEL_FIELDS = {
     "source", "revision", "laya_commit", "laya_version", "torch_version",
     "transformers_version", "safetensors_version", "huggingface_hub_version",
     "numpy_version", "device", "dtype", "config_sha256", "source_artifact_sha256",
+    "laya_source_sha256",
 }
 PREDICTION_FIELDS = {
     "index", "gold", "choice", "probabilities", "confidence",
@@ -278,7 +286,26 @@ def _snapshot_hashes(model_dir):
     return actual_files
 
 
-def _model_identity(model_dir):
+def _laya_source_hashes(package_dir=None):
+    if package_dir is None:
+        spec = importlib.util.find_spec("laya")
+        if spec is None or spec.origin is None:
+            raise ValueError("installed Laya package cannot be located")
+        package_dir = Path(spec.origin).parent
+    else:
+        package_dir = Path(package_dir)
+    actual = {}
+    for relative_path in LAYA_SOURCE_SHA256:
+        path = package_dir / relative_path
+        if not path.is_file():
+            raise ValueError("installed Laya source file is missing")
+        actual[relative_path] = sha256_file(path)
+    if actual != LAYA_SOURCE_SHA256:
+        raise ValueError("installed Laya source identity mismatch")
+    return actual
+
+
+def _model_identity(model_dir, laya_source_hashes):
     artifacts = _snapshot_hashes(model_dir)
     versions = {name: importlib.metadata.version(package) for name, package in (
         ("laya_version", "laya"), ("torch_version", "torch"),
@@ -292,6 +319,7 @@ def _model_identity(model_dir):
         **versions, "device": "cpu", "dtype": "torch.float32",
         "config_sha256": artifacts["rl_agent_config.json"],
         "source_artifact_sha256": dict(sorted(artifacts.items())),
+        "laya_source_sha256": dict(sorted(laya_source_hashes.items())),
     }
 
 
@@ -331,6 +359,7 @@ def _request_sha(row_id, state_sha):
 
 def run(laya_input_path, model_dir, output_path):
     # Laya and its inference dependencies are imported only by this command.
+    laya_source_hashes = _laya_source_hashes()
     from laya.common import build_sequence
     from laya.router import Router
     from transformers import AutoTokenizer
@@ -338,7 +367,7 @@ def run(laya_input_path, model_dir, output_path):
     _validate_contract_constants()
     rows = read_jsonl(laya_input_path)
     _validate_input(rows)
-    identity = _model_identity(model_dir)
+    identity = _model_identity(model_dir, laya_source_hashes)
     router = Router(models={"english": str(model_dir)}, device="cpu", default="english")
     routes = [router.route(row["state"], QUESTIONS)["model"] for row in rows]
     if routes != ["english"] * len(rows):
@@ -398,6 +427,8 @@ def _validate_model(value):
     artifacts = value.get("source_artifact_sha256")
     if artifacts != MODEL_ARTIFACT_SHA256:
         raise ValueError("model artifact hash mismatch")
+    if value.get("laya_source_sha256") != LAYA_SOURCE_SHA256:
+        raise ValueError("installed Laya source identity mismatch")
     expected = {
         "source": MODEL_SOURCE, "revision": MODEL_REVISION, "laya_commit": LAYA_COMMIT,
         **MODEL_VERSIONS, "device": "cpu", "dtype": "torch.float32",
