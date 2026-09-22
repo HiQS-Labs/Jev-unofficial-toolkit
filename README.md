@@ -121,6 +121,17 @@ The text boundary is the caller's: the toolkit sends state to Jev and never writ
 
 To add a frozen question set: write `jev/questions/<name>.json` (canonical JSON, keys sorted), write its SHA-256 to `jev/questions/<name>.sha256`, and add the same hash to `FROZEN_QUESTIONS` in `guard.py`. `load_questions` refuses anything else.
 
+### Adapted from jbt95/jev-toolkit
+
+Four pieces are ported from the MIT-licensed [jbt95/jev-toolkit](https://github.com/jbt95/jev-toolkit) (attribution in [NOTICE](NOTICE)). **None has labeled validation here; borrowed wording starts at zero evidence.**
+
+- `--repeat N` (1–10) sends each record N identical times and writes a per-record `drift` report (distinct choices, modal share, value and confidence ranges); only the first answer is scored.
+- `--redact` masks credential assignments and Bearer tokens, replaces fenced code with `[code]`, and clips long strings in state before sending. It is opt-in so historical request hashes stay reproducible.
+- `failure_triage_v1` is a frozen set (failure class, blocks work, safe to suppress). `jev.loops.LoopGuard` counts failure fingerprints and escalates once at three sightings in 24 hours; `identity_request` asks whether a reworded failure is one already counted.
+- `jev.routing.route_request` / `route` pick one skill from a caller-owned catalog and route only above confidence and dependence floors — a starting point for #14.
+
+Routing and identity questions are built per call, so they cannot be frozen; failure text and tasks always travel in state, never in question wording.
+
 ## Other OSS projects — untested potential integrations
 
 [SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects that may be candidates for future integration with this toolkit. **Neither has been tested with it.** No adapter, drop-in compatibility, or comparable accuracy is claimed; this version supports only the pinned TypeSafe and OpenRouter Decisions routes described above.

@@ -24,3 +24,18 @@ HiQS-Labs/XYZ-forge by explicit operator instruction. No XYZ-forge Jev
 implementation code or TypeSafe SDK is included.
 ATE questions are newly authored from the handoff GH-712 Requirements and are not an
 exact reconstruction of XYZ-forge's historical question set.
+
+Portions of jev/text.py, jev/loops.py, jev/routing.py, the repeat-drift report
+in jev/eval.py, and the failure_triage_v1 question set are adapted from
+jbt95/jev-toolkit, Copyright (c) 2026 jbt95:
+https://github.com/jbt95/jev-toolkit/tree/f8792f9
+  src/core/text.ts
+  src/core/loops.ts
+  src/question-packs/failure-triage.ts
+  src/question-packs/skill-routing.ts
+  src/eval/pack-lab.ts (repeat-drift design only)
+These sources were distributed under the MIT License; its terms are retained
+in licenses/MIT-jev-toolkit.txt. Modifications port TypeScript/Effect code to
+stdlib Python, move caller text from question instructions into state so
+question sets can be frozen, and add validation and offline tests. Borrowed
+question wording has no labeled validation in this toolkit.

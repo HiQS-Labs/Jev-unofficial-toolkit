@@ -2,6 +2,7 @@
 # Attribution and modification notice: ../NOTICE; license: ../licenses/Apache-2.0.txt.
 """Known-truth scoring and explicit confidence gates."""
 import json
+from collections import Counter
 from pathlib import Path
 from .answers import number
 
@@ -146,6 +147,31 @@ def metrics_from_confusion(confusion, classes, uncertain_truth_n=0):
         raise ValueError("invalid uncertain count")
     result["uncertain_truth_n"] = uncertain_truth_n
     return result
+
+
+def drift(runs, questions):
+    """Answer drift across identical repeated requests for one record.
+
+    Adapted from jbt95/jev-toolkit at f8792f9 (src/eval/pack-lab.ts), MIT; see ../NOTICE.
+    runs: Answer.project() outputs for the same state and questions. Choice axes report
+    distinct picks and modal share; Score/Noul axes report the value range.
+    """
+    if len(runs) < 2:
+        raise ValueError("drift needs at least two runs")
+    report = {}
+    for axis, question in questions.items():
+        kind = question["type"]
+        values = [run[axis][kind] for run in runs]
+        if kind == "choice":
+            modal = Counter(values).most_common(1)[0][1]
+            report[axis] = {"distinct": len(set(values)), "modal_share": modal / len(values)}
+        else:
+            values = [number(v) for v in values]
+            report[axis] = {"range": max(values) - min(values)}
+        if kind in ("choice", "score"):
+            conf = [number(run[axis]["confidence"], unit=True) for run in runs]
+            report[axis]["confidence_range"] = max(conf) - min(conf)
+    return report
 
 
 def binary_counts(truth, pred):

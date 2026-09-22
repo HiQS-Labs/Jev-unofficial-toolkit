@@ -8,10 +8,11 @@ from pathlib import Path
 from . import openrouter
 from .answers import MODEL, number
 from .client import JevClient, MockClient, canonical, load_key, request_bytes, sha256
-from .eval import (agreement, binary_counts, confidence_table, gate, hit_equal, metrics,
+from .eval import (agreement, binary_counts, confidence_table, drift, gate, hit_equal, metrics,
                    metrics_from_confusion, noul_metrics, score_metrics, within)
 from .guard import (FROZEN_FIXTURES, POLICY, load_questions, repo_visibility,
                     verify, verify_freeze, write_results)
+from .text import sanitize
 
 
 def read_json(path):
@@ -119,6 +120,12 @@ def run(args):
         records = read_json(args.records)
         input_path = args.records
     keyed(records)
+    if type(args.repeat) is not int or not 1 <= args.repeat <= 10:
+        raise ValueError("--repeat must be 1 to 10")
+    if args.repeat > 1 and fixture:
+        raise ValueError("historical fixtures hold one response per record; --repeat is for new runs")
+    if args.redact:
+        records = [{**r, "state": sanitize(r["state"])} for r in records]
     for record in records:
         request_bytes(record["state"], questions)  # Validate the entire batch before spending.
     mock = args.mock_responses is not None
@@ -179,16 +186,24 @@ def run(args):
         raise ValueError("receipt-specific replay requires a pinned fixture")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=False)  # Reserve before any paid request; failures remain reserved.
-    completed = []
+    completed, drifts = [], {}
     for record in sendable:
-        answer = client.ask(record["state"], questions)
-        values = answer.project(questions)  # Typed fields only; never state, API extensions, or error text.
-        completed.append({"id": record["id"], "model": answer.model, "answers": values,
-                          "request_sha256": answer.request_sha256, "response_sha256": answer.response_sha256})
-        if not fixture:
-            completed[-1]["backend"] = backend
-        # Preserve paid, completed answers even when a later request fails.
-        write_results(out / f"answer-{len(completed):04d}.json", completed[-1])
+        runs = []
+        for attempt in range(args.repeat):
+            answer = client.ask(record["state"], questions)
+            values = answer.project(questions)  # Typed fields only; never state, API extensions, or error text.
+            entry = {"id": record["id"], "model": answer.model, "answers": values,
+                     "request_sha256": answer.request_sha256, "response_sha256": answer.response_sha256}
+            if not fixture:
+                entry["backend"] = backend
+            runs.append(values)
+            if attempt == 0:
+                completed.append(entry)  # The first answer is the one scored; repeats only measure drift.
+            # Preserve paid, completed answers even when a later request fails.
+            suffix = f"-r{attempt + 1}" if attempt else ""
+            write_results(out / f"answer-{len(completed):04d}{suffix}.json", entry)
+        if args.repeat > 1:
+            drifts[record["id"]] = drift(runs, questions)
     if mock:
         client.finish()
     write_results(out / "answers.json", completed)
@@ -197,6 +212,10 @@ def run(args):
               "skipped_ids": skipped, "visibility": visibility, "questions_sha256": sha256(canonical(questions))}
     if not fixture:
         report["backend"] = backend
+    if args.redact:
+        report["redacted"] = True
+    if drifts:
+        report.update(repeat=args.repeat, drift=drifts)
     if backend == "openrouter":
         report.update(provider="TypeSafe", output_tokens=client.output_tokens, cost=client.cost)
     if fixture:
@@ -255,6 +274,8 @@ def main(argv=None):
     parser.add_argument("--questions", default="work_purpose_v3")
     parser.add_argument("--out", required=True)
     parser.add_argument("--live", action="store_true")
+    parser.add_argument("--repeat", type=int, default=1, help="identical requests per record (1-10) to measure answer drift")
+    parser.add_argument("--redact", action="store_true", help="mask credentials, drop fenced code, clip long text in state before sending")
     args = parser.parse_args(argv)
     try:
         report = run(args)
