@@ -25,6 +25,7 @@
 ### In progress
 
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
+- [GH-25 Laya six-action comparison](PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md) — merged SemIf base and Laya/data recon are complete; plan QA is pending.
 
 ### Completed
 
