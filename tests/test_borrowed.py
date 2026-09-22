@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -73,9 +74,21 @@ class BorrowedTests(unittest.TestCase):
         self.assertEqual(guard.recent(5), [{"fingerprint": fp, "sample": "Build failed"}])
         now[0] += PRUNE_SECONDS + 1
         self.assertEqual(guard.check(fp)["count"], 1)
+        self.assertEqual(list(self.tmp.glob("*.tmp")), [])
+        (self.tmp / "loops.json").write_text("  \n")
+        self.assertEqual(guard.recent(5), [])
         (self.tmp / "loops.json").write_text('{"x": {"count": "1"}}')
         with self.assertRaises(ValueError):
             guard.check(fp)
+
+    def test_loop_guard_concurrent_checks_lose_no_counts(self):
+        guard = LoopGuard(self.tmp / "shared.json")
+        threads = [threading.Thread(target=guard.check, args=("fp",)) for _ in range(20)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        self.assertEqual(guard.check("fp")["count"], 21)
 
     def test_identity_request_keeps_text_in_state(self):
         recent = [{"fingerprint": "aaa", "sample": "token=abc timeout"}, {"fingerprint": "bbb", "sample": "disk full"}]
@@ -89,6 +102,8 @@ class BorrowedTests(unittest.TestCase):
         for bad in ("recent_2", "recent_x", "other"):
             with self.assertRaises(ValueError):
                 matched_fingerprint(recent, bad)
+        with self.assertRaises(ValueError):
+            identity_request("new failure", [])
 
     def test_failure_triage_is_frozen(self):
         q = load_questions("failure_triage_v1")

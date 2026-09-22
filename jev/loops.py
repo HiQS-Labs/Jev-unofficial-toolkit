@@ -2,6 +2,7 @@
 # src/question-packs/failure-triage.ts), MIT.
 # Attribution and modification notice: ../NOTICE; license: ../licenses/MIT-jev-toolkit.txt.
 """Loop breaker: count recurring failures and escalate once when the same one keeps coming back."""
+import fcntl
 import hashlib
 import json
 import os
@@ -45,13 +46,19 @@ class LoopGuard:
         return state
 
     def _write(self, state):
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self.path.with_name(self.path.name + ".tmp")
+        tmp = self.path.with_name(f"{self.path.name}.{os.getpid()}.tmp")
         tmp.write_text(json.dumps(state, sort_keys=True))
         os.replace(tmp, self.path)
 
     def check(self, fp, sample=None):
         """Record one sighting. `escalate` is true only on the sighting that first reaches ESCALATE_AT."""
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        # Concurrent sessions share one state file; serialize the read-modify-write.
+        with open(self.path.with_name(self.path.name + ".lock"), "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            return self._check(fp, sample)
+
+    def _check(self, fp, sample):
         now = self.clock()
         state = {k: r for k, r in self._read().items() if now - r["last_ts"] <= PRUNE_SECONDS}
         current = state.get(fp, {})
@@ -79,6 +86,8 @@ def identity_request(current, recent):
     in state; the question only names slots. Built per call, so it is never frozen:
     validate any live use under PROTOCOL.md first.
     """
+    if not recent:
+        raise ValueError("identity_request needs at least one recent failure; with none, the failure is new")
     criteria = {f"recent_{i}": f"the same underlying issue as recent_{i} in state" for i in range(len(recent))}
     criteria["none"] = "a new, distinct failure"
     state = {"current": sanitize(current, SAMPLE_CHARS),
