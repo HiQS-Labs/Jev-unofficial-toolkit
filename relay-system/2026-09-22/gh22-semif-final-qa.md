@@ -4,8 +4,8 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
-STATUS: Open
+NEXT: Producer
+STATUS: Approved
 ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
@@ -158,5 +158,22 @@ repository-wide gate remains intentionally unrun until final approval.
 
 Handing off to Reviewer — take round 2 and verify the blocker disposition against the corrected
 validator, red controls, canonical metadata, and refreshed receipt.
+
+### Reviewer · Round 2
+
+swept file: yes
+
+- [Pass] The Round-1 blocker is resolved at the boundary that writes committed evidence. `_validate_model` now requires the exact runtime versions, allocator limit, MLX-LM URL and revision, dtype, quantization, serving config, and exact source-artifact filename set before returning a fixed projection (`evidence/2026-09-22-semif-six-action/semif_next_action.py:213-249`); all 100 rows pass `_projection` and identity equality before the create-only writes (`evidence/2026-09-22-semif-six-action/semif_next_action.py:307-364`). The focused red controls separately reject the version sentinel and artifact-key sentinel and prove both result paths remain absent (`tests/test_semif_evidence.py:143-166`).
+- [Pass] The committed receipt is internally reproducible. `results.json:31-168,2071-2089` records 24/100, macro-F1 `0.16750572534154626`, the stated confusion/per-label/prediction counts, probability buckets, model identity, probability semantics, and timings; `verification.json:23-131` independently carries the same aggregates and binds the exact results/provenance hashes; `provenance.json:12-58` binds the refreshed runner SHA-256, unchanged raw-output SHA-256, pinned source/data/model revisions, and the corrected toolkit commit.
+- [Pass] The text-safety and containment contract is closed for the implemented path. Raw/result field sets and projected values are explicitly allowlisted (`semif_next_action.py:67-80,252-288,327-363`), the shared writer recursively rejects source-text field names and validates before exclusive creation (`jev/guard.py:69-86`), and the synthetic sentinel is absent from all three serialized artifacts (`tests/test_semif_evidence.py:125-133`). The consolidated probe below found no machine-local path and enumerated only the expected non-hash scalar values.
+- [Pass] The documentation stays within the comparison's actual envelope: the receipt says same rows/task/state/options but not byte-identical requests, labels the probabilities uncalibrated conditional option scores, discloses the repeated known two-trajectory sample and zero git support, and makes no integration or superiority claim (`evidence/2026-09-22-semif-six-action/README.md:3-48`; `README.md:135-137`). The footprint remains additive and proportionate. No unrelated runtime/API change or additional pre-existing defect was found in the swept files.
+
+Probe command: `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; python3 .relay-scratch/final_qa_probe.py`; exit `0`; decisive output: `{"canonical_model_validates": true, "confusion_matches": true, "correct": 24, "identity_matches": true, "machine_local_paths": [], "macro_f1": 0.16750572534154626, "mutations_rejected": {"allocator": true, "artifact_key": true, "mlx_lm_url": true, "mlx_version": true}, "non_hash_strings": ["0.32.0", "0.32.2", "0.5-0.8", "2026-09-22T19:51:16.313298+00:00", "3.11.15", "5.17.0", "<0.5", ">=0.8", "CC BY 4.0", "Darwin", "Qwen/Qwen3.5-4B", "arm64", "conditional option score; uncalibrated as decision confidence", "edit", "git", "mlx", "mlx-direct-v1", "mlx.core.bfloat16", "mlx.core.float32", "native last-position logits restricted to declared answer slots; no generated tokens", "nebius/SWE-rebench-openhands-trajectories", "read", "run_command", "run_tests", "search", "semif-qwen3.5-4b-mlx-direct-source-precision", "semif-six-action-provenance-v1", "semif-six-action-results-v1", "semif-six-action-verification-v1"], "prediction_schema_closed": true, "probabilities_valid": true, "provenance_hash_matches": true, "results_hash_matches": true, "rows": 100, "runner_hash_matches": true, "seeded_readme_matches": true, "sequential": true}`.
+
+VERDICT: PASS
+
+Basis: the demonstrated nested-metadata leak is closed, its regression controls are present, the canonical evidence remains byte-bound and internally consistent, and the complete changed-file sweep found no remaining correctness, safety, publication, or scope blocker. The branch is ready for the reserved repository-wide gate and PR.
+
+Relay closed (Approved), no further turn needed.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
