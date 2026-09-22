@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 1 / 3
 
@@ -106,5 +106,77 @@ finding. A passing review must explicitly answer all six questions.
 6. The relay ends on **Approved** (Reviewer only). End each turn by committing just this file; no push.
 
 ## Log
+
+### Reviewer · Round 1
+
+swept file: yes
+
+VERDICT: FAIL
+
+Basis: The comparison contract, reuse seams, bounded run order, rollback, task rating, and limits are
+sound, but the plan does not yet prove its load-bearing text-safety promise and leaves two declared
+canonical-stop conditions outside the concrete red-control/preflight design.
+
+- [Blocker] **Q4 / Proof + safety — source-text exclusion is asserted, not falsified.** The plan says
+  only typed projections and hashes are committed and that no state/query/issue text may appear
+  (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:66,81-82,93`), but it neither defines the fixed emitted
+  row schema nor gives the focused test a source-text sentinel. The reused guard recursively rejects
+  denied *keys* only (`jev/guard.py:11-12,69-78`), so it is not by itself a value-leak barrier.
+  Narrow probe command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; PYTHONPATH="/Users/noelsaw/marathon-clones/jev-gh22-semif-six-action" python3 -c 'from jev.guard import safe_results; value={"note":"secret source state/query text"}; print(safe_results(value))'`.
+  Exit status: `0`. Decisive output: `{'note': 'secret source state/query text'}`. Cheapest fix: name
+  the exact allowlisted committed per-row fields and add one synthetic state/query sentinel control
+  that proves the sentinel is absent from `results.json`, `provenance.json`, and `verification.json`
+  (and that an unexpected raw field is rejected or dropped before `write_results`).
+  Observed input: `{"note":"secret source state/query text"}` passes the current guard unchanged.
+  Affected scope: every committed JSON artifact produced by the receipt-local summarizer.
+  Falsifier: a focused synthetic row carrying a unique sentinel in both state and query; expected
+  result is successful aggregation with the sentinel absent from all three committed JSON files and
+  an unexpected raw-output field rejected/dropped by the fixed projection.
+
+- [Should] **Q2 — the executable baseline preflight omits phase-backoff.** The frozen comparison names
+  phase-backoff `42` (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:29,44`), and the source evaluator
+  emits and promotes that metric (`spike/coding_core/baselines.py:171-178`), but ordered step 1 checks
+  only majority, repeat-last, and Markov-1 (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:80`). Add
+  phase-backoff `42` to the explicit equality gate before model loading.
+  Observed input: the plan's frozen baseline set contains phase-backoff `42`, while step 1 enumerates
+  the other three values only.
+  Affected scope: regenerated holdouts used for the single canonical SemIf run.
+  Falsifier: a regenerated baseline result with the other three values matching but phase-backoff
+  equal to `41`; expected result is a pre-inference hard stop.
+
+- [Should] **Q2 — model identity/source precision have no concrete synthetic rejection check.** The
+  plan declares either mismatch a canonical stop (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:39-44`),
+  yet the summarizer refusal list and red controls omit model metadata and quantization drift
+  (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:81-82`). SemIf already emits revision, backend, dtype,
+  quantization, and artifact hashes (`src/semif_phase1/mlx_backend.py:82-91,95-106`), so the cheapest
+  fix is to validate those fields against the frozen contract and add one wrong-revision/quantized
+  synthetic raw row to the focused red controls.
+  Observed input: a raw result shaped like the existing MLX output but with `model.revision` changed
+  or `model.quantization.bits = 4`; neither condition is in the planned refusal list.
+  Affected scope: raw rows admitted into the canonical source-precision receipt.
+  Falsifier: synthetic raw metadata with the wrong revision or non-null quantization; expected result
+  is rejection before any committed result is created.
+
+- [Pass] **Q1 — the frozen contract is faithful and candid.** Exact repo/data/model revisions, the
+  100-row hash/support, q1 state, criterion/options, and metric are pinned, while the serializer and
+  readout difference is explicitly disclosed (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:31-44`).
+- [Pass] **Q3 — the footprint is surgical and reuses the right seams.** One receipt-local stdlib
+  runner plus one focused unittest module is proposed, with metrics delegated to `jev.eval.metrics`
+  / `confidence_table` and create-only persistence to `jev.guard.write_results`
+  (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:65,81-83`; `jev/eval.py:34-54,81-89`;
+  `jev/guard.py:81-86`).
+- [Pass] **Q5 — ordering and rollback are commensurate.** Runner bytes freeze before inference, a
+  one-row owned smoke precedes exactly one create-only canonical run, the full gate/final relay follow,
+  and rollback is purely additive deletion (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:83-87,98-104`).
+  The missing safety/metadata controls are isolated above rather than grounds for broader machinery.
+- [Pass] **Q6 — rating, roadmap state, limits, and confidence language are honest.** The current
+  roadmap says plan QA is pending (`ROADMAP.md:25-28`); the plan records `rated 65/20/50/70` with its
+  rationale, forbids superiority/calibration/generalization claims, and preserves the issue's
+  non-goals (`.relay-artifacts/GH-22-SEMIF-SIX-ACTION.md:25-29,70-76,100-108`).
+
+Pre-existing defects outside the findings above: none found in the complete 109-line plan sweep.
+
+Handing off to Producer — go to the claude-a window and say "take your turn".
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
