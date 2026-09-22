@@ -2,7 +2,7 @@
 gh_issue: 22
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/22
 title: Run SemIf direct logits on the #21 six-action holdout
-status: Implementation complete; final QA in progress
+status: Ready for PR
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -20,7 +20,7 @@ phases: 3
 
 | What was just completed | What's next |
 |---|---|
-| The exact 100-row source-precision MLX run scored 24/100; the typed receipt independently verifies and the SemIf/focused gates are green. | Obtain final Codex relay approval, run the repository full gate once, and publish the PR. |
+| Codex final QA approved the corrected metadata boundary; the one repository-wide gate passed 46/46. | Push the branch, open the linked PR, and verify hosted checks. |
 
 ## Observed problem and decision boundary
 
@@ -118,3 +118,5 @@ Round 2: **Approved** by Codex and attested against commit `9af18991de13e33ba2f7
 The frozen preflight reproduced all 100 rows, support counts, the holdout SHA-256, and the four registered baselines. SemIf commit `1f2dea3e25379f9dfc98cb83c324f00ab5deda37` passed `78` tests with `1` skipped, its complete published raw checksum manifest, and `69` published-summary claims. Its owned three-row MLX smoke completed before the canonical run.
 
 The one canonical `direct` / MLX / source-precision pass scored `24/100` with macro-F1 `0.16750572534154626`, no skipped rows, and raw-output SHA-256 `df2754fc413d85df80de922d6807933e4505ac8f5d9e68e5cf56401d88713777`. The independent verifier reproduced the confusion matrix, per-label counts, probability buckets, and aggregate metrics from the committed allowlisted projection. Full interpretation and provenance are in `evidence/2026-09-22-semif-six-action/README.md`.
+
+Final Codex relay QA approved round 2 and attested reviewed head `d12d9e661235a2dae8a18e2025b56fb7d51496ed` after its round-1 nested-metadata finding was reproduced and fixed. The final repository-wide gate then passed all `46` unittests once on the approved implementation. Thread: `relay-system/2026-09-22/gh22-semif-final-qa.md`.

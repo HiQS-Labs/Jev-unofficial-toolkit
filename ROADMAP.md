@@ -25,7 +25,7 @@
 ### In progress
 
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
-- [GH-22 SemIf six-action comparison](PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md) — canonical 100-row result and independently verified receipt are complete; final relay QA and PR publication remain.
+- [GH-22 SemIf six-action comparison](PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md) — canonical receipt, final Codex QA, and the 46-test full gate are complete; PR publication remains.
 
 ### Completed
 
