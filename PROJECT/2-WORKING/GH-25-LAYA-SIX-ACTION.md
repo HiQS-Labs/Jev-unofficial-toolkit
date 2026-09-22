@@ -2,7 +2,7 @@
 gh_issue: 25
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/25
 title: Run Laya on the #21 six-action holdout
-status: Plan pending Codex QA
+status: Implementation complete; final Codex QA pending
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -21,7 +21,7 @@ reversibility: Easy — additive receipt, tests, and documentation only; no runt
 
 | What was just completed | What's next |
 |---|---|
-| PR #24 landed the SemIf receipt; Laya source/model/data entry points and truncation behavior are traced on the merged base. | Obtain Codex plan approval before implementing the receipt-local runner. |
+| The plan passed three-round Codex QA; the pinned Laya arm scored 15/100 and its independent verification receipt is complete. | Obtain final Codex implementation approval, run the one repository-wide gate, then publish the PR. |
 
 ## Table of contents
 
@@ -99,6 +99,8 @@ Graph coverage was current with no recorded gaps for the Laya agent/common/route
 
 Unresolved until the post-plan preflight: the exact snapshot artifact/config hashes, the actual all-English route count, native test count, dependency versions, and truncation count. Each is a measured stop condition, not a value the plan predicts.
 
+Execution resolved those stop conditions before the canonical run: five snapshot files matched the frozen hash map; all 100 rows routed to `english`; the full 90-token instruction and all six option texts fit; seven native offline script entrypoints passed 343 checks; and the pinned runtime was Python `3.11.15`, Laya `0.3.6`, torch `2.14.0`, Transformers `5.17.0`, safetensors `0.8.0`, Hugging Face Hub `1.32.0`, and NumPy `2.4.6`. The one create-only canonical output has SHA-256 `8a3f42ab667d4851108672bcc6e58503ac759acf1b91a28e7119ad099397e737`; independent verification reproduced 15/100, macro-F1 `0.11129932869063304`, and zero state-truncated rows. The committed receipt is [`evidence/2026-09-22-laya-six-action/README.md`](../../evidence/2026-09-22-laya-six-action/README.md).
+
 ## Design decision
 
 Ranked alternatives for the load-bearing model path:
@@ -167,36 +169,36 @@ Rationale, 2026-09-22: the operator directly requested this adjacent comparison;
 
 **Goal:** A committed, reviewed runner/test pair rejects every registered drift case before the model run.
 
-- [ ] Revalidate exact holdout SHA, row count, support, and all four baselines before loading Laya.
-- [ ] Create an isolated Python 3.11 environment outside the clean Laya checkout, install exact local source/dependencies, and run Laya's native tests.
-- [ ] Download only the root checkpoint at the full revision; record exact config/weights/snapshot hashes and dependency versions without a machine-local path.
-- [ ] Freeze the exact question constructor and both canonical hashes above; route all rows, then run the tokenizer-only full-versus-used instruction/option preflight. Abort before `Agent` construction unless every route is `english` and every head component is preserved.
-- [ ] Add one receipt-local runner with bounded `prepare`, `run`, `summarize`, and `verify` commands. `run` is the only Laya import and writes create-only raw JSONL outside Git; every failure raises a row/field-specific error to stderr with no automatic retry.
-- [ ] Implement the closed raw/model/result/provenance/verification schemas above. Any missing/extra key, drift, non-finite/range error, probability relation violation, or impossible token relation aborts before its applicable committed write.
-- [ ] Commit only an allowlisted projection without source text. Add and run one focused unittest module with the listed green/red controls; commit runner/tests and artifact constants before inference.
+- [x] Revalidate exact holdout SHA, row count, support, and all four baselines before loading Laya.
+- [x] Create an isolated Python 3.11 environment outside the clean Laya checkout, install exact local source/dependencies, and run Laya's native tests.
+- [x] Download only the root checkpoint at the full revision; record exact config/weights/snapshot hashes and dependency versions without a machine-local path.
+- [x] Freeze the exact question constructor and both canonical hashes above; route all rows, then run the tokenizer-only full-versus-used instruction/option preflight. Abort before `Agent` construction unless every route is `english` and every head component is preserved.
+- [x] Add one receipt-local runner with bounded `prepare`, `run`, `summarize`, and `verify` commands. `run` is the only Laya import and writes create-only raw JSONL outside Git; every failure raises a row/field-specific error to stderr with no automatic retry.
+- [x] Implement the closed raw/model/result/provenance/verification schemas above. Any missing/extra key, drift, non-finite/range error, probability relation violation, or impossible token relation aborts before its applicable committed write.
+- [x] Commit only an allowlisted projection without source text. Add and run one focused unittest module with the listed green/red controls; commit runner/tests and artifact constants before inference.
 
 ### Phase 1 — QA checklist
 
-- [ ] Every input/model claim has an observed hash, count, version, or route receipt.
-- [ ] Red controls are watched fail: raw/schema failures leave results and provenance absent; mutated result/provenance fixtures leave verification absent.
-- [ ] No production/runtime interface, dependency manifest, or published SemIf runner byte changes.
-- [ ] Blast/undo: easy additive files only; create-only output is the shield; any mismatch before the first result write is the tripwire.
+- [x] Every input/model claim has an observed hash, count, version, or route receipt.
+- [x] Red controls are watched fail: raw/schema failures leave results and provenance absent; mutated result/provenance fixtures leave verification absent.
+- [x] No production/runtime interface, dependency manifest, or published SemIf runner byte changes.
+- [x] Blast/undo: easy additive files only; create-only output is the shield; any mismatch before the first result write is the tripwire.
 
 ## Phase 2: Execute and package evidence
 
 **Goal:** One canonical 100-row CPU result is independently verified and documented without source text.
 
-- [ ] Run route-only preflight, one project-owned smoke, then exactly one canonical CPU/float32 pass into a new raw path; no resume or overwrite counts as completion.
-- [ ] Summarize with reused `jev.eval` / `jev.guard` seams, then independently verify from the frozen holdout/baselines, prepared input, and raw JSONL through the full text-free projection: model consistency, metrics, per-label counts, route/head/state aggregates, confidence/probability buckets, timing, and every binding hash.
-- [ ] Write the receipt with decision, comparison table, probability/confidence semantics, per-label behavior, measured truncation, run envelope, provenance, and limitations.
-- [ ] Update only the repository README statement/link and task/roadmap pointers.
+- [x] Run route-only preflight, one project-owned smoke, then exactly one canonical CPU/float32 pass into a new raw path; no resume or overwrite counts as completion.
+- [x] Summarize with reused `jev.eval` / `jev.guard` seams, then independently verify from the frozen holdout/baselines, prepared input, and raw JSONL through the full text-free projection: model consistency, metrics, per-label counts, route/head/state aggregates, confidence/probability buckets, timing, and every binding hash.
+- [x] Write the receipt with decision, comparison table, probability/confidence semantics, per-label behavior, measured truncation, run envelope, provenance, and limitations.
+- [x] Update only the repository README statement/link and task/roadmap pointers.
 
 ### Phase 2 — QA checklist
 
-- [ ] Exactly 100 sequential rows, one model identity, six ordered options, and no skips.
-- [ ] Sentinel and local-path scans are empty across all committed artifacts.
-- [ ] Raw trajectories, prompts, weights, cache, snapshot path, and raw output remain outside Git.
-- [ ] Blast/undo: deletion of additive receipt files is sufficient; a resource/schema failure stops the arm and remains reported as failure.
+- [x] Exactly 100 sequential rows, one model identity, six ordered options, and no skips.
+- [x] Sentinel and local-path scans are empty across all committed artifacts.
+- [x] Raw trajectories, prompts, weights, cache, snapshot path, and raw output remain outside Git.
+- [x] Blast/undo: deletion of additive receipt files is sufficient; a resource/schema failure stops the arm and remains reported as failure.
 
 ## Phase 3: Review and publish
 

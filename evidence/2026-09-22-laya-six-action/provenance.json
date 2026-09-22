@@ -1,0 +1,52 @@
+{
+ "baselines": {
+  "majority": 26,
+  "markov_1": 37,
+  "phase_backoff": 42,
+  "repeat_last": 22
+ },
+ "created_utc": "2026-09-22T23:07:18.207953+00:00",
+ "dataset": "nebius/SWE-rebench-openhands-trajectories",
+ "dataset_license": "CC BY 4.0",
+ "dataset_revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
+ "hashes": {
+  "baselines_sha256": "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00",
+  "holdout_sha256": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
+  "laya_choice_contract_sha256": "6a268fefffc807cb1013765c5e23e9b668326f69704c0a65389989e7ca2f8edb",
+  "laya_input_sha256": "11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024",
+  "laya_output_sha256": "8a3f42ab667d4851108672bcc6e58503ac759acf1b91a28e7119ad099397e737",
+  "question_sha256": "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7",
+  "runner_sha256": "f0df0681145e9f01137f163d66841b32c364d8f22a2761019c3082158af2c4a3",
+  "train_sha256": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
+ },
+ "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
+ "model_identity": {
+  "config_sha256": "ae287b56bbcf5f8c4f4541ae9dfd00c914c4c48b940b8398c3058af37ba92bbd",
+  "device": "cpu",
+  "dtype": "torch.float32",
+  "huggingface_hub_version": "1.32.0",
+  "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
+  "laya_version": "0.3.6",
+  "numpy_version": "2.4.6",
+  "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+  "safetensors_version": "0.8.0",
+  "source": "convaiinnovations/laya",
+  "source_artifact_sha256": {
+   "encoder/config.json": "bf3ab80598fdccf414855a2ce80f22859e4492d06ca8a62ddd1cfb63972f8979",
+   "model.safetensors": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+   "rl_agent_config.json": "ae287b56bbcf5f8c4f4541ae9dfd00c914c4c48b940b8398c3058af37ba92bbd",
+   "tokenizer/tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+   "tokenizer/tokenizer_config.json": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12"
+  },
+  "torch_version": "2.14.0",
+  "transformers_version": "5.17.0"
+ },
+ "needle_commit": "d3be2058230cee6dc69f85c074a41bba5c8ecf61",
+ "runtime": {
+  "machine": "arm64",
+  "platform": "Darwin",
+  "python": "3.11.15"
+ },
+ "schema": "laya-six-action-provenance-v1",
+ "toolkit_commit": "dd574178082b648aceabac9cc7e7ae3e017717a0"
+}

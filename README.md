@@ -134,7 +134,7 @@ Routing and identity questions are built per call, so they cannot be frozen; fai
 
 ## Other OSS projects — bounded evidence and untested potential integrations
 
-[SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects. A pinned SemIf/Qwen3.5-4B direct-MLX arm scored [`24/100` on the same six-action holdout](evidence/2026-09-22-semif-six-action/README.md) used in issue #21: above Jev's recorded `21/100` original result but below the `26/100` majority baseline. The serializers and readouts differ, so this is not a byte-identical request comparison, adapter validation, or drop-in compatibility claim. Laya remains untested. This version's runtime integrations still support only the pinned TypeSafe and OpenRouter Decisions routes described above.
+[SemIf](https://github.com/TheoLeeCJ/SemIf) and [Laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects. On the same frozen six-action holdout used in issue #21, the pinned [SemIf/Qwen3.5-4B direct-MLX arm scored `24/100`](evidence/2026-09-22-semif-six-action/README.md) and the pinned [Laya default English arm scored `15/100`](evidence/2026-09-22-laya-six-action/README.md). SemIf exceeded Jev's recorded `21/100` original result but not the `26/100` majority baseline; Laya did not exceed either. Their serializers, tokenizers, and readouts differ, so these are not byte-identical request comparisons, adapter validations, or drop-in compatibility claims. This version's runtime integrations still support only the pinned TypeSafe and OpenRouter Decisions routes described above.
 
 ## Build a Jev function in your app
 
