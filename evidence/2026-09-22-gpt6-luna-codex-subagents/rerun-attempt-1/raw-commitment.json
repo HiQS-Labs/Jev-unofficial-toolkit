@@ -1,0 +1,17 @@
+{
+ "attempt": 1,
+ "duration_ms": 334011,
+ "freeze_sha256": "34eefbf0a6b5b295ee8709118efd0e0f6deca96c3f0b2184049a408f42cc1563",
+ "raw_sha256": "21612297c6eaf8e3509af0e111dad0a6bfbb9256f383d31c0c723653a6283f00",
+ "responses_sha256": "96001cfcc942aa01c0232935b3d2aaeca3a4aea9142dfd200d0ed1f554638b2b",
+ "rows": 100,
+ "schema": "gh26-cli-commitment-v1",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 1163520,
+  "input_tokens": 1411243,
+  "output_tokens": 913,
+  "reasoning_output_tokens": 0,
+  "total_tokens": 1412156
+ }
+}
