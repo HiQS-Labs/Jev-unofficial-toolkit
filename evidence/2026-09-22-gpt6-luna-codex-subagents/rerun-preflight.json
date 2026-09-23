@@ -1,0 +1,49 @@
+{
+  "exact_runtime_input_match": true,
+  "focused_tests_passed": 17,
+  "full_mock_log_sha256": "8c7d87bce752368ffbc181d8499bc5a5c975e8ba78314bdac2e7f41ae75873dd",
+  "full_mock_tests_passed": 77,
+  "green_log_sha256": "def440ba9a6e098b46c3c7e3e74f5b73f3dca02a1634a1c51f6f7068e399b5c1",
+  "new_attempt_limit": 3,
+  "omitted_word_red_log_sha256": "ffcbca295b1a96f35b60bb43c62741e671b438f1bba79d4720b4d3e0e849b725",
+  "schema": "gh26-cli-preflight-v1",
+  "scored_rows_launched": 0,
+  "smokes": [
+    {
+      "agent_receipt_sha256": "27024a886fff840e80dcc16579978a8a7872e127cf4b6fa37728df2eafa2f382",
+      "choice": "run_tests",
+      "duration_ms": 2734,
+      "model": "gpt-6-luna",
+      "prompt_sha256": "5e8e8b5bfa99c040482be8716601c411b6cf3a7bf522db55ac3977a794f9b29c",
+      "reasoning_effort": "medium",
+      "session_mode": "fresh_exec",
+      "tool_calls": 0,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 2816,
+        "input_tokens": 13969,
+        "output_tokens": 10,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 13979
+      }
+    },
+    {
+      "agent_receipt_sha256": "f653a9b481a3027b0d00bc6c086d85c176e9db169d3c5ff1fbad531bcad4d69c",
+      "choice": "search",
+      "duration_ms": 2737,
+      "model": "gpt-6-luna",
+      "prompt_sha256": "372e0fdde8105c1f47a63685848c5036302cf226ed1c9500af754eef38eeecb5",
+      "reasoning_effort": "medium",
+      "session_mode": "fresh_exec",
+      "tool_calls": 0,
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 0,
+        "input_tokens": 13966,
+        "output_tokens": 9,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 13975
+      }
+    }
+  ]
+}

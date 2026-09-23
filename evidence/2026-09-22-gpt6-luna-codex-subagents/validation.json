@@ -1,0 +1,23 @@
+{
+  "code_changed_between_full_suite_attempts": false,
+  "focused_tests": 14,
+  "full_suite_attempts": [
+    {
+      "errors": 2,
+      "log_sha256": "5fb282cfc8d1f59311eb2c00d4b81543988daeef1597e880caa63bef61defa95",
+      "passed": 58,
+      "python": "3.9",
+      "tests": 60
+    },
+    {
+      "errors": 0,
+      "log_sha256": "e5ca983395ee79d70ac8c165417c70db19f04565a241e1115f711f88c37ef4cb",
+      "passed": 60,
+      "python": "3.13",
+      "tests": 60
+    }
+  ],
+  "model_retries": 0,
+  "real_smoke_trace_checks": 2,
+  "schema": "gh26-validation-v1"
+}
