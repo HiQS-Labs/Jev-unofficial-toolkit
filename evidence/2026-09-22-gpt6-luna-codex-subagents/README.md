@@ -158,15 +158,33 @@ Monetary cost and calibrated confidence are unavailable.
 **Commit order:** reviewed code `ce7b6fd`; per-attempt freeze `cc9620c` before
 inference; complete raw commitment `11e84b1` before opening labels. Raw SHA-256:
 `21612297c6eaf8e3509af0e111dad0a6bfbb9256f383d31c0c723653a6283f00`.
+The pre-label commitment file itself has SHA-256
+`bb149ea4a58101e48e6492fab3cfc6f1f0dccd9601ec24c69a00716b8b7f6d2b`.
+
+Post-run review found that the frozen verifier could validate a coherently
+replaced results/provenance/commitment bundle without independently selecting
+the public pre-label commitment. The historical helpers and artifacts remain
+byte-for-byte unchanged. An additive
+[anchored verifier](rerun_anchored_verify.py) now hard-codes the commitment from
+full commit `11e84b1da82250f12bed54927230209236f50cdc`, checks it before delegating
+all schema, provenance, prediction, metric and support checks to the frozen
+scorer, and writes a create-only [anchored receipt](rerun-attempt-1/anchored-verification.json).
+This is post-freeze automation hardening. The public Git history was already the
+timeline anchor; this change does not retroactively prove arbitrary filesystem
+or label access history.
 
 - [Attempt freeze](rerun-attempt-1/freeze.json)
 - [Pre-label raw commitment](rerun-attempt-1/raw-commitment.json)
 - [Results and sanitized per-row projection](rerun-attempt-1/results.json)
 - [Provenance](rerun-attempt-1/provenance.json)
 - [Independent metric verification](rerun-attempt-1/verification.json)
+- [Commitment-anchored verification](rerun-attempt-1/anchored-verification.json)
 - [Pre-inference QA](../../relay-system/2026-09-22/gh26-luna-rerun-preflight-qa.md)
 
-All 77 mock-only tests passed on the frozen code under Python 3.13. The raw CLI
+All 77 mock-only tests passed on the frozen code under Python 3.13. The additive
+post-freeze verifier added two controls: the legacy verifier demonstrably accepts
+a coherent replacement, the anchored path rejects it without output, and the
+canonical published artifacts pass. The current full suite passes 79/79. The raw CLI
 inputs, launch records, stdout and finalized runtime traces remain private in the
 repository's ignored temporary folder. No source text, machine paths, session
 identifiers or raw reasoning are included in the public result projection.

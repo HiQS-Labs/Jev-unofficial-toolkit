@@ -1,0 +1,75 @@
+{
+ "attempt": 1,
+ "freeze_sha256": "34eefbf0a6b5b295ee8709118efd0e0f6deca96c3f0b2184049a408f42cc1563",
+ "metrics": {
+  "confusion": [
+   [
+    5,
+    0,
+    9,
+    0,
+    2,
+    3
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    5,
+    0,
+    19,
+    0,
+    1,
+    4
+   ],
+   [
+    0,
+    0,
+    16,
+    0,
+    8,
+    2
+   ],
+   [
+    0,
+    0,
+    4,
+    0,
+    2,
+    1
+   ],
+   [
+    4,
+    0,
+    11,
+    0,
+    0,
+    4
+   ]
+  ],
+  "confusion_labels": [
+   "edit",
+   "git",
+   "read",
+   "run_command",
+   "run_tests",
+   "search"
+  ],
+  "correct": 30,
+  "labeled_n": 100,
+  "macro_f1": 0.1962121212121212,
+  "raw_accuracy": 0.3,
+  "uncertain_truth_n": 0
+ },
+ "provenance_sha256": "9cf454e19b50eabd40696be2b5545381909f073fb2a0e56202f2931a7af0270c",
+ "raw_commitment_sha256": "bb149ea4a58101e48e6492fab3cfc6f1f0dccd9601ec24c69a00716b8b7f6d2b",
+ "results_sha256": "3bad9f8647903eb7291df94627d72f4ac60010427ea855e78cc8f01578dd373e",
+ "rows": 100,
+ "schema": "gh26-cli-verification-v1",
+ "verified": true
+}

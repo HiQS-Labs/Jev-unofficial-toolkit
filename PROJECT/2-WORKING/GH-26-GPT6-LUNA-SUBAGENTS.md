@@ -353,3 +353,17 @@ separate and unscored. See the evidence README for per-label results, provenance
 usage, comparison limitations and review links.
 
 Published [final results to #26](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/26#issuecomment-5788107970) and updated [PR #28](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/28). Both hosted test jobs passed on the result commit.
+
+### Post-freeze commitment verification
+
+PR review reproduced an automation gap: the frozen verifier accepted a
+coherently replaced results/provenance/commitment bundle because it had no
+external selector for the public pre-label commitment. The experiment remains
+manually auditable from commit `11e84b1`, which introduced only the complete raw
+commitment before the scoring artifacts. To make that trust boundary executable
+without changing any frozen helper or historical artifact, an additive anchored
+verifier now requires raw-commitment SHA-256
+`bb149ea4a58101e48e6492fab3cfc6f1f0dccd9601ec24c69a00716b8b7f6d2b`
+before delegating the original verification checks. A coherent-replacement red
+control failed before the fix and passes only by being rejected afterward; the
+canonical positive control and the full 79-test suite pass.

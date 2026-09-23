@@ -12,6 +12,10 @@ PATH = ROOT / 'evidence/2026-09-22-gpt6-luna-codex-subagents/rerun_scoring.py'
 spec = importlib.util.spec_from_file_location('luna_rerun_scoring', PATH)
 s = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(s)
+ANCHOR_PATH = ROOT / 'evidence/2026-09-22-gpt6-luna-codex-subagents/rerun_anchored_verify.py'
+anchor_spec = importlib.util.spec_from_file_location('luna_anchored_verify', ANCHOR_PATH)
+anchored = importlib.util.module_from_spec(anchor_spec)
+anchor_spec.loader.exec_module(anchored)
 
 
 class ScoringTests(unittest.TestCase):
@@ -124,6 +128,34 @@ class ScoringTests(unittest.TestCase):
         self.write('results',changed)
         with self.assertRaises(ValueError):self.verify()
         self.assertFalse(self.p['verification'].exists())
+
+    def test_anchor_rejects_coherent_bundle_replacement(self):
+        self.finalize();result,provenance=self.summarize()
+        changed=copy.deepcopy(result);changed['predictions'][0]['choice']='read';changed['predictions'][0]['correct']=False
+        truth=[row['gold'] for row in changed['predictions']];choices=[row['choice'] for row in changed['predictions']]
+        changed['metrics']=s.metrics(truth,choices,s.h.LABELS)
+        changed['per_label']={label:dict(support=truth.count(label),predicted=choices.count(label),
+            recall_correct=sum(t==c==label for t,c in zip(truth,choices)),
+            recall=sum(t==c==label for t,c in zip(truth,choices))/truth.count(label) if truth.count(label) else None)
+            for label in s.h.LABELS}
+        commitment=s.h.read(self.p['commitment'])
+        commitment['responses_sha256']=s.h.canonical_sha256(s.h.response_projection(changed['predictions']))
+        self.write('commitment',commitment)
+        provenance['raw_commitment']=commitment
+        provenance['raw_commitment_sha256']=s.h.sha256_file(self.p['commitment'])
+        self.write('results',changed);self.write('provenance',provenance)
+        self.assertTrue(self.verify()['verified'])
+        output=self.root/'anchored-verification.json'
+        with self.assertRaises(ValueError):
+            anchored.verify(*(self.p[k] for k in ('results','provenance','freeze','commitment')),output)
+        self.assertFalse(output.exists())
+
+    def test_anchor_accepts_published_commitment(self):
+        attempt=ROOT/'evidence/2026-09-22-gpt6-luna-codex-subagents/rerun-attempt-1'
+        output=self.root/'anchored-verification.json'
+        value=anchored.verify(*(attempt/name for name in ('results.json','provenance.json','freeze.json','raw-commitment.json')),output)
+        self.assertTrue(value['verified'])
+        self.assertEqual(value['raw_commitment_sha256'],anchored.RAW_COMMITMENT_SHA256)
 
     def test_duplicate_json_keys_fail(self):
         self.p['raw'].write_text('{"index":0,"index":1}\n')
