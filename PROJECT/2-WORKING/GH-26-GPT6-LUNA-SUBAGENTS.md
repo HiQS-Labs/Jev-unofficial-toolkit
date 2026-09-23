@@ -280,3 +280,64 @@ inputs and the relocated Phase 0 audit under its ignored temporary folder. The
 frozen helper/tests remain unchanged. A future canonical pass requires explicit
 operator authorization and mechanically exact request dispatch; this pass must
 never be resumed or represented as an accuracy result.
+
+## Authorized rerun amendment — 2026-09-22
+
+The operator authorized a fresh rerun and up to two additional attempts for
+adaptation/pivots (three new attempts maximum), and explicitly directed that the
+prompt be fixed first. This supersedes the prior requirement to ask again after
+each failed pass within this new bounded campaign. The original failed pass and
+its frozen implementation remain unchanged.
+
+- [x] Reproduce the omitted-word dispatch defect in a synthetic red control.
+- [x] Eliminate manual prompt transcription: serializer → UTF-8 bytes → checked
+  SHA-256 → subprocess stdin, without shell expansion or appended newline.
+- [ ] Independent amended protocol/implementation QA and final smoke acceptance.
+- [ ] Commit per-attempt freeze before any scored model call.
+- [ ] First complete 100-row pass, pre-label commitment, independent scoring QA.
+- [ ] Publish every attempt's terminal status and final outcome to #26.
+
+**Harness pivot.** Each row launches a new `codex exec` process/session with
+`gpt-6-luna`, medium reasoning effort, ChatGPT subscription authentication,
+read-only sandbox and user configuration ignored. API-key environment overrides
+are removed. CLI options disable delegation, shell tools, apps/plugins, web
+search and unbounded connection retries; runtime validation additionally rejects
+all tool activity. No `resume` or `fork` command is used. These are fresh CLI
+sessions, not `collaboration.spawn_agent` subagents, and their scaffold differs
+from the earlier arm. Record this explicitly; preserve original six-action text,
+option order, state and prompt hashes unchanged. No output-schema API mode or
+additional response instructions are added.
+
+**Exact input proof.** Check all 100 blind rows and hashes before launching any
+row. Pass the checked bytes themselves to stdin. Require the sole task user
+message after the runtime turn context to contain those exact bytes. Bind the
+runtime source `exec`, unique session, exact model/effort/OpenAI provider, one
+completed turn, zero tools, single final JSON answer, and CLI/runtime answer and
+usage agreement. Hash finalized full traces. Source/session paths stay private.
+Repeated frozen prompts are retained as separate rows with distinct sessions and
+destination-bound launch manifests; no dataset deduplication occurs.
+
+**Attempt rule.** Attempt numbers 1–3 identify this newly authorized campaign.
+Each gets a new directory, manifest and exactly one call per row. On the first
+failure, retain its stop record and raw evidence; never retry a row or resume that
+attempt. Adapt only between attempts, revalidate on synthetic data and freeze the
+changed code/config before the next pass. Stop after the first fully valid pass;
+no score-based retry or best-of-three selection. Stop after the third failed
+attempt if none completes. Labels stay unopened until all 100 receipts from a
+single successful attempt are finalized and hash-committed. Failed prefixes are
+never scored, joined, or substituted into another attempt.
+
+**Freeze and scoring.** Separate CLI schemas bind attempt, original dataset and
+baseline hashes/support, blind input, old serializer, dispatcher/scorer hashes,
+CLI version, authentication mode, config hash, source revisions and concurrency
+(one). Commit each freeze before inference and raw commitment before labels.
+Reuse existing label parsing, dataset loaders and metrics; independently rebuild
+the full confusion matrix, top-1, six-class macro-F1 and per-label recall. Publish
+only the approved numeric/label/hash projection. Preserve known-sample,
+two-trajectory, zero-git-support and differing-harness limitations. Monetary cost
+remains unavailable; report actual runtime usage/timing only.
+
+Phase 0 is bounded to synthetic dispatch checks and offline negative controls
+before a scored attempt. Ordinary code/test corrections in this phase do not
+consume scored attempts. The full mock suite runs on the final code; any required
+follow-up to a failed test is retained and disclosed.

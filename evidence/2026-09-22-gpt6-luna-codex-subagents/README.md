@@ -89,3 +89,30 @@ invocation; it did not retry any scored model row.
 
 [Final independent QA](../../relay-system/2026-09-22/gh26-luna-final-qa.md)
 approves publication of this incomplete-run receipt only.
+
+## Newly authorized rerun
+
+The operator authorized up to three new attempts with adaptations, with the
+prompt defect fixed first. The original failed pass above remains unchanged.
+The new runner sends the serializer's exact UTF-8 bytes to a fresh Codex CLI
+session via stdin, checks all 100 hashes before inference, and verifies equality
+against the actual plaintext task in the runtime trace. No manual prompt copying
+is involved. Official [Codex non-interactive documentation](https://learn.chatgpt.com/docs/non-interactive-mode)
+and the installed CLI help document the stdin execution path.
+
+This is an explicit harness pivot: fresh `codex exec` sessions, not collaboration
+subagents. Model, medium effort, six options, task instruction, dataset and blind
+prompt hashes remain fixed. User configuration is ignored; API-key overrides are
+removed; ChatGPT subscription authentication is checked. Read-only execution and
+runtime zero-tool validation apply. The CLI and prior subagent scaffolds differ.
+
+[Preflight](rerun-preflight.json) records the two final synthetic checks: exact
+runtime input matches, one completed fresh session, correct model/effort, valid
+choice-only answers and zero tool calls. Seventeen new focused controls pass,
+including an omitted-word regression, row-99 corruption preventing all calls,
+repeated-prompt preservation, and stop-on-first-failure behavior.
+
+Each attempt will receive its own frozen manifest before inference. The first
+fully valid 100-row pass is committed before labels and scored once. Failed
+attempts are retained unscored; there are no row retries or best-of-three score
+selection. No new scored attempt has started at this preflight checkpoint.
