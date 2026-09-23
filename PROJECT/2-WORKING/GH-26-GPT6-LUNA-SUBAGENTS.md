@@ -263,6 +263,20 @@ Per [the Phase 0 review](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/iss
 - [x] Phase 0 choice-only smoke and independent runtime-evidence review.
 - [x] Fresh full task clone; base d61566ae345d9f5556f3918c30b0c3d534ea3d07.
 - [x] Independent plan approval.
-- [ ] Frozen data/helper/tests and blind-input hash.
+- [x] Frozen data/helper/tests and blind-input hash.
 - [ ] Canonical 100 child receipts finalized before labels.
 - [ ] Independent scoring verification, final QA, full gate and publication.
+
+## Canonical pass disposition — 2026-09-22
+
+Stopped incomplete after 38 launches: 37 validated rows, then coordinator prompt
+transcription drift at index 37. One word (“next”) was omitted from the frozen
+first sentence. Coordinator self-review found it; encrypted runtime traces cannot
+independently prove actual plaintext equality. No labels opened, no retries or
+partial score, and 62 rows not launched. See the evidence receipt for hashes.
+
+All task files now reside in the operator-added Jev repository, with private
+inputs and the relocated Phase 0 audit under its ignored temporary folder. The
+frozen helper/tests remain unchanged. A future canonical pass requires explicit
+operator authorization and mechanically exact request dispatch; this pass must
+never be resumed or represented as an accuracy result.

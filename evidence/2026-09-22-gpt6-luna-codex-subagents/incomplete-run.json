@@ -1,0 +1,21 @@
+{
+ "accuracy": null,
+ "actual_requested_prompt_sha256": "28a6c8de6acaeb476d8793b533173d38d3c8c7719fa85ac145163940aaaf48b9",
+ "complete": false,
+ "expected_prompt_sha256": "be196de082fe60df60b9fe3ef4328b17eacbfef40a57c25d1bccab09912eab4f",
+ "failed_child_trace_sha256": "0355c7be80b1e7f448ec92809b3869b554274bd54bd933b14c950e888494c1db",
+ "failure_detail": "Coordinator omitted next from the frozen first sentence.",
+ "failure_type": "CoordinatorPromptDrift",
+ "freeze_sha256": "a64060b4fbc55c39ef92b3fc97c4742377aff8277db47823adf38e663198fc07",
+ "index": 37,
+ "labels_opened": false,
+ "launched_rows": 38,
+ "macro_f1": null,
+ "partial_raw_sha256": "6d45410985e6aa4e6868fe15a0bdd0313169b49ef5e7ad5f7328922545546dcb",
+ "prompt_drift_detected_by": "coordinator_self_review_not_automated_validator",
+ "remaining_rows_not_launched": 62,
+ "retries": 0,
+ "schema": "gh26-failed-run-v1",
+ "scored_rows": 0,
+ "validated_rows": 37
+}

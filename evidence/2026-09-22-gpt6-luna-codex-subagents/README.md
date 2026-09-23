@@ -40,12 +40,52 @@ remain outside Git.
 
 ## Status
 
-Choice-only synthetic Phase 0 and independent plan review passed. Canonical
-inference has not started. This document will be updated with the actual terminal
-state and verified result; it does not currently claim benchmark accuracy.
+**Incomplete — no accuracy score.** The canonical pass launched 38 fresh Luna
+children sequentially. Rows 0–36 produced 37 validated receipts. At row 37 (the
+38th launch), the coordinator accidentally omitted “next” from the frozen first
+sentence when transcribing the direct launch request. The coordinator noticed
+the drift and stopped; the remaining 62 rows were not launched. There were no
+retries, replacement predictions, label access, or partial scoring.
+
+This is a coordinator orchestration failure, not evidence of a Luna model
+failure or classification accuracy. The malformed request still received a
+choice-only response; it cannot count toward the frozen benchmark.
+
+The automated validator checked the saved plaintext request against the frozen
+serializer and correlated encrypted parent/child payloads. It could not verify
+that the manually transcribed actual launch used that saved plaintext. The
+coordinator's self-review, not the validator, found the omission. Any future pass
+needs exact programmatic dispatch from the frozen request plus a verifiable
+binding, and separate operator authorization under this experiment's no-retry
+rule. The frozen helper is retained unchanged as an audit artifact.
 
 ## Artifacts
 
-The helper and focused tests are frozen before inference. The blind input's hash
-is committed while its text stays outside Git. Completed results, provenance and
-independent verification will be added only after a valid finalized pass.
+- [Freeze manifest](freeze.json): helper/protocol committed at `96f4767`, then
+  blind-input/runtime freeze committed at `4b0c19b`, both before inference.
+- [Incomplete-run receipt](incomplete-run.json): counts, failure classification,
+  intended/actual requested-prompt hashes, failed child-trace hash and partial
+  raw-receipt hash. No source text, predictions or gold labels are published.
+- [Data preflight](data-preflight.json): frozen input/baseline checks and source
+  suite result (598 passed, 7 skipped, 18 deselected).
+- [Pre-inference QA](../../relay-system/2026-09-22/gh26-luna-preflight-qa.md):
+  reviewed helper and 14 passing focused controls, including two offline checks
+  against completed synthetic runtime traces.
+
+Private inputs, launch sidecars, the actual drifted request, 37 accepted receipts,
+stop marker and test logs remain in the repository's ignored temporary folder.
+Raw runtime session logs remain in Codex's private session store. The earlier
+Phase 0 audit was relocated into this repository's ignored temporary folder.
+
+## Validation
+
+The full mock-only suite passed all 60 tests under Python 3.13. The initial
+Python 3.9 invocation had two errors in existing HTTP-error mock tests
+(`HTTPError.close()` reached a missing `file` entry in standard-library
+`tempfile`). Both logs are retained privately and hashed in
+[validation.json](validation.json). No code changed between invocations. This
+explicit environment follow-up deviates from the planned single full-suite
+invocation; it did not retry any scored model row.
+
+[Final independent QA](../../relay-system/2026-09-22/gh26-luna-final-qa.md)
+approves publication of this incomplete-run receipt only.
