@@ -24,6 +24,8 @@
 
 ### In progress
 
+- [GH-26 GPT-6 Luna comparison](PROJECT/2-WORKING/GH-26-GPT6-LUNA-SUBAGENTS.md) — choice-only Phase 0 passed; canonical run authorized, preflight and helper pending.
+
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
 
 ### Completed

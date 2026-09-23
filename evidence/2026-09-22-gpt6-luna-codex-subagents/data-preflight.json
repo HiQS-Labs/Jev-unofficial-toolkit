@@ -1,0 +1,36 @@
+{
+ "baselines_correct": {
+  "majority": 26,
+  "markov_1": 37,
+  "phase_backoff": 42,
+  "repeat_last": 22
+ },
+ "hashes": {
+  "holdout": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
+  "train": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
+ },
+ "holdout_trajectories": 2,
+ "needle_commit": "d3be2058230cee6dc69f85c074a41bba5c8ecf61",
+ "python": "Python 3.13.15",
+ "rows": {
+  "holdout": 100,
+  "train": 500
+ },
+ "schema": "luna-data-preflight-v1",
+ "source_clone_clean": true,
+ "source_suite": {
+  "deselected": 18,
+  "exit_code": 0,
+  "passed": 598,
+  "skipped": 7
+ },
+ "support": {
+  "edit": 19,
+  "git": 0,
+  "read": 29,
+  "run_command": 26,
+  "run_tests": 7,
+  "search": 19
+ },
+ "trajectory_separation": "prepare() successful with explicit train/holdout instance overlap guard"
+}
