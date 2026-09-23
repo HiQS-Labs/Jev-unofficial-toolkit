@@ -331,4 +331,12 @@ for the one reserved full repository gate and PR publication.
 
 Relay closed (Approved), no further turn needed.
 
+
+### Attestation · relay-drive — 2026-09-23T00:13:05Z
+task: RELAY-gh25-laya-final-qa-20260922
+reviewer: codex
+status: Approved
+reviewed-head: c109e5829c2ae33966bd30b7d727a4ea62f37ecf
+added-range: 22490+5903
+added-sha256: d694cf83eeac3255d971d609dababe8df95c1de23068745da43293894e618dab
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
