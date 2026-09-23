@@ -1,0 +1,36 @@
+{
+ "attempt": 1,
+ "auth_mode": "chatgpt_subscription",
+ "baselines": {
+  "majority": 26,
+  "markov_1": 37,
+  "phase_backoff": 42,
+  "repeat_last": 22
+ },
+ "baselines_sha256": "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00",
+ "blind_sha256": "fdaccd92d54de353a25c02a8d1374cc2cfb47b8bdb0f1b55d12fbf3740da7b94",
+ "codex_version": "0.155.0-alpha.16",
+ "concurrency": 1,
+ "config_sha256": "7fab5469b98d58f642727739c9d3a7b025c81e153908313dfbd258fe8cb653a5",
+ "dataset_revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
+ "dispatcher_sha256": "1e3c89fb568324610defc0e4b68fd10c165283539dc38337eb2d75fdafbc9294",
+ "holdout_sha256": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
+ "model": "gpt-6-luna",
+ "needle_commit": "d3be2058230cee6dc69f85c074a41bba5c8ecf61",
+ "old_helper_sha256": "05b283403d825d14106141e735dd2359ed79758d50cce6259a72d6259e67a05b",
+ "reasoning_effort": "medium",
+ "rows": 100,
+ "schema": "gh26-cli-freeze-v1",
+ "scorer_sha256": "5d8e9f23fcfd9c47af644ba5a4f484fc600300f224420e2d2d70b43dbfd1e136",
+ "session_mode": "fresh_exec",
+ "support": {
+  "edit": 19,
+  "git": 0,
+  "read": 29,
+  "run_command": 26,
+  "run_tests": 7,
+  "search": 19
+ },
+ "toolkit_head": "ce7b6fd7b55255cb7dfd169d22c2a084de58e6b6",
+ "train_sha256": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
+}
