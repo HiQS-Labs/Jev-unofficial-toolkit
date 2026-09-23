@@ -139,6 +139,34 @@ class LayaEvidenceTests(unittest.TestCase):
         for path in (results, provenance, verification):
             self.assertNotIn(self.sentinel, path.read_text(encoding="utf-8"))
 
+    def test_verifier_uses_recorded_runtime_on_another_host(self):
+        (_, _), raw, results, provenance = self._summarize(self._raw_rows(), "portable")
+        recorded = json.loads(provenance.read_text(encoding="utf-8"))["runtime"]
+        with (patch.object(laya.platform, "python_version", return_value="0.0.0"),
+              patch.object(laya.platform, "system", return_value="OtherOS"),
+              patch.object(laya.platform, "machine", return_value="other-cpu")):
+            self._verify(raw, results, provenance, self.root / "portable-verification.json")
+        self.assertEqual(json.loads(provenance.read_text(encoding="utf-8"))["runtime"], recorded)
+
+    def test_verifier_rejects_empty_recorded_runtime(self):
+        (_, _), raw, results, provenance = self._summarize(self._raw_rows(), "runtime")
+        value = json.loads(provenance.read_text(encoding="utf-8"))
+        value["runtime"]["python"] = ""
+        provenance.write_text(json.dumps(value), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "runtime schema drift"):
+            self._verify(raw, results, provenance, self.root / "never-runtime.json")
+
+    def test_verifier_accepts_original_runner_but_rejects_unknown_hash(self):
+        (_, _), raw, results, provenance = self._summarize(self._raw_rows(), "runner")
+        value = json.loads(provenance.read_text(encoding="utf-8"))
+        value["hashes"]["runner_sha256"] = laya.ORIGINAL_RUNNER_SHA256
+        provenance.write_text(json.dumps(value), encoding="utf-8")
+        self._verify(raw, results, provenance, self.root / "original-runner.json")
+        value["hashes"]["runner_sha256"] = "0" * 64
+        provenance.write_text(json.dumps(value), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "unknown runner hash"):
+            self._verify(raw, results, provenance, self.root / "never-runner.json")
+
     def test_holdout_and_all_four_baselines_are_frozen(self):
         with self.assertRaisesRegex(ValueError, "holdout hash mismatch"):
             laya.load_holdout(self.holdout, expected_sha="0" * 64,

@@ -21,7 +21,7 @@ reversibility: Easy — additive receipt, tests, and documentation only; no runt
 
 | What was just completed | What's next |
 |---|---|
-| [PR #27](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/27) is ready for review: final Codex QA approved, the one local gate passed 57/57, and the hosted test is green. | Review and merge the PR, then retire `/Users/noelsaw/marathon-clones/jev-gh25-laya-six-action` through `/merge-cleanup`. |
+| [PR #27](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/27) is ready for review: final Codex QA approved, the one local gate passed 57/57, and the hosted test is green. | Review and merge the PR, then retire the retained GH-25 clone through `/merge-cleanup`. |
 
 ## Table of contents
 
@@ -213,7 +213,7 @@ Rationale, 2026-09-22: the operator directly requested this adjacent comparison;
 - [x] Final relay is Approved and attested against the implementation under review.
 - [x] Focused, native Laya, repository-wide, and hosted check evidence is recorded without laundering failures/skips.
 - [x] Issue/plan/roadmap say “PR ready; awaiting merge,” not shipped.
-- [x] Retained clone `/Users/noelsaw/marathon-clones/jev-gh25-laya-six-action` and its `/merge-cleanup` retirement pointer are handed off.
+- [x] The retained GH-25 clone and its `/merge-cleanup` retirement pointer are handed off.
 
 ## Acceptance falsification matrix
 

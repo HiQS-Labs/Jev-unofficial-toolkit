@@ -47,6 +47,7 @@ QUESTIONS = {
 }
 
 HOLDOUT_SHA256 = "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587"
+ORIGINAL_RUNNER_SHA256 = "8184ae9c5f714eb500c186472131560ef9878377c5a7a845231b51947be29dd8"
 TRAIN_SHA256 = "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
 BASELINES_SHA256 = "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00"
 QUESTION_SHA256 = "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7"
@@ -595,7 +596,8 @@ def _created_utc(value=None):
 
 
 def _build_provenance(baselines_path, input_path, raw_path, toolkit_commit, model_identity,
-                      created_utc=None, expected_holdout_sha=HOLDOUT_SHA256):
+                      created_utc=None, expected_holdout_sha=HOLDOUT_SHA256, runtime=None,
+                      runner_sha=None):
     if not _is_git_commit(toolkit_commit):
         raise ValueError("toolkit commit must be a full Git SHA")
     provenance = {
@@ -604,15 +606,16 @@ def _build_provenance(baselines_path, input_path, raw_path, toolkit_commit, mode
         "needle_commit": NEEDLE_COMMIT,
         "dataset": "nebius/SWE-rebench-openhands-trajectories",
         "dataset_revision": DATASET_REVISION, "dataset_license": "CC BY 4.0",
-        "runtime": {"python": platform.python_version(), "platform": platform.system(),
-                    "machine": platform.machine()},
+        "runtime": (dict(runtime) if runtime is not None else
+                    {"python": platform.python_version(), "platform": platform.system(),
+                     "machine": platform.machine()}),
         "baselines": dict(BASELINES), "model_identity": model_identity,
         "hashes": {
             "train_sha256": TRAIN_SHA256, "holdout_sha256": expected_holdout_sha,
             "baselines_sha256": sha256_file(baselines_path),
             "question_sha256": QUESTION_SHA256,
             "laya_choice_contract_sha256": LAYA_CHOICE_CONTRACT_SHA256,
-            "runner_sha256": sha256_file(__file__),
+            "runner_sha256": runner_sha if runner_sha is not None else sha256_file(__file__),
             "laya_input_sha256": sha256_file(input_path),
             "laya_output_sha256": sha256_file(raw_path),
         },
@@ -637,7 +640,11 @@ def _validate_results(value):
 def _validate_provenance(value):
     if not isinstance(value, dict) or set(value) != PROVENANCE_FIELDS:
         raise ValueError("committed provenance schema drift")
-    if set(value.get("runtime", {})) != {"python", "platform", "machine"}:
+    runtime = value.get("runtime")
+    if (not isinstance(runtime, dict)
+            or set(runtime) != {"python", "platform", "machine"}
+            or any(not isinstance(item, str) or not item.strip()
+                   for item in runtime.values())):
         raise ValueError("runtime schema drift")
     expected_hashes = {
         "train_sha256", "holdout_sha256", "baselines_sha256", "question_sha256",
@@ -780,10 +787,14 @@ def verify(holdout_path, baselines_path, laya_input_path, laya_output_path,
     expected_results = _independent_reprojection(holdout, raw_rows)
     if expected_results != results:
         raise ValueError("independent raw-to-results projection mismatch")
+    recorded_runner_sha = provenance["hashes"]["runner_sha256"]
+    if recorded_runner_sha not in {ORIGINAL_RUNNER_SHA256, sha256_file(__file__)}:
+        raise ValueError("unknown runner hash")
     expected_provenance = _build_provenance(
         baselines_path, laya_input_path, laya_output_path, provenance["toolkit_commit"],
         expected_results["model_identity"], created_utc=provenance["created_utc"],
-        expected_holdout_sha=expected_sha,
+        expected_holdout_sha=expected_sha, runtime=provenance["runtime"],
+        runner_sha=recorded_runner_sha,
     )
     if expected_provenance != provenance:
         raise ValueError("independent provenance projection mismatch")
