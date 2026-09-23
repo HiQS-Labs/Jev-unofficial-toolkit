@@ -136,7 +136,7 @@ Routing and identity questions are built per call, so they cannot be frozen; fai
 
 [SemIf](https://github.com/TheoLeeCJ/SemIf) and [laya](https://github.com/NandhaKishorM/laya) are independent, non-TypeSafe OSS projects. A pinned SemIf/Qwen3.5-4B direct-MLX arm scored [`24/100` on the same six-action holdout](evidence/2026-09-22-semif-six-action/README.md) used in issue #21: above Jev's recorded `21/100` original result but below the `26/100` majority baseline. The serializers and readouts differ, so this is not a byte-identical request comparison, adapter validation, or drop-in compatibility claim. Laya remains untested. This version's runtime integrations still support only the pinned TypeSafe and OpenRouter Decisions routes described above.
 
-The [GPT-6 Luna Codex-subagent comparison](evidence/2026-09-22-gpt6-luna-codex-subagents/README.md) stopped incomplete after 38 launches because the coordinator transcribed one frozen prompt incorrectly. It produced no accuracy score and supports no ranking against the other models.
+The [GPT-6 Luna comparison](evidence/2026-09-22-gpt6-luna-codex-subagents/README.md#completed-cli-rerun) scored **30/100** on the same known six-action sample using fresh Codex CLI sessions at medium effort: above the recorded Jev (21), SemIf (24) and Needle (28) scores, below phase-backoff (42). Different harnesses and only two trajectories limit the comparison. The prior subagent pass stopped for coordinator prompt drift and remains unscored; the authorized rerun fixed dispatch and completed on its first attempt.
 
 ## Build a Jev function in your app
 

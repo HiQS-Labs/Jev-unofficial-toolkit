@@ -292,9 +292,9 @@ its frozen implementation remain unchanged.
 - [x] Reproduce the omitted-word dispatch defect in a synthetic red control.
 - [x] Eliminate manual prompt transcription: serializer → UTF-8 bytes → checked
   SHA-256 → subprocess stdin, without shell expansion or appended newline.
-- [ ] Independent amended protocol/implementation QA and final smoke acceptance.
-- [ ] Commit per-attempt freeze before any scored model call.
-- [ ] First complete 100-row pass, pre-label commitment, independent scoring QA.
+- [x] Independent amended protocol/implementation QA and final smoke acceptance.
+- [x] Commit per-attempt freeze before any scored model call.
+- [x] First complete 100-row pass, pre-label commitment, independent scoring QA.
 - [ ] Publish every attempt's terminal status and final outcome to #26.
 
 **Harness pivot.** Each row launches a new `codex exec` process/session with
@@ -341,3 +341,13 @@ Phase 0 is bounded to synthetic dispatch checks and offline negative controls
 before a scored attempt. Ordinary code/test corrections in this phase do not
 consume scored attempts. The full mock suite runs on the final code; any required
 follow-up to a failed test is retained and disclosed.
+
+### Rerun outcome
+
+New attempt 1 completed all 100 fresh CLI sessions with exact runtime prompt
+matches and no tools or retries. Raw commitment was committed at `11e84b1`
+before labels were opened. Scoring and independent metric verification report
+30/100 accuracy and six-class macro-F1 0.1962121212121212. Attempts 2 and 3 were
+not needed and were not launched. The original failed subagent pass remains
+separate and unscored. See the evidence README for per-label results, provenance,
+usage, comparison limitations and review links.

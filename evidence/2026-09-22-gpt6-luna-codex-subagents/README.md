@@ -1,6 +1,6 @@
 # GPT-6 Luna: six-action next-action comparison
 
-Contents: Limitations · Protocol · Status · Artifacts
+Contents: Limitations · Protocol · Original pass · Artifacts · Completed CLI rerun
 
 ## Limitations
 
@@ -13,10 +13,11 @@ definitions are shared with the historical arms. Codex adds its own system,
 developer, environment and repository scaffolding and uses generated choice-only
 JSON; these are not byte-identical requests or equivalent harnesses.
 
-Model identity is attested by the executing Codex runtime's child session record,
-not a separate provider assertion. Requested prompt hashes bind the coordinator's
-frozen messages; the encrypted payload in the local runtime trace cannot be
-independently decoded. Fresh children have no prior conversation, but share the
+Model identity is attested by the executing Codex runtime's session record,
+not a separate provider assertion. In the original subagent pass, encrypted task
+payloads could not be independently decoded to prove plaintext equality. The
+completed CLI rerun instead verifies its recorded plaintext task against the
+exact dispatched bytes. Fresh sessions have no prior conversation, but share the
 runtime environment and filesystem. No calibrated confidence is available.
 Reported token usage, when present, includes harness scaffolding; monetary cost
 is unavailable. Concurrency changes throughput, not the validity rule.
@@ -38,7 +39,7 @@ Committed per-row results contain only numeric indices, labels, correctness and
 hashes. Raw source text, prompts, session logs, identifiers and machine paths
 remain outside Git.
 
-## Status
+## Original pass — stopped incomplete
 
 **Incomplete — no accuracy score.** The canonical pass launched 38 fresh Luna
 children sequentially. Rows 0–36 produced 37 validated receipts. At row 37 (the
@@ -90,7 +91,7 @@ invocation; it did not retry any scored model row.
 [Final independent QA](../../relay-system/2026-09-22/gh26-luna-final-qa.md)
 approves publication of this incomplete-run receipt only.
 
-## Newly authorized rerun
+## Completed CLI rerun
 
 The operator authorized up to three new attempts with adaptations, with the
 prompt defect fixed first. The original failed pass above remains unchanged.
@@ -112,7 +113,63 @@ choice-only answers and zero tool calls. Seventeen new focused controls pass,
 including an omitted-word regression, row-99 corruption preventing all calls,
 repeated-prompt preservation, and stop-on-first-failure behavior.
 
-Each attempt will receive its own frozen manifest before inference. The first
-fully valid 100-row pass is committed before labels and scored once. Failed
-attempts are retained unscored; there are no row retries or best-of-three score
-selection. No new scored attempt has started at this preflight checkpoint.
+**The first newly authorized attempt completed 100/100 valid rows and scored
+30/100 (30% accuracy), with six-class macro-F1 0.1962121212121212.** There were
+no row retries, tools, reused sessions, missing rows, substitutions or partial
+scores. Attempts 2 and 3 were not used. The historical failed subagent pass remains
+unscored and is not part of this result.
+
+| Same known 100-row sample | Correct |
+|---|---:|
+| Phase-backoff baseline | 42 |
+| Markov-1 baseline | 37 |
+| **GPT-6 Luna, fresh Codex CLI, medium** | **30** |
+| Needle tuned scorer | 28 |
+| Majority baseline | 26 |
+| SemIf/Qwen3.5-4B | 24 |
+| Repeat-last baseline | 22 |
+| Jev recorded original | 21 |
+
+Historical model values are from the [SemIf comparison receipt](../2026-09-22-semif-six-action/README.md).
+The prompt serializers/readouts and runtime scaffolds differ between arms.
+These are observed scores on a reused sample, not a statistically established
+ranking or evidence of broad model intelligence. There is no completed
+GPT-5.6 Terra or Sol 100-row arm here; the earlier synthetic formatting checks
+cannot be compared as accuracy results.
+
+| Label | Gold support | Predicted | Correct | Recall |
+|---|---:|---:|---:|---:|
+| edit | 19 | 14 | 5 | 26.3% |
+| git | 0 | 0 | 0 | n/a |
+| read | 29 | 59 | 19 | 65.5% |
+| run_command | 26 | 0 | 0 | 0% |
+| run_tests | 7 | 13 | 2 | 28.6% |
+| search | 19 | 14 | 4 | 21.1% |
+
+The main observed weakness is zero `run_command` predictions despite 26 gold
+rows, alongside 59 `read` predictions. The aggregate score therefore does not
+support replacing the stronger phase-backoff baseline.
+
+Summed runtime-reported agent duration: **334.011 seconds**. Reported usage:
+1,411,243 input tokens (1,163,520 cached), 913 output tokens, 1,412,156 total;
+zero reasoning-output tokens were reported. Usage includes CLI scaffolding.
+Monetary cost and calibrated confidence are unavailable.
+
+**Commit order:** reviewed code `ce7b6fd`; per-attempt freeze `cc9620c` before
+inference; complete raw commitment `11e84b1` before opening labels. Raw SHA-256:
+`21612297c6eaf8e3509af0e111dad0a6bfbb9256f383d31c0c723653a6283f00`.
+
+- [Attempt freeze](rerun-attempt-1/freeze.json)
+- [Pre-label raw commitment](rerun-attempt-1/raw-commitment.json)
+- [Results and sanitized per-row projection](rerun-attempt-1/results.json)
+- [Provenance](rerun-attempt-1/provenance.json)
+- [Independent metric verification](rerun-attempt-1/verification.json)
+- [Pre-inference QA](../../relay-system/2026-09-22/gh26-luna-rerun-preflight-qa.md)
+
+All 77 mock-only tests passed on the frozen code under Python 3.13. The raw CLI
+inputs, launch records, stdout and finalized runtime traces remain private in the
+repository's ignored temporary folder. No source text, machine paths, session
+identifiers or raw reasoning are included in the public result projection.
+
+[Final independent CLI audit](../../relay-system/2026-09-22/gh26-luna-rerun-final-qa.md)
+approves the completed 100-row result and its publication.

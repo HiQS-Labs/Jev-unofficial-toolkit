@@ -28,6 +28,8 @@
 
 ### Completed
 
+- [GH-26 GPT-6 Luna comparison](PROJECT/2-WORKING/GH-26-GPT6-LUNA-SUBAGENTS.md) — authorized fresh-CLI rerun completed 30/100 on its first attempt; original failed subagent pass retained unscored.
+
 - [GH-22 SemIf six-action comparison](PROJECT/2-WORKING/GH-22-SEMIF-SIX-ACTION.md) — merged in PR #24 with canonical 24/100 receipt, final Codex QA, and green local/hosted gates.
 - [GH-6 live answer recovery](PROJECT/2-WORKING/GH-6-PROBABILITY-CHECKPOINTS.md) — closed after checkpoint and optional-probability recovery shipped in PR #19.
 - [GH-9 OpenRouter access](PROJECT/2-WORKING/GH-9-OPENROUTER-ACCESS.md) — closed after the pinned Decisions adapter and mock coverage shipped in PR #19.
@@ -40,7 +42,3 @@
 ---
 
 *Add new work here only when a real `PROJECT/**` doc exists to own the execution detail.*
-
-### Attempted
-
-- [GH-26 GPT-6 Luna comparison](PROJECT/2-WORKING/GH-26-GPT6-LUNA-SUBAGENTS.md) — canonical pass stopped for coordinator prompt drift after 38 launches; no accuracy score.
