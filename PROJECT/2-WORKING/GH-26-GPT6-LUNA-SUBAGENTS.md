@@ -295,7 +295,7 @@ its frozen implementation remain unchanged.
 - [x] Independent amended protocol/implementation QA and final smoke acceptance.
 - [x] Commit per-attempt freeze before any scored model call.
 - [x] First complete 100-row pass, pre-label commitment, independent scoring QA.
-- [ ] Publish every attempt's terminal status and final outcome to #26.
+- [x] Publish every attempt's terminal status and final outcome to #26.
 
 **Harness pivot.** Each row launches a new `codex exec` process/session with
 `gpt-6-luna`, medium reasoning effort, ChatGPT subscription authentication,
@@ -351,3 +351,5 @@ before labels were opened. Scoring and independent metric verification report
 not needed and were not launched. The original failed subagent pass remains
 separate and unscored. See the evidence README for per-label results, provenance,
 usage, comparison limitations and review links.
+
+Published [final results to #26](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/26#issuecomment-5788107970) and updated [PR #28](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/28). Both hosted test jobs passed on the result commit.
