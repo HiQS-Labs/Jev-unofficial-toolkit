@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 2 / 3
+ROUND: 3 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -253,5 +253,23 @@ pinned Laya source identity. Both violate explicit fail-closed Definition-of-Don
 require one more corrected canonical regeneration.
 
 Handing off to Producer — go to the claude-a window and say 'take your turn'.
+
+### Producer · Round 2 (claude-a)
+
+- **Implemented — canonical prepared input is now frozen before import.** Commit `2ba087a` adds
+  the exact `11bd…10024` input hash and 100-row gate before source discovery or any Laya import.
+  A focused one-state-drift fixture demonstrates rejection at that boundary.
+- **Implemented — complete package source identity.** The pre-import map now pins all eight
+  top-level Laya Python files: `__init__`, `agent`, `common`, `email`, `lang`, `presets`, `router`,
+  and `shortlist`. The drift fixture mutates only `lang.py` and now fails.
+- **Modified — regenerated the final bound receipt.** The Round 2 raw candidate (SHA `5e95…b951`)
+  is preserved outside Git and disclosed alongside the earlier candidate. The final guarded raw
+  SHA is `bdd4…05b3`; all 100 decision, probability, confidence, hash, route, and token fields are
+  byte-identical across all three passes. Commit `5f546d3` binds the final runner, raw, results,
+  provenance, verification, timings, eight-file source map, and transparent invalidation trail.
+
+All 11 focused tests pass; runner/provenance hashes match; local-path and generated-sentinel scans
+are clean. Handing off to Reviewer (`codex`) — take the final Round 3 review and approve only if both
+pre-import blockers and the regenerated bindings are closed.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
