@@ -25,7 +25,7 @@
 ### In progress
 
 - [GH-11 starter readiness](PROJECT/2-WORKING/GH-11-STARTER-READINESS.md) — transport work is complete; the umbrella remains open for #10's separately authorized human-reference receipt.
-- [GH-25 Laya six-action comparison](PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md) — canonical 15/100 receipt and final Codex QA are complete; the repository gate and PR publication remain.
+- [GH-25 Laya six-action comparison](PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md) — canonical 15/100 receipt, final Codex QA, and the 57-test repository gate are complete; PR publication remains.
 
 ### Completed
 

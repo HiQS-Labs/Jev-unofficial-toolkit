@@ -2,7 +2,7 @@
 gh_issue: 25
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/25
 title: Run Laya on the #21 six-action holdout
-status: Final Codex QA approved; repository gate pending
+status: Final Codex QA and repository gate complete; PR publication pending
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -21,7 +21,7 @@ reversibility: Easy — additive receipt, tests, and documentation only; no runt
 
 | What was just completed | What's next |
 |---|---|
-| Final Codex implementation QA approved and attested the corrected, independently verified 15/100 receipt. | Run the one repository-wide gate, then publish the PR. |
+| Final Codex implementation QA approved the corrected receipt, and the one repository-wide gate passed 57/57. | Publish the PR and verify its hosted checks. |
 
 ## Table of contents
 
@@ -205,7 +205,7 @@ Rationale, 2026-09-22: the operator directly requested this adjacent comparison;
 **Goal:** The committed diff is independently approved, passes the one final gate, and is published as a ready PR.
 
 - [x] Obtain final Codex relay approval within the three-round cap and disposition every finding against evidence and scope.
-- [ ] Run this repository's full unittest gate exactly once on the approved implementation.
+- [x] Run this repository's full unittest gate exactly once on the approved implementation: 57 tests passed in `0.355s`.
 - [ ] Push the task branch, open a PR to `main` linked to #25, and verify exact head/base plus hosted checks.
 
 ### Phase 3 — QA checklist
