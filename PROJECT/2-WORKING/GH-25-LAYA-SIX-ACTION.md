@@ -2,7 +2,7 @@
 gh_issue: 25
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/25
 title: Run Laya on the #21 six-action holdout
-status: Final Codex QA and repository gate complete; PR publication pending
+status: PR ready; awaiting merge
 created: 2026-09-22
 updated: 2026-09-22
 owner: toolkit maintainer
@@ -21,7 +21,7 @@ reversibility: Easy — additive receipt, tests, and documentation only; no runt
 
 | What was just completed | What's next |
 |---|---|
-| Final Codex implementation QA approved the corrected receipt, and the one repository-wide gate passed 57/57. | Publish the PR and verify its hosted checks. |
+| [PR #27](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/27) is ready for review: final Codex QA approved, the one local gate passed 57/57, and the hosted test is green. | Review and merge the PR, then retire `/Users/noelsaw/marathon-clones/jev-gh25-laya-six-action` through `/merge-cleanup`. |
 
 ## Table of contents
 
@@ -206,14 +206,14 @@ Rationale, 2026-09-22: the operator directly requested this adjacent comparison;
 
 - [x] Obtain final Codex relay approval within the three-round cap and disposition every finding against evidence and scope.
 - [x] Run this repository's full unittest gate exactly once on the approved implementation: 57 tests passed in `0.355s`.
-- [ ] Push the task branch, open a PR to `main` linked to #25, and verify exact head/base plus hosted checks.
+- [x] Push the task branch, open [PR #27](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/pull/27) to `main` linked to #25, and verify exact head/base plus the green hosted test.
 
 ### Phase 3 — QA checklist
 
 - [x] Final relay is Approved and attested against the implementation under review.
-- [ ] Focused, native Laya, repository-wide, and hosted check evidence is recorded without laundering failures/skips.
-- [ ] Issue/plan/roadmap say “PR ready; awaiting merge,” not shipped.
-- [ ] Retained clone path and `/merge-cleanup` retirement pointer are handed off.
+- [x] Focused, native Laya, repository-wide, and hosted check evidence is recorded without laundering failures/skips.
+- [x] Issue/plan/roadmap say “PR ready; awaiting merge,” not shipped.
+- [x] Retained clone `/Users/noelsaw/marathon-clones/jev-gh25-laya-six-action` and its `/merge-cleanup` retirement pointer are handed off.
 
 ## Acceptance falsification matrix
 
