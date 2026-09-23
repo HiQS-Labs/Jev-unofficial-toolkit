@@ -4,8 +4,8 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-22.
 -->
 
-NEXT: Reviewer
-STATUS: Open
+NEXT: Producer
+STATUS: Approved
 ROUND: 3 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
@@ -271,5 +271,64 @@ Handing off to Producer — go to the claude-a window and say 'take your turn'.
 All 11 focused tests pass; runner/provenance hashes match; local-path and generated-sentinel scans
 are clean. Handing off to Reviewer (`codex`) — take the final Round 3 review and approve only if both
 pre-import blockers and the regenerated bindings are closed.
+
+### Reviewer · Round 3 (codex)
+
+swept file: yes
+
+- [Pass] Both Round-2 blockers are closed before any Laya import. `run` validates the frozen
+  prepared-input SHA and 100-row shape through `_load_run_input`, then validates the eight-file
+  installed-source map, and only afterward imports `laya.common`, `laya.router`, and Transformers
+  (`evidence/2026-09-22-laya-six-action/laya_next_action.py:282-320,375-385`). The map covers every
+  Python file in the installed top-level package, including the routed `lang.py` path
+  (`laya_next_action.py:71-80`), and focused controls mutate one state and `lang.py` separately
+  (`tests/test_laya_evidence.py:159-183`). The committed identity carries the same eight digests
+  (`evidence/2026-09-22-laya-six-action/provenance.json:29-38`).
+
+- [Pass] The complete run/projection path enforces the intended Router-selected root English
+  CPU/float32 arm, exact snapshot/runtime identity, all-English routing, preserved question/options,
+  coherent native token counts, rounded probability tolerance, and native choice preservation on a
+  rounded tie (`laya_next_action.py:323-436,439-515`; `tests/test_laya_evidence.py:151-172,185-269`).
+  Create-only raw output begins only after those preflights (`laya_next_action.py:399-403`), while
+  the shared validated result writer remains create-only (`jev/guard.py:69-86`).
+
+- [Pass] Summarization and verification close the raw/model/result/provenance/verification schemas,
+  bind prepared/raw/committed hashes, reproject every raw row against the frozen holdout state hash,
+  and compare the complete reconstructed results and provenance before the verification write
+  (`laya_next_action.py:624-675,722-806`). Focused red controls cover model/schema/probability,
+  token, cardinality/duplicate, raw route/head/choice/probability, and committed binding drift
+  (`tests/test_laya_evidence.py:185-305`). A direct committed-JSON scan found no source-bearing key,
+  machine-local/cache path, or sentinel. Command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; if rg -n '/Users/|/private/|\.cache|GH25-PRIVATE-STATE-SENTINEL|"(state|query|text|content|prompt|command|task|summary|body|stdout|stderr|title|description|diff_summary)"[[:space:]]*:' evidence/2026-09-22-laya-six-action/{results,provenance,verification}.json; then exit 1; else s=$?; echo "no_forbidden_match rg_status=$s"; test "$s" -eq 1; fi`; exit `0`; decisive output:
+  `no_forbidden_match rg_status=1`.
+
+- [Pass] All 100 committed predictions, aggregates, hashes, and documentation agree on 15/100,
+  macro-F1 `0.11129932869063304`, 100 English routes, zero state truncations, the final raw hash,
+  and the bounded two-trajectory/no-integration interpretation (`results.json:73-136,2394-2447`;
+  `provenance.json:12-61`; `verification.json:123-192`; receipt `README.md:3-7,21-57`;
+  repository `README.md:135-137`; `ROADMAP.md:25-32`). Probe command:
+  `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; mkdir -p "$TMPDIR"; python3 -c 'import hashlib,json,pathlib; b=pathlib.Path("evidence/2026-09-22-laya-six-action"); r=json.loads((b/"results.json").read_text()); p=json.loads((b/"provenance.json").read_text()); v=json.loads((b/"verification.json").read_text()); h=lambda x:hashlib.sha256(x.read_bytes()).hexdigest(); q=r["predictions"]; assert len(q)==100 and [x["index"] for x in q]==list(range(100)); assert all(abs(sum(x["probabilities"])-1)<=0.000300000001 and x["max_option_probability"]==max(x["probabilities"])==x["probabilities"][r["labels"].index(x["choice"])] and x["state_tokens_used"]<=x["state_tokens_full"] for x in q); assert h(b/"laya_next_action.py")==p["hashes"]["runner_sha256"] and h(b/"results.json")==v["results_sha256"] and h(b/"provenance.json")==v["provenance_sha256"]; print(json.dumps({"rows":len(q),"correct":r["metrics"]["correct"],"macro_f1":r["metrics"]["macro_f1"],"routes":r["route_counts"],"truncated":r["state_truncation"]["truncated_rows"],"runner":h(b/"laya_next_action.py"),"results":h(b/"results.json"),"provenance":h(b/"provenance.json"),"raw":v["raw_output_sha256"]},sort_keys=True))'`;
+  exit `0`; decisive output:
+  `{"correct": 15, "macro_f1": 0.11129932869063304, "provenance": "79900a24337c40d67afc40e062683d4df95922c987151c08004b244b11e89b7e", "raw": "bdd42a8765ca225b4d43c4ef89e5d83e356b10c5d80808e12b5562e9975205b3", "results": "8303ac6925995b306ba223daf2f67f5f941df41757dacf570f9c567dd0d0f17b", "routes": {"english": 100}, "rows": 100, "runner": "8184ae9c5f714eb500c186472131560ef9878377c5a7a845231b51947be29dd8", "truncated": 0}`.
+
+- [Unverified — no citation] The implementation footprint is additive and proportionate to a one-shot evidence receipt;
+  no unrelated runtime/API behavior or additional pre-existing defect was found in the complete
+  scoped-file sweep. The GH-25 graph generation did not yet track the new/changed receipt files, so
+  this conclusion used direct full-source reads and the all-row probes above; the separately indexed
+  pinned Laya package reported current coverage with no recorded gaps.
+
+- [Unverified — needs clone run] Per relay policy, this turn did not execute the focused suite,
+  native Laya scripts, pytest, fixtures, or the repository-wide gate. The recorded native/focused
+  evidence remains at `evidence/2026-09-22-laya-six-action/README.md:42-50`; the reserved final gate
+  and hosted checks remain pending at `PROJECT/2-WORKING/GH-25-LAYA-SIX-ACTION.md:203-215`.
+
+VERDICT: PASS
+
+Basis: the two demonstrated pre-import identity gaps are closed, their focused regressions are
+present, the complete artifact sweep and independent all-row probes found the final receipt coherent
+and text-safe, and no correctness, safety, publication, or scope blocker remains. The branch is ready
+for the one reserved full repository gate and PR publication.
+
+Relay closed (Approved), no further turn needed.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
