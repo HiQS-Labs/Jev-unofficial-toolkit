@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 1 / 3
 
@@ -77,5 +77,42 @@ ROUND: 1 / 3
 6. The relay ends on **Approved** (Reviewer only). End each turn by committing just this file; no push.
 
 ## Log
+
+
+### Reviewer · Round 1
+
+VERDICT: FAIL
+Basis: The production implementation follows the Approved plan's observed-failure semantics, but two schedule assumptions make the new concurrency acceptance tests flaky. Correct those tests and obtain fresh disposable-clone evidence before approval.
+
+swept file: yes
+
+Read the entire plan and all of `jev/cli.py`, `jev/client.py`, `jev/openrouter.py`, `tests/test_jev_harness.py`, and `README.md`, including pre-existing code; traced answer projection, drift and the results writer. No additional pre-existing runtime defect identified in this sweep. Graph tools were unavailable, so project/generation and coverage checks were unavailable; evidence is direct source inspection. No Git command, suite, executable fixture, live request, or source modification was performed. Only an in-memory probe of the seeded dispatch statements was executed.
+
+- [Should] **F1 — Fix the ordering test's schedule assumption (question 5).** `tests/test_jev_harness.py:775-780` releases s3, waits for its fake call to finish, then releases s2/s1, but s4–s6 are ungated. The production loop may correctly replenish immediately after s3; s4 can finish before the controller releases s2. Thus `seen["order"][:3] == ["s3", "s2", "s1"]` rejects a correct implementation. Also, fake-call completion at line 737 precedes checkpoint writing and Future completion, so this event alone does not establish the assembler's observed completion order. Synchronize the actual checkpoint/Future boundary for the reversal control; permit valid interleaving of replenished records (or gate those records too), while retaining input-order and bounded-overlap assertions. Propagate controller-thread assertion failures to the test thread rather than relying on background tracebacks (`drive`, lines 758-765).
+  Observed input: six records s1–s6, N=3, first three gated; s3 finishes, the controller is delayed before releasing s2, and the dispatcher starts s4. The source-extracted dispatcher produced prefix `['s3', 's4', 's2']` with correctly ordered assembled results.
+  Affected scope: the normal-run concurrency test and its controller synchronization; no production dispatch behavior change requested.
+  Falsifier: this legal interleaving passes the corrected test, while a completion-order assembler and a serial dispatcher each fail in a disposable clone.
+  Probe command: `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; python3 "$TMPDIR/dispatch_probe.py"` (exit 0). The scratch script AST-extracted the unchanged top-level statements at `jev/cli.py:212-243`; injected only `send`, six string records, and concurrency=3; used real stdlib futures. Its controller waited for s1/s2/s3 entry, released s3, waited for s3 and s4 completion, then released s2 and s1. Decisive output: `normal completion prefix: ['s3', 's4', 's2']`; `test line 780 assertion: False`; `assembled input order: ['s1', 's2', 's3', 's4', 's5', 's6']`. This measures the scheduling assumption, not a run of the test suite.
+
+- [Should] **F2 — Signal the actual failing repeat before releasing held records (question 5).** `tests/test_jev_harness.py:737` sets the same finished event after every attempt. With repeat=2, `finished("s3").wait(5)` at line 794 can return after the successful first call, contrary to its comment. If the worker pauses while checkpointing that answer, the controller releases s1/s2; their records may finish and legitimately dispatch s4 before s3's second call fails. Use an attempt-specific failure/Future-observation handshake before releasing s1/s2, preserving the earlier-repeat checkpoint check. Do not fix this by restricting valid production replenishment.
+  Observed input: existing `fail=("s3", 2)`, repeat=2, s1/s2 held; finished(s3) is already set by call 1. In the same source-extracted probe, holding s3's failure until s4 entered, while releasing s1/s2, yielded `failure: second repeat failed` and `s4 started before s3 second-repeat failure: True` (same command, exit 0). This is the schedule the existing controller mistakenly allows.
+  Affected scope: failure-test synchronization and controller error propagation, not the runtime failure contract.
+  Falsifier: delay s3 between its successful first attempt and second-attempt failure; the corrected controller must keep s1/s2 held until failure observation. The correct implementation passes; eager submission or replenishment after an observed failure fails in the disposable clone.
+
+- [Pass] **Question 1 — worker, order and checkpoint boundaries.** `jev/cli.py:194-210` checkpoints each successful attempt under eligible-position names, preserves the first answer for scoring, and uses unchanged first/no-suffix then -r2/-r3 naming. Inline N=1 and indexed N>1 results feed ordered completion/drift assembly (`212-245`). Outstanding records are bounded by initial N submissions and one replacement per returned completion (`219-237`); on observed errors, cancellation removes not-started work and the loop/context waits for running records before raising (`238-243`). Aggregates follow that raise (`248,303`). No additional dispatcher path discarding a successfully written checkpoint found. This does not promise retention when response validation or the checkpoint write itself fails (`198-209`).
+
+- [Pass] **Question 2 — first observed error, not chronological first.** Every Future in the returned `done` set is inspected before replenishment (`jev/cli.py:228-237`); `failure = failure or error` retains the first encountered ordinary exception during later draining. Two failures in one unordered set can select either exception, regardless of wall-clock failure order. A Future finishing after the wait snapshot remains pending and is examined on a later iteration. This matches the plan QA's explicit “entire returned completion set” interpretation (`relay-system/2026-09-29/gh30-plan-qa.md`, Round 2 question 4); it is not an atomic promise to halt at the instant any worker fails. No additional chronological-error machinery requested.
+
+- [Pass] **Question 3 — accounting transaction and constructor coverage.** `jev/client.py:80,102-105,146` initializes both TypeSafe constructors and locks token/model updates. `jev/openrouter.py:48,73-80,119` protects cumulative-cost validation and all updates together; rejected cumulative overflow precedes any update. Requests, openers and retry state remain per-call locals (`jev/client.py:110-137`, `jev/openrouter.py:85-112`). Report reads occur after workers exit (`jev/cli.py:249-259`). No further lock needed for these paths.
+
+- [Pass] **Question 4 — guards and serial structure.** Bounds/type checks and concurrent-mock refusal occur at `jev/cli.py:128-138`, before output reservation at 193. Fixture setup supplies mocks at 112; replay without mocks is refused at 137. N=1 executes the shared worker inline (`213-215`); ask still constructs one record (`118`). Freeze/visibility/label-commitment checks remain before dispatch (`139-189`); labels are opened after finalized answers (`280-287`). Exact pre-change byte parity remains unverified below.
+
+- [Pass] **Questions 5–6 — bounded implementation and useful assertions, with F1/F2 outstanding.** Source uses stdlib executor/locks and one shared record body (`jev/cli.py:6,194-243`), not another dispatch subsystem. Network/process blockers remain at `tests/test_jev_harness.py:37-43`. The new tests assert ordered IDs, names, peak=3, retained repeat checkpoints, absent aggregates, bounds and accounting (`778-856`). Accounting uses the inherited production methods and a held-lock check (`831-855`); its 0.3-second join is timing-based evidence, not a deterministic guarantee that an unlocked mutant has actually run. No sleep was added to the controlled dispatch tests. Strengthen synchronization where F1/F2 identify concrete invalid assumptions.
+
+- [Nit] **Question 6 — qualify README timing claims.** `README.md:18` says “if a request fails, no new records start”; describe stopping dispatch once failure is observed, consistent with the returned-set semantics above. At `README.md:76`, “before the next request” should mean the next repeat for that record under concurrency. The range/default/live-only claims at `18,79` match `jev/cli.py:128-138,317`.
+
+- [Unverified — needs clone run] The Producer's 84-test, baseline-byte-parity and mutation-red claims are summarized in the plan's Implementation evidence, but raw run receipts/baseline outputs are not present in this relay workspace. No suite or mutation was run here. Have the harness/Producer run the corrected tests and red controls in a disposable full clone, including the delayed-controller and delayed-second-repeat schedules above, then record commands, statuses and decisive output. Byte parity must include all eight files for denied/A/B with repeat=3. With Git prohibited and no seeded diff, the exact `445ef5e..224ef81` changed-file inventory and absence of stray changes are also unverified; source review establishes the visible design's scope, not that diff claim.
+
+Handing off to Producer (claude-a) — disposition F1/F2, correct the test synchronization, and provide disposable-clone evidence for round 2; go to the Producer window and say “take your turn.”
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
