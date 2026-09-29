@@ -4,8 +4,8 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Reviewer
-STATUS: Open
+NEXT: Producer
+STATUS: Approved
 ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
@@ -121,5 +121,23 @@ Dispositions:
 - F3 — Implemented. Step 3 defines position as 1-based in `sendable`, keeps suffixes unchanged, and adds a `[denied, public-A, public-B]` `--repeat 3` parity case plus a baseline byte comparison from unmodified code in a disposable clone.
 
 Plan revised at commit below; requesting Round 2 review of the updated `PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md`.
+
+### Reviewer · Round 2
+
+VERDICT: PASS
+Basis: F1–F3 are addressed. The plan now defines a bounded implementation and falsifiable acceptance criteria sufficient for GH-30 within the stated laptop CLI envelope. Approval is of the plan, not implementation test results.
+
+swept file: yes
+
+Read the whole revised plan, all of `jev/cli.py`, `jev/client.py`, `jev/openrouter.py`, `tests/test_jev_harness.py`, and the supporting `jev/guard.py`. No additional pre-existing defect found in this sweep. Graph tools were unavailable, so project/generation and index coverage could not be checked; evidence is direct source inspection. `P` below denotes `PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md`.
+
+- [Pass] **Questions 1–2; F2 closed.** The observed serial loop, completion-based naming, unlocked accounting and ordered mocks remain at `jev/cli.py:190-206`, `jev/client.py:100-101,139-150`, and `jev/openrouter.py:71-76,114-125`. `P:52` now covers the complete accounting transaction, including cumulative-cost validation and the separate TypeSafe mock constructor; `P:65` exercises the real accounting methods. One lock per client suffices for this worker use: requests/openers/retry state are call-local (`jev/client.py:107-134`, `jev/openrouter.py:82-109`), and the results writer uses local serialization and exclusive creation (`jev/guard.py:81-86`). Distinct position/suffix filenames avoid worker collisions.
+- [Pass] **Question 3; F3 closed.** `P:54` explicitly numbers eligible `sendable` records, preserves first-answer scoring, unchanged repeat suffixes, immediate per-attempt checkpoints, ordered answers/drifts, and inline N=1 execution. These match `jev/cli.py:150,190-206`. The skipped-first-record/repeat=3 baseline byte comparison covers the former parity gap; it must be performed with the same canned responses and inputs in the disposable clone.
+- [Pass] **Question 4; F1 closed.** `P:55` now bounds outstanding futures to N, observes completion/errors before replenishing, cancels not-started futures, waits for running records to finish their checkpointed repeats, and re-raises without aggregates. Read “inspect each completed future” as inspecting the entire returned completion set before replenishment. This preserves the per-attempt checkpoint boundary at `jev/cli.py:193-204`; aggregate writes remain after successful dispatch (`jev/cli.py:209,264`). Explicit cancellation addresses the executor-context-manager limitation documented in Round 1.
+- [Pass] **Questions 5–6.** Refusing concurrent ordered mocks/fixtures/replay (`P:44,53`) is appropriate. A thread-safe fake at the live-client seam is compatible with existing network/process blockers (`tests/test_jev_harness.py:34-40`) and live-path patches (`tests/test_jev_harness.py:266-273`). Keep those blockers active while patching visibility, credentials and CI locally. The plan uses one shared record body, stdlib futures, and per-client locks (`P:40,52-55`); no second dispatch system is needed. Existing preflight guards and output reservation stay before workers (`jev/cli.py:129-188`), labels after finalized answers (`jev/cli.py:241-248`). `ask` remains one record with serial repeats (`jev/cli.py:116-118`).
+- [Pass] **Question 7.** `P:60-67` keeps tests in the existing unittest harness and specifies event-controlled overlap, bounded concurrency, reverse-completion ordering, failure without starting records 4–6, successful in-flight checkpoints, later-repeat failure, real accounting, parity, refusals, and the final suite. The completion-order assembler red control (`P:63`) can fail a wrong implementation; the serial/eager-submit controls (`P:64`) cover the scheduling gap. Record their actual red/green evidence with implementation QA.
+- [Unverified — needs clone run] No suites, executable fixtures, or live requests were run here. Byte parity, concurrent accounting, ordering/failure red controls, and the final suite are still implementation-time checks required by `P:54,62-67`. This source review does not assert they passed.
+
+Relay closed (Approved), no further review turn needed. Producer (claude-a) may proceed to implementation and disposable-clone verification; the harness owns the relay-file commit.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
