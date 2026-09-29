@@ -4,7 +4,7 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Reviewer
+NEXT: Producer
 STATUS: Open
 ROUND: 1 / 3
 
@@ -77,5 +77,40 @@ ROUND: 1 / 3
 6. The relay ends on **Approved** (Reviewer only). End each turn by committing just this file; no push.
 
 ## Log
+
+### Reviewer · Round 1
+
+VERDICT: FAIL
+Basis: The proposed surface is appropriate, but dispatch/failure mechanics and two compatibility edges need explicit acceptance criteria before implementation. These are bounded plan corrections, not requests for a new subsystem.
+
+swept file: yes
+
+Read the whole plan, `jev/cli.py`, `jev/client.py`, `jev/openrouter.py`, and `tests/test_jev_harness.py`; also traced the results writer in `jev/guard.py`. No additional pre-existing defect found in that sweep beyond the shared-state hazards discussed below for the proposed concurrent use. Graph tools were unavailable; evidence is direct source inspection. `P` below means `PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md`.
+
+- [Should] **F1 — Specify the bounded submission/failure algorithm and measure actual overlap (questions 4, 6, 7).** `P:54-55` specifies a pool and stopping submissions but leaves outstanding futures and exception observation unspecified. Say explicitly: keep at most N outstanding record futures, inspect completed futures for errors before replenishing, stop replenishing on an observed failure, cancel work that has not started, wait for running workers to finish checkpointing, and then re-raise without aggregate files. Do not wait on futures in input order to detect errors. Define whether an already-running record finishes its remaining repeats; keep each successful attempt checkpointed before the next call. A pool context manager waits but does not cancel queued work by default. Strengthen the six-record test with event-controlled overlap (peak active >1 and <=N), records 1/2 held while 3 fails, and an assertion that 4–6 never start in that controlled schedule. Assert both aggregate files absent and checkpoints for successful in-flight calls, including one completed repeat before a later repeat fails.
+  Observed input: `P:55` uses failure on record 3 of 6 at N=3, but its asserted output does not detect eager submission of all six or a serial implementation; `jev/cli.py:192-204` currently checkpoints each successful repeat individually.
+  Affected scope: N>1 scheduling and failure handling only; no change to provider retries or default serial failure behavior.
+  Falsifier: the controlled schedule above starts only records 1–3, records successful in-flight attempts, emits neither aggregate, and a normal run demonstrates bounded overlap; an eager-submit or serial variant must fail these assertions.
+  Probe: with `PYTHONDONTWRITEBYTECODE=1` and `TMPDIR="$PWD/.relay-scratch/tmp"`, ran `python3` importing `inspect`, `ThreadPoolExecutor`, and `Executor`, then `print(inspect.getsource(ThreadPoolExecutor.shutdown)); print(inspect.getsource(Executor.__exit__))`. Exit 0; decisive output: `def shutdown(self, wait=True, *, cancel_futures=False):` and `__exit__` calls `self.shutdown(wait=True)`. This was source inspection, not an executable fixture or suite run.
+
+- [Should] **F2 — Complete the counter-lock scope and constructor coverage (question 2).** One lock per client is enough for the owned mutable accounting state, provided OpenRouter’s cumulative-cost finiteness check is inside the same critical section as all updates. Initialize the lock in TypeSafe `MockClient` too: its constructor bypasses `JevClient.__init__`, whereas `OpenRouterMockClient` calls its parent. Add these two details to step 1. Exercise the real `_answer` accounting in both backends with canned data; counters owned only by a fake client would not test the production lock.
+  Observed input: `jev/openrouter.py:71` reads `self.cost` before the updates at 73–76; `jev/client.py:139-150` separately initializes mock counters and calls inherited `_answer`. `P:40,52` currently says only “around the counter updates.”
+  Affected scope: each client’s accounting check/update transaction and all constructors reaching it, including serial mocks.
+  Falsifier: both existing mock paths remain usable after lock introduction; concurrent real `_answer` calls preserve token/model totals and reject cumulative nonfinite cost without partially updating counters. A lock introduced only in the live TypeSafe constructor must fail the mock check.
+
+- [Should] **F3 — Pin eligible-record numbering and repeat parity (question 3).** Define “record position” as the 1-based position in `sendable`, not in the original input. Preserve suffixes exactly: first answer has no suffix, then `-r2`, `-r3`; checkpoint inside each repeat, score only the first answer, and return per-record drift for ordered assembly. Extend parity coverage to a skipped first input and `--repeat 3`, plus a later-repeat failure. Compare checkpoint filenames and bytes, `answers.json`, and `results.json` against a pre-change baseline in the disposable clone; the current checkpoint test alone is insufficient.
+  Observed input: `jev/cli.py:150` filters eligible records; `190-204` numbers by completed eligible records and uses `attempt + 1`. `tests/test_jev_harness.py:198-244` tests checkpoints without repeats or visibility filtering, yet `P:54,64` relies on that case for parity.
+  Affected scope: naming and serialization compatibility in the factored record worker, at N=1 and N>1.
+  Falsifier: input `[denied, public-A, public-B]` with repeat=3 yields `answer-0001{,-r2,-r3}.json` for A and `answer-0002{,-r2,-r3}.json` for B; N=1 bytes match the old implementation and N>1 ordered answers/drift retain the same identity mapping.
+
+- [Pass] **Observed-problem claims and worker isolation (questions 1, 2).** The serial nested loops and completion-based names are present at `jev/cli.py:190-206`; unlocked counters at `jev/client.py:100-101` and `jev/openrouter.py:73-76`; ordered response consumption at `jev/client.py:147` and `jev/openrouter.py:122`. Requests, openers, retry counters and delays are per-call locals (`jev/client.py:107-134`, `jev/openrouter.py:82-109`). No shared opener or sleep state needs another lock. `write_results` uses local serialization and exclusive file creation (`jev/guard.py:81-86`), so distinct position/suffix paths suffice. Keep aggregate writes after worker completion (`jev/cli.py:209-220`).
+
+- [Pass] **Offline boundary and surgical scope (questions 5, 6).** Refusing N>1 for ordered mocks/fixtures/replay is reasonable; no deterministic concurrent mock machinery is needed (`P:44`). The fake-live approach fits existing fail-closed network patches (`tests/test_jev_harness.py:34-40`) and live-path substitution (`tests/test_jev_harness.py:266-273`): patch the CLI client seam, visibility and dummy credentials, clear CI locally, retain socket/process blockers. One shared record body plus stdlib executor and per-client lock is commensurate (`P:40,54`). Keep freeze/visibility checks and output reservation before dispatch (`jev/cli.py:129-188`) and label reads after final answers (`jev/cli.py:241-250`). `ask` currently creates one record (`jev/cli.py:116-118`), so accepting N>1 need not make repeats concurrent.
+
+- [Pass] **Ordering red control is directionally correct (question 7).** `P:63` explicitly forces later records to finish first while requiring input-order results. Use distinct IDs/answers and synchronization so the wrong completion-order assembler demonstrably fails; record that red result alongside the final clone suite result. The existing unittest file and full-suite command (`P:60-66`) are sufficient infrastructure.
+
+- [Unverified — needs clone run] No suites or executable fixtures were run in this reviewer workspace. N=1 byte parity, concurrent accounting, failure/checkpoint controls and the complete existing suite remain implementation-time evidence. Source review establishes feasibility, not a passing implementation.
+
+Handing off to Producer (claude-a) — disposition F1–F3 and revise the plan, then open round 2; go to the Producer window and say “take your turn.”
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
