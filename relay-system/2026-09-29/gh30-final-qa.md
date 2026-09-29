@@ -4,8 +4,8 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Reviewer
-STATUS: Open
+NEXT: Producer
+STATUS: Approved
 ROUND: 3 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
@@ -163,5 +163,31 @@ Dispositions:
 - Receipts (suite, byte parity, inventory, mutations) at commit 072bad0 are recorded in the plan under "Final-QA round 2 receipts". Production code is unchanged since round 1.
 
 Requesting Round 3.
+
+### Reviewer · Round 3
+
+VERDICT: PASS
+Basis: F2 now synchronizes on the failed Future in the returned completion set, closing the remaining review finding. F1 and the README correction remain addressed. Source review and a narrow boundary probe support approval; full-suite, baseline-byte and mutation execution remain the separately reported disposable-clone evidence and the subsequent harness gate.
+
+swept file: yes
+
+Read the whole Approved plan and all of jev/cli.py, jev/client.py, jev/openrouter.py, tests/test_jev_harness.py and README.md, including pre-existing code, and inspected answer projection, drift and the results writer. No additional pre-existing runtime defect identified. Graph tools were unavailable; project/generation and coverage could not be checked, so this is direct-source evidence. No Git command, test suite, executable fixture, live request or artifact/source edit was performed. Only this relay file and allowed scratch were written.
+
+- [Pass] **F2 closed; question 5.** `tests/test_jev_harness.py:749-753` obtains the real wait result and signals only if its done set contains an exception; `819-822` keeps s1/s2 held until that signal. Even if those workers finish before the wrapper returns, s3's failed Future is already in the returned set, which production inspects completely before replenishment (`jev/cli.py:228-237`). The successful first repeat or a pause before raising cannot trigger this handshake. Retained repeat checkpoints and absent aggregates remain asserted (`tests/test_jev_harness.py:825-830`). No production behavior change needed.
+  Probe command: `export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/.relay-scratch/tmp"; python3 "$TMPDIR/observation_probe.py"`; exit 0. The scratch probe AST-extracted the current dispatcher (`jev/cli.py:212-243`) and current `spy_wait` (`tests/test_jev_harness.py:749-753`), using real stdlib futures with six synthetic in-memory records. An event held s3 immediately before its exception; the controller checked that observation remained unset and s1/s2 remained held, then allowed the failure and released s1/s2 only after observation. Decisive output: `pre-raise gap: observed=False; held records remain blocked`; `raised: synthetic second-repeat failure`; `started: ['s1', 's2', 's3']`; `held workers drained: True; no replenishment: True`. This measures the observation boundary, not filesystem checkpointing or a suite run.
+
+- [Pass] **Questions 1–2 — bounded worker and error handling.** `jev/cli.py:194-210` names checkpoints by eligible position, retains unchanged repeat suffixes and first-answer scoring, and writes each successful attempt before its next repeat. Indexed assembly at `212-245` preserves input order. Initial submissions and one replacement per consumed completion bound outstanding records (`219-237`); every returned done Future is inspected before replenishment. The first encountered ordinary exception survives subsequent draining, pending not-started futures are canceled, running records finish, and re-raise precedes aggregate writes (`233-248,303`). Multiple errors in one unordered completion set can select either: this is first observed, not chronological first, consistent with Approved plan QA round 2. A future completing after the wait snapshot remains pending for the next iteration. No further path discarding a successfully written checkpoint found; response-validation and write failures remain outside that persistence guarantee.
+
+- [Pass] **Question 3 — complete accounting critical sections.** Both TypeSafe constructors initialize the lock (`jev/client.py:80,146`), and token/model updates share it (`102-105`). OpenRouter cumulative-cost validation precedes all updates inside the same lock (`jev/openrouter.py:73-80`); its mock calls the parent constructor (`119`). Request/openers/retry state remain call-local (`client.py:110-137`, `openrouter.py:85-112`); report reads follow executor completion (`cli.py:249-259`).
+
+- [Pass] **Question 4 — serial structure and preflight guards.** N=1 uses the shared worker inline (`jev/cli.py:213-215`), ask still creates one record (`118`), and fixtures supply ordered mocks (`112`). Bounds and concurrent-mock refusal precede output reservation (`128-138,193`); replay without mocks is refused. Freeze, CI/live, visibility and label-commitment checks remain before dispatch (`139-189`), with label content opened only after finalized answers (`280-287`). Baseline byte identity is distinguished from this source conclusion below.
+
+- [Pass] **Question 5 — ordering controls remain sound.** All six normal-run records are gated; replacement-entry handshakes establish reversed completion of the first three (`tests/test_jev_harness.py:789-800`). The remaining fake-call exit order is controlled (`801-806`), though that does not establish their checkpoint/Future order; the ordering regression control already has the first three reversed. Ordered IDs, names and peak=3 are asserted (`807-811`), and controller failures propagate (`767-784`). Network/process blockers remain (`37-43`). The accounting test exercises inherited production accounting and overflow refusal (`853-882`). Its held-lock negative control uses a 0.3-second scheduling window; it is useful evidence, not a deterministic proof that every unlocked mutant runs within that interval. Event waits also retain finite timeout limits on severely stalled machines; no additional concrete race found.
+
+- [Pass] **Question 6 — visible design and documentation.** One shared record body, stdlib executor and per-client locks are a bounded extension (`jev/cli.py:194-243`, `jev/client.py:80,102`, `jev/openrouter.py:48,73`), with no duplicate dispatch subsystem. README.md:18 correctly qualifies stopping at observed failure, :76 describes checkpointing before that record's next request, and :79 gives the default/cap. Exact changed-file inventory remains a reported clone result, not independently established without Git.
+
+- [Unverified — needs clone run] `PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md:93-97` records the Producer's 072bad0 clone results: forced pre-raise gap passes 5/5 while the older test fails; 84 tests OK; all eight output files match baseline at default and N=3; six mutants fail; 30 concurrency stress runs pass; eight changed files. These are inspected receipt summaries, not raw logs or independent reruns. This reviewer did not execute those checks; the harness gate remains responsible for its post-turn run. No claim of live-provider validation is made.
+
+Relay closed (Approved), no further review turn needed. Producer (claude-a) receives the completed review; the harness owns the relay-file commit and subsequent gate.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
