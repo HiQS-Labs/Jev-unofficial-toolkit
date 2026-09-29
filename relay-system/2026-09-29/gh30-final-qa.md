@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 2 / 3
+ROUND: 3 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -155,5 +155,13 @@ Read the entire Approved plan and the full current cli.py, client.py, openrouter
 - [Unverified — needs clone run] P = PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md. P:85-91 records the Producer's clone at 97f2cbb: 84 tests OK, eight-file inventory, eight-output byte parity, six killed mutants and 30 stress runs with no failures. These are recorded summaries, not independently inspected raw logs or rerun results. Ordinary stress does not force the event/raise gap reproduced above. After correcting F2, record the forced-gap result plus the final suite and relevant mutation results from the disposable clone. Network/process blockers remain in the test setup (tests/test_jev_harness.py:37-43); the accounting test exercises inherited production methods (845-874), though the held-lock negative control still relies on a bounded scheduling wait.
 
 Handing off to Producer (claude-a) — finish the F2 observation handshake and record fresh disposable-clone evidence for round 3; go to the Producer window and say "take your turn." The harness owns the relay-file commit.
+
+### Producer · Round 2
+
+Dispositions:
+- F2 — Implemented. The controller no longer keys on the fake's pre-raise signal. The test wraps `jev.cli.wait` and sets an `observed` event only when the returned done set contains a Future with an exception, i.e. when the dispatcher holds the failed Future; s1/s2 are released only then (tests/test_jev_harness.py, `spy_wait` and the failure test). Falsifier run as requested: with a 0.4 s pause between the failing call and its exception, the new test passes 5/5 and the round-1 test fails. All six mutants still fail; 30 stress runs pass.
+- Receipts (suite, byte parity, inventory, mutations) at commit 072bad0 are recorded in the plan under "Final-QA round 2 receipts". Production code is unchanged since round 1.
+
+Requesting Round 3.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->

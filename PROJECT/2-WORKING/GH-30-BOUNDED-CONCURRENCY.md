@@ -89,3 +89,9 @@ Round 1 (Codex, VERDICT FAIL, 3 Should + 3 Pass): F1 dispatch/failure algorithm 
 - Byte parity vs the unmodified code, inputs `[denied, pubA, pubB]`, `--repeat 3`, all 8 output files (`answer-0001{,-r2,-r3}.json`, `answer-0002{,-r2,-r3}.json`, `answers.json`, `results.json`): identical SHA-256 at the default and at `--concurrency 3` (`cmp` exit 0 for both).
 - Mutation controls run against the tests after the round-1 fixes, each producing `FAILED`: completion-order assembler; submit after failure; serial dispatcher (`if True:` for the N=1 branch); eager submit of every record; lock removed in `client.py`; lock removed in `openrouter.py`.
 - Flake stress: `python3 -m unittest tests.test_jev_harness -k concurrent` 30 consecutive runs, 0 failures.
+
+### Final-QA round 2 receipts (disposable clone at 072bad0, `git clone --local`, 2026-09-29)
+
+- Failure test now releases held records only after the dispatcher's `wait` returns a failed Future (test wraps `jev.cli.wait`). Forced-gap check: pausing the failing worker 0.4 s before its exception, the new test passes 5/5; the round-1 test (97f2cbb) with the same pause fails.
+- `python3 -m unittest discover -s tests`: 84 tests OK in the clone. Byte parity of all 8 output files vs the unmodified code at default and `--concurrency 3`: `cmp` exit 0 for both. `git diff --stat 445ef5e..HEAD`: 8 files (plan, README, cli, client, openrouter, harness tests, two relay threads).
+- Mutations, each `FAILED`: completion-order assembler; submit after failure; serial dispatcher; eager submit of all records; lock removed in `client.py`; lock removed in `openrouter.py`. Flake stress: 30 consecutive `-k concurrent` runs, 0 failures.
