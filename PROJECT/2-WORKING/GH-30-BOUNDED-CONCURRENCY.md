@@ -2,7 +2,7 @@
 gh_issue: 30
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/30
 title: Bounded concurrent dispatch for eval/ask batches
-status: Plan — awaiting plan QA
+status: Plan — round-2 plan QA
 created: 2026-09-29
 updated: 2026-09-29
 owner: toolkit maintainer
@@ -49,20 +49,21 @@ Extend the existing loop in `cli.run` and add one `threading.Lock` around the co
 
 ## Ordered implementation
 
-1. Lock the counter updates in `JevClient._answer` and `OpenRouterClient` answer handling. Check: existing suite still green.
+1. One `threading.Lock` per client covers the whole accounting transaction in `JevClient._answer` and `OpenRouterClient` (including the cumulative-cost finiteness check at openrouter.py:71 with the updates at 73-76, inside one critical section). `MockClient.__init__` (client.py:139-142) bypasses `JevClient.__init__`, so it must create the lock too; `OpenRouterMockClient` inherits its parent constructor. Check: existing suite green; both mock paths still work.
 2. Add `--concurrency` in `main`; in `run`, validate int 1–8 and refuse N>1 with mock/fixture/replay. Check: refusal tests (N=0, N=9, N=2 with mock).
-3. Factor the per-record body (repeat loop, entry build, checkpoint write) into one local function; run it inline at N=1 or via `ThreadPoolExecutor(N)` at N>1; assemble `completed` and `drifts` in input order; name checkpoints by record position. Check: N=1 bytes equal to pre-change outputs on the existing checkpoint test.
-4. Failure path: on first exception stop submitting, wait for in-flight, re-raise. Check: a fake client failing on record 3 of 6 at N=3 leaves no `answers.json`, every completed record has a checkpoint.
+3. Factor the per-record body (repeat loop, entry build, checkpoint write, returning `(entry, runs)`) into one local function; run it inline at N=1. "Record position" is the 1-based position in `sendable` (the eligible list, cli.py:150), not in the original input. Suffixes are unchanged: first answer none, then `-r2`, `-r3`; each successful attempt is checkpointed before the next call; only the first answer is scored; `completed` and `drifts` are assembled in `sendable` order. Check: N=1 checkpoint names and bytes, `answers.json` and `results.json` match a baseline produced by the unmodified code on the same inputs (run once in a disposable clone of main), including `[denied, public-A, public-B]` with `--repeat 3`.
+4. Dispatch and failure at N>1: keep at most N outstanding record futures in a `ThreadPoolExecutor`; wait with `FIRST_COMPLETED`, inspect each completed future for an error before submitting the next record; on an observed failure stop submitting, `cancel()` futures not yet started, wait for running workers (a running record finishes its own repeats, each checkpointed), then re-raise; write neither aggregate file. Do not detect errors by waiting on futures in input order. Check: see the controlled-schedule test below.
 5. Docs: one sentence each in README (replace "concurrent dispatch is not implemented") and the CLI section.
 
 ## Test scope (commensurate: existing harness, no new framework)
 
 Add to [tests/test_jev_harness.py](../../tests/test_jev_harness.py) using its existing network-blocking patches and a thread-safe fake live client:
 
-- N=3 over 6 records: `answers.json` order equals input order; checkpoint names `answer-0001..0006`; counters equal the sum.
-- Red control: an out-of-order fake (later records finish first) must still yield input-order results.
-- N=1 result equals the pre-change checkpoint/answers output.
-- Failure test from step 4; refusal tests from step 2.
+- Fake live client with event-controlled scheduling (`threading.Event`, no sleeps). Normal run, N=3, 6 records: peak active calls > 1 and <= 3; `answers.json` in input order; names `answer-0001..0006`.
+- Red control: later records are released first so completion order is reversed; results must still be input order (an assembler that appends in completion order fails this).
+- Failure schedule, N=3: records 1 and 2 held, record 3 fails; records 4-6 never start; after releasing 1 and 2 their checkpoints exist; neither `answers.json` nor `results.json` exists. Include one record whose first repeat completes before a later repeat fails and check that repeat's checkpoint. A serial or eager-submit variant must fail this test.
+- Accounting: concurrent real `_answer` calls on `JevClient` and `OpenRouterClient` with canned responses give exact token/model totals, and a nonfinite cumulative cost is rejected without partial update.
+- N=1 parity case from step 3 (skipped record, `--repeat 3`); refusal tests from step 2.
 - Full `python3 -m unittest discover -s tests` once on the final commit.
 
 ## Risks / rollback
@@ -71,4 +72,4 @@ Default 1 keeps today's behavior; revert is one commit. Risk: a thread failing a
 
 ## Plan QA
 
-Pending.
+Round 1 (Codex, VERDICT FAIL, 3 Should + 3 Pass): F1 dispatch/failure algorithm and controlled-schedule test — Implemented (steps 3-4, tests). F2 lock covers the whole accounting transaction and `MockClient.__init__` — Implemented (step 1, accounting test). F3 numbering by `sendable` position and repeat/skip parity — Implemented (step 3, parity test). Round 2 review pending. Relay thread: `relay-system/2026-09-29/gh30-plan-qa.md`.

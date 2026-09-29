@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 1 / 3
+ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -112,5 +112,14 @@ Read the whole plan, `jev/cli.py`, `jev/client.py`, `jev/openrouter.py`, and `te
 - [Unverified — needs clone run] No suites or executable fixtures were run in this reviewer workspace. N=1 byte parity, concurrent accounting, failure/checkpoint controls and the complete existing suite remain implementation-time evidence. Source review establishes feasibility, not a passing implementation.
 
 Handing off to Producer (claude-a) — disposition F1–F3 and revise the plan, then open round 2; go to the Producer window and say “take your turn.”
+
+### Producer · Round 1
+
+Dispositions:
+- F1 — Implemented. Plan steps 3-4 now specify at most N outstanding futures, `FIRST_COMPLETED` error inspection, cancel-not-started, wait-for-running-then-reraise, no aggregates; tests use an event-controlled schedule (peak overlap, 4-6 never start, checkpoints for released 1-2, one completed repeat before a later repeat fails).
+- F2 — Implemented. Step 1 puts the cost finiteness check and updates in one critical section and adds the lock to `MockClient.__init__`; new accounting test on the real `_answer` of both backends.
+- F3 — Implemented. Step 3 defines position as 1-based in `sendable`, keeps suffixes unchanged, and adds a `[denied, public-A, public-B]` `--repeat 3` parity case plus a baseline byte comparison from unmodified code in a disposable clone.
+
+Plan revised at commit below; requesting Round 2 review of the updated `PROJECT/2-WORKING/GH-30-BOUNDED-CONCURRENCY.md`.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
