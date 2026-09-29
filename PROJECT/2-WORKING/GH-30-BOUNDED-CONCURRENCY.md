@@ -2,7 +2,7 @@
 gh_issue: 30
 source: https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/30
 title: Bounded concurrent dispatch for eval/ask batches
-status: Plan — round-2 plan QA
+status: Implemented — final QA pending
 created: 2026-09-29
 updated: 2026-09-29
 owner: toolkit maintainer
@@ -70,6 +70,14 @@ Add to [tests/test_jev_harness.py](../../tests/test_jev_harness.py) using its ex
 
 Default 1 keeps today's behavior; revert is one commit. Risk: a thread failing after paid completion — covered by per-record checkpoints written inside the worker.
 
-## Plan QA
+## Plan QA (Approved, Codex round 2)
 
 Round 1 (Codex, VERDICT FAIL, 3 Should + 3 Pass): F1 dispatch/failure algorithm and controlled-schedule test — Implemented (steps 3-4, tests). F2 lock covers the whole accounting transaction and `MockClient.__init__` — Implemented (step 1, accounting test). F3 numbering by `sendable` position and repeat/skip parity — Implemented (step 3, parity test). Round 2 review pending. Relay thread: `relay-system/2026-09-29/gh30-plan-qa.md`.
+
+## Implementation evidence (2026-09-29)
+
+- Code: `jev/cli.py` (`--concurrency`, `send()` worker, bounded dispatch), `jev/client.py` and `jev/openrouter.py` (one lock per client, also on `MockClient`), README.
+- Full suite `python3 -m unittest discover -s tests`: 84 tests OK (79 existing + 5 new).
+- Byte parity against the unmodified code (baseline from commit c3d9c36 code, same canned responses, inputs `[denied, pubA, pubB]`, `--repeat 3`): all 8 output files (6 checkpoints, `answers.json`, `results.json`) have identical SHA-256 at `--concurrency` default, and at `--concurrency 3`.
+- Red controls, each run against a deliberately broken implementation: assembling results in completion order fails `test_concurrent_dispatch_is_bounded_ordered...`; submitting after a failure fails `test_concurrent_failure_stops_dispatch...`; removing the lock in `client.py` or in `openrouter.py` fails `test_client_accounting_is_exact_under_threads`. A lost-update count alone did not detect a removed lock (the GIL hides it), so that test also holds the lock and checks `_answer` blocks.
+- Not run: any live request. No new live evidence or accuracy claim.

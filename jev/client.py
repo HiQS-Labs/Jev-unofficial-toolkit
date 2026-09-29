@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import os
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -76,6 +77,7 @@ class JevClient:
             raise ValueError("only the TypeSafe endpoint is allowed")
         self._key, self.endpoint = key.strip(), endpoint
         self.input_tokens, self.models_seen = 0, set()
+        self._lock = threading.Lock()
 
     def _answer(self, raw_request, raw_response, questions):
         parsed = json.loads(raw_response)
@@ -97,8 +99,9 @@ class JevClient:
         tokens = usage.get("input_tokens", 0)
         if type(tokens) is not int or tokens < 0:
             raise ValueError("invalid token usage")
-        self.input_tokens += tokens
-        self.models_seen.add(answer.model)
+        with self._lock:  # Workers share one client under --concurrency.
+            self.input_tokens += tokens
+            self.models_seen.add(answer.model)
         return answer
 
     def ask(self, state, questions):
@@ -140,6 +143,7 @@ class MockClient(JevClient):
     def __init__(self, responses):
         self._responses = iter(responses)
         self.input_tokens, self.models_seen = 0, set()
+        self._lock = threading.Lock()
 
     def ask(self, state, questions):
         raw = request_bytes(state, questions)

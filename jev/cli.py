@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 from collections import Counter
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
 
 from . import openrouter
@@ -124,11 +125,15 @@ def run(args):
         raise ValueError("--repeat must be 1 to 10")
     if args.repeat > 1 and fixture:
         raise ValueError("historical fixtures hold one response per record; --repeat is for new runs")
+    if type(args.concurrency) is not int or not 1 <= args.concurrency <= 8:
+        raise ValueError("--concurrency must be 1 to 8")
     if args.redact:
         records = [{**r, "state": sanitize(r["state"])} for r in records]
     for record in records:
         request_bytes(record["state"], questions)  # Validate the entire batch before spending.
     mock = args.mock_responses is not None
+    if args.concurrency > 1 and mock:
+        raise ValueError("--concurrency above 1 needs a live run; ordered mock responses are sequential")
     if args.command == "replay" and not mock:
         raise ValueError("replay requires --mock-responses or --fixture")
     if manifest:
@@ -186,9 +191,9 @@ def run(args):
         raise ValueError("receipt-specific replay requires a pinned fixture")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=False)  # Reserve before any paid request; failures remain reserved.
-    completed, drifts = [], {}
-    for record in sendable:
-        runs = []
+    def send(position, record):
+        """One record's requests. Checkpoints are named by position in the eligible list."""
+        runs, first = [], None
         for attempt in range(args.repeat):
             answer = client.ask(record["state"], questions)
             values = answer.project(questions)  # Typed fields only; never state, API extensions, or error text.
@@ -198,12 +203,46 @@ def run(args):
                 entry["backend"] = backend
             runs.append(values)
             if attempt == 0:
-                completed.append(entry)  # The first answer is the one scored; repeats only measure drift.
+                first = entry  # The first answer is the one scored; repeats only measure drift.
             # Preserve paid, completed answers even when a later request fails.
             suffix = f"-r{attempt + 1}" if attempt else ""
-            write_results(out / f"answer-{len(completed):04d}{suffix}.json", entry)
-        if args.repeat > 1:
-            drifts[record["id"]] = drift(runs, questions)
+            write_results(out / f"answer-{position:04d}{suffix}.json", entry)
+        return first, drift(runs, questions) if args.repeat > 1 else None
+
+    results = [None] * len(sendable)
+    if args.concurrency == 1:
+        for index, record in enumerate(sendable):
+            results[index] = send(index + 1, record)
+    else:
+        queue, pending, failure = iter(enumerate(sendable)), {}, None
+
+        def submit_next():
+            for index, record in queue:
+                pending[pool.submit(send, index + 1, record)] = index
+                return
+
+        with ThreadPoolExecutor(args.concurrency) as pool:
+            for _ in range(args.concurrency):
+                submit_next()
+            while pending:
+                done, _ = wait(pending, return_when=FIRST_COMPLETED)
+                for future in done:
+                    index = pending.pop(future)
+                    try:
+                        results[index] = future.result()
+                    except Exception as error:
+                        failure = failure or error
+                if failure is None:
+                    for _ in done:
+                        submit_next()
+                else:  # Stop dispatch; running records finish and keep their checkpoints.
+                    for future in list(pending):
+                        if future.cancel():
+                            del pending[future]
+        if failure is not None:
+            raise failure
+    completed = [first for first, _ in results]
+    drifts = {record["id"]: found for record, (_, found) in zip(sendable, results) if found is not None}
     if mock:
         client.finish()
     write_results(out / "answers.json", completed)
@@ -275,6 +314,7 @@ def main(argv=None):
     parser.add_argument("--out", required=True)
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--repeat", type=int, default=1, help="identical requests per record (1-10) to measure answer drift")
+    parser.add_argument("--concurrency", type=int, default=1, help="live requests in flight (1-8); records are still scored in input order")
     parser.add_argument("--redact", action="store_true", help="mask credentials, drop fenced code, clip long text in state before sending")
     args = parser.parse_args(argv)
     try:
