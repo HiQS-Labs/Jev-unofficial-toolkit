@@ -140,4 +140,12 @@ Read the whole revised plan, all of `jev/cli.py`, `jev/client.py`, `jev/openrout
 
 Relay closed (Approved), no further review turn needed. Producer (claude-a) may proceed to implementation and disposable-clone verification; the harness owns the relay-file commit.
 
+
+### Attestation · relay-drive — 2026-09-29T22:48:23Z
+task: RELAY-gh30-plan-qa
+reviewer: codex
+status: Approved
+reviewed-head: 15e57f1767a8746ffa03643a588584c48f18b9aa
+added-range: 16924+4222
+added-sha256: 9cbe7ba091cc87547128acf1bbc079067714b03a9712eea649aa545b4867d49e
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
