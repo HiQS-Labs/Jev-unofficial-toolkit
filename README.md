@@ -8,6 +8,18 @@
 
 **Build status:** the offline test suite and shipped fixture replays pass; CI remains mock-only. An operator-authorized [live historical-sample rerun](evidence/2026-09-20-fresh-100-live-rerun/README.md) scored purpose `89/100`, area `62/94`, and passed the original purpose gate with `72/74` correct at confidence ≥ `0.8` and coverage `74/100`. That rerun required recovery from the [probability-accessor failure](https://github.com/HiQS-Labs/Jev-unofficial-toolkit/issues/6); this version now keeps completed answers per record and scores valid choices even when an optional probability map is invalid. The historical rerun remains a repeated-sample result, not an uninterrupted CLI pass or a new unseen-sample result.
 
+## Design rules
+
+Jev decides within a bounded answer space; your software deterministically validates, thresholds, authorizes, and acts. The output shape is fixed (a Choice label from your options, a Score in your scale, or a Noul probability), but the meaning is a learned, probabilistic judgment: it is not proof, not guaranteed correct, and not necessarily identical across model versions. Enforce every consequence in code, for example `jev.policy.decide` with a fail-closed `default`, and never let a Jev answer alone trigger an action.
+
+Choose a batching pattern by the shape of the work:
+
+- **One event, many decisions (default):** send one shared state with several related Choice/Noul/Score questions in a single request, for example classification, severity, escalation and safe response for one incident. Shared state is counted once. This is how `ate_triage_v1` and `failure_triage_v1` are used.
+- **Many records, same decision:** send one request per record with the same frozen question bundle, not one mega-prompt. Persist each result as it completes (the CLI writes `answer-NNNN.json` checkpoints) and keep record IDs stable so a failed run can resume. The CLI sends records sequentially; concurrent dispatch is not implemented.
+- **Small candidate set:** one parent state plus a few clearly keyed candidates in a single request. If the candidate list grows, shortlist deterministically or with embeddings first and give Jev only the top few.
+
+Confirm current input-size limits, option-count limits and pricing in the [TypeSafe documentation](https://docs.typesafe.ai/introduction) before sizing a batch; this repo does not pin those numbers.
+
 ## Getting Started
 
 **For this toolkit, get a TypeSafe API key.** Sign up or log in at the [TypeSafe console](https://console.typesafe.ai/), then obtain a key from the dashboard as described in the [official quick start](https://docs.typesafe.ai/introduction/quickstart). Store it in a private file outside the repository and pass its path with `--key-file`, or supply `TYPESAFE_API_KEY` in your environment for each live run. Never commit the key. Start with the offline examples below, then follow [Live use](#live-use-after-mock-acceptance) for the required manifest, input policy and explicit live flag.
