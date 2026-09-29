@@ -711,7 +711,7 @@ class HarnessTests(unittest.TestCase):
             axis: {"type": "choice", "choice": choice, "confidence": 0.9}
             for axis, choice in (("purpose", "bug_fix"), ("area", "integrations"))}}
         lock, held = threading.Lock(), {state: threading.Event() for state in gates}
-        seen = {"active": 0, "peak": 0, "entered": {}, "finished": {}, "order": [], "calls": {}}
+        seen = {"active": 0, "peak": 0, "entered": {}, "finished": {}, "failed": {}, "order": [], "calls": {}}
         event = lambda kind, state: seen[kind].setdefault(state, threading.Event())
 
         class Fake:
@@ -728,6 +728,7 @@ class HarnessTests(unittest.TestCase):
                     if state in held and not held[state].wait(timeout):
                         raise AssertionError("gate never released")
                     if fail == (state, call):
+                        event("failed", state).set()
                         raise RuntimeError("synthetic failure")
                     return MockClient([canned]).ask(state, questions)
                 finally:
@@ -757,27 +758,44 @@ class HarnessTests(unittest.TestCase):
 
     def drive(self, seen, script):
         """Run the CLI on this thread while a controller thread releases gates in a chosen order."""
-        controller = threading.Thread(target=script, daemon=True)
-        controller.start()
+        errors = []
+
+        def controller():
+            try:
+                script()
+            except BaseException as error:  # Surface controller failures on the test thread.
+                errors.append(error)
+                for gate in seen["held"].values():
+                    gate.set()  # Never leave a worker waiting on a gate that will not open.
+        thread = threading.Thread(target=controller, daemon=True)
+        thread.start()
         code = seen["run"]()
-        controller.join(10)
-        self.assertFalse(controller.is_alive())
+        thread.join(10)
+        self.assertFalse(thread.is_alive())
+        if errors:
+            raise errors[0]
         return code
 
     def test_concurrent_dispatch_is_bounded_ordered_and_matches_serial_names(self):
         states = ["s%d" % i for i in range(1, 7)]
-        seen = self.concurrent_run(states, 3, gates=states[:3])
-        entered, finished, held = (lambda s: seen["event"]("entered", s)), (lambda s: seen["event"]("finished", s)), seen["held"]
+        seen = self.concurrent_run(states, 3, gates=states)
+        entered, held = (lambda s: seen["event"]("entered", s)), seen["held"]
+        finished = lambda s: seen["event"]("finished", s)
 
         def script():
             for state in states[:3]:
                 self.assertTrue(entered(state).wait(5))
-            for state in reversed(states[:3]):  # Complete 3, 2, 1: completion order is not input order.
+            # A replacement starts only after the dispatcher has observed a completion, so waiting for it
+            # fixes the completion order: s3, s2, s1, then (reversed again) s6, s5, s4.
+            for done, replacement in (("s3", "s4"), ("s2", "s5"), ("s1", "s6")):
+                held[done].set()
+                self.assertTrue(entered(replacement).wait(5))
+            for state in ("s6", "s5", "s4"):
                 held[state].set()
                 self.assertTrue(finished(state).wait(5))
         self.assertEqual(self.drive(seen, script), 0)
         out = seen["out"]
-        self.assertEqual(seen["order"][:3], ["s3", "s2", "s1"])  # The red control really reversed completion.
+        self.assertEqual(seen["order"], ["s3", "s2", "s1", "s6", "s5", "s4"])  # Red control: not input order.
         self.assertEqual([r["id"] for r in json.loads((out / "answers.json").read_text())],
                          ["r%d" % i for i in range(1, 7)])
         self.assertEqual(sorted(p.name for p in out.glob("answer-*.json")),
@@ -791,7 +809,7 @@ class HarnessTests(unittest.TestCase):
 
         def script():
             self.assertTrue(entered("s1").wait(5) and entered("s2").wait(5))
-            self.assertTrue(finished("s3").wait(5))  # s3's second call failed while s1 and s2 are still held.
+            self.assertTrue(seen["event"]("failed", "s3").wait(5))  # s3's second call failed; s1 and s2 still held.
             self.assertFalse(any(seen["event"]("entered", s).is_set() for s in states[3:]))
             held["s1"].set(); held["s2"].set()
         self.assertEqual(self.drive(seen, script), 2)
