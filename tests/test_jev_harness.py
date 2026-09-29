@@ -16,6 +16,7 @@ from urllib.error import HTTPError
 from jev import openrouter
 from jev.answers import Answer, MODEL, pinned_model
 from jev.client import JevClient, MockClient, canonical, load_key, sha256, validate_questions
+from concurrent.futures import wait as cli_wait
 from jev.cli import main, score
 from jev.eval import (agreement, confidence_table, fn_zero_threshold, gate, metrics, metrics_from_confusion,
                       binary_counts, noul_metrics, score_metrics, within)
@@ -711,7 +712,7 @@ class HarnessTests(unittest.TestCase):
             axis: {"type": "choice", "choice": choice, "confidence": 0.9}
             for axis, choice in (("purpose", "bug_fix"), ("area", "integrations"))}}
         lock, held = threading.Lock(), {state: threading.Event() for state in gates}
-        seen = {"active": 0, "peak": 0, "entered": {}, "finished": {}, "failed": {}, "order": [], "calls": {}}
+        seen = {"active": 0, "peak": 0, "entered": {}, "finished": {}, "observed": threading.Event(), "order": [], "calls": {}}
         event = lambda kind, state: seen[kind].setdefault(state, threading.Event())
 
         class Fake:
@@ -728,7 +729,6 @@ class HarnessTests(unittest.TestCase):
                     if state in held and not held[state].wait(timeout):
                         raise AssertionError("gate never released")
                     if fail == (state, call):
-                        event("failed", state).set()
                         raise RuntimeError("synthetic failure")
                     return MockClient([canned]).ask(state, questions)
                 finally:
@@ -744,10 +744,18 @@ class HarnessTests(unittest.TestCase):
         visibility = {"HiQS-Labs/pub": "PUBLIC", "HiQS-Labs/denied": "PRIVATE"}
         seen["event"], seen["held"], seen["out"] = event, held, out
 
+        real_wait = cli_wait
+
+        def spy_wait(pending, **kwargs):
+            done, rest = real_wait(pending, **kwargs)
+            if any(future.exception() is not None for future in done):
+                seen["observed"].set()  # The dispatcher is now holding a failed Future.
+            return done, rest
+
         def run():
             with patch.dict(os.environ, {"TYPESAFE_API_KEY": "test-only"}, clear=True), \
                     patch("jev.cli.repo_visibility", return_value=visibility), \
-                    patch("jev.cli.JevClient", Fake), \
+                    patch("jev.cli.JevClient", Fake), patch("jev.cli.wait", spy_wait), \
                     contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 try:
                     return main(args)
@@ -809,7 +817,7 @@ class HarnessTests(unittest.TestCase):
 
         def script():
             self.assertTrue(entered("s1").wait(5) and entered("s2").wait(5))
-            self.assertTrue(seen["event"]("failed", "s3").wait(5))  # s3's second call failed; s1 and s2 still held.
+            self.assertTrue(seen["observed"].wait(5))  # The dispatcher returned s3's failed Future; s1 and s2 still held.
             self.assertFalse(any(seen["event"]("entered", s).is_set() for s in states[3:]))
             held["s1"].set(); held["s2"].set()
         self.assertEqual(self.drive(seen, script), 2)
