@@ -81,3 +81,11 @@ Round 1 (Codex, VERDICT FAIL, 3 Should + 3 Pass): F1 dispatch/failure algorithm 
 - Byte parity against the unmodified code (baseline from commit c3d9c36 code, same canned responses, inputs `[denied, pubA, pubB]`, `--repeat 3`): all 8 output files (6 checkpoints, `answers.json`, `results.json`) have identical SHA-256 at `--concurrency` default, and at `--concurrency 3`.
 - Red controls, each run against a deliberately broken implementation: assembling results in completion order fails `test_concurrent_dispatch_is_bounded_ordered...`; submitting after a failure fails `test_concurrent_failure_stops_dispatch...`; removing the lock in `client.py` or in `openrouter.py` fails `test_client_accounting_is_exact_under_threads`. A lost-update count alone did not detect a removed lock (the GIL hides it), so that test also holds the lock and checks `_answer` blocks.
 - Not run: any live request. No new live evidence or accuracy claim.
+
+### Final-QA round 1 receipts (disposable clone at 97f2cbb, `git clone --local`, 2026-09-29)
+
+- `git diff --stat 445ef5e..97f2cbb`: 8 files, +598/-18: this plan, README.md, jev/cli.py, jev/client.py, jev/openrouter.py, tests/test_jev_harness.py, and the two relay threads. No other files.
+- `python3 -m unittest discover -s tests`: `Ran 84 tests ... OK`.
+- Byte parity vs the unmodified code, inputs `[denied, pubA, pubB]`, `--repeat 3`, all 8 output files (`answer-0001{,-r2,-r3}.json`, `answer-0002{,-r2,-r3}.json`, `answers.json`, `results.json`): identical SHA-256 at the default and at `--concurrency 3` (`cmp` exit 0 for both).
+- Mutation controls run against the tests after the round-1 fixes, each producing `FAILED`: completion-order assembler; submit after failure; serial dispatcher (`if True:` for the N=1 branch); eager submit of every record; lock removed in `client.py`; lock removed in `openrouter.py`.
+- Flake stress: `python3 -m unittest tests.test_jev_harness -k concurrent` 30 consecutive runs, 0 failures.

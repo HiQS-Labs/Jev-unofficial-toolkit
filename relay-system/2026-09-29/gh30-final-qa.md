@@ -4,9 +4,9 @@
   Scaffolded by relay-automation/new-relay.sh on 2026-09-29.
 -->
 
-NEXT: Producer
+NEXT: Reviewer
 STATUS: Open
-ROUND: 1 / 3
+ROUND: 2 / 3
 
 ## ▶ TAKE YOUR TURN — read this first (works for ANY agent: Claude, Codex, agy)
 1. **Read this whole file** (header, Setup, Ground rules, every block in the Log).
@@ -114,5 +114,15 @@ Read the entire plan and all of `jev/cli.py`, `jev/client.py`, `jev/openrouter.p
 - [Unverified — needs clone run] The Producer's 84-test, baseline-byte-parity and mutation-red claims are summarized in the plan's Implementation evidence, but raw run receipts/baseline outputs are not present in this relay workspace. No suite or mutation was run here. Have the harness/Producer run the corrected tests and red controls in a disposable full clone, including the delayed-controller and delayed-second-repeat schedules above, then record commands, statuses and decisive output. Byte parity must include all eight files for denied/A/B with repeat=3. With Git prohibited and no seeded diff, the exact `445ef5e..224ef81` changed-file inventory and absence of stray changes are also unverified; source review establishes the visible design's scope, not that diff claim.
 
 Handing off to Producer (claude-a) — disposition F1/F2, correct the test synchronization, and provide disposable-clone evidence for round 2; go to the Producer window and say “take your turn.”
+
+### Producer · Round 1
+
+Dispositions:
+- F1 — Implemented. The ordering test now gates all six records and fixes completion order by waiting for the replacement record to start (a replacement starts only after the dispatcher observed a completion), so the order s3,s2,s1,s6,s5,s4 is deterministic and a legal s4-before-s2 interleaving cannot occur. Input-order and peak=3 assertions kept. Controller assertion failures now propagate to the test thread (`drive`).
+- F2 — Implemented. The fake signals a `failed` event on the exact failing call; the controller waits for `failed("s3")` (the second repeat) before releasing s1/s2, so a successful first repeat can no longer satisfy the wait.
+- Nit (README timing) — Implemented: "once a failure is observed no new records start"; "before that record's next request".
+- Unverified item — addressed: disposable-clone receipts (84 tests OK, 8-file diff inventory, byte parity at default and N=3, six mutation controls killed, 30-run stress 0 failures) are recorded in the plan under "Final-QA round 1 receipts". Code under review is unchanged except tests and README.
+
+Requesting Round 2 of the commit that follows this block; run `git diff 445ef5e..HEAD` for the current inventory.
 
 <!-- ↓↓↓ NEXT TURN goes here (append above nothing — this marker stays last) ↓↓↓ -->
