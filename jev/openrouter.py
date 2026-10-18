@@ -4,6 +4,7 @@
 import json
 import math
 import os
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -44,6 +45,7 @@ class OpenRouterClient:
         self._key, self.endpoint = key.strip(), endpoint
         self.input_tokens, self.output_tokens, self.cost = 0, 0, 0.0
         self.models_seen = set()
+        self._lock = threading.Lock()
 
     def _answer(self, raw_request, raw_response, questions):
         parsed = json.loads(raw_response)
@@ -68,12 +70,13 @@ class OpenRouterClient:
             if type(usage.get(field)) is not int or usage[field] < 0:
                 raise ValueError("invalid token usage")
         cost = number(usage.get("cost"))
-        if cost < 0 or not math.isfinite(self.cost + cost):
-            raise ValueError("invalid cost")
-        self.input_tokens += usage["input_tokens"]
-        self.output_tokens += usage["output_tokens"]
-        self.cost += cost
-        self.models_seen.add(answer.model)
+        with self._lock:  # Workers share one client under --concurrency; check and update together.
+            if cost < 0 or not math.isfinite(self.cost + cost):
+                raise ValueError("invalid cost")
+            self.input_tokens += usage["input_tokens"]
+            self.output_tokens += usage["output_tokens"]
+            self.cost += cost
+            self.models_seen.add(answer.model)
         return answer
 
     def ask(self, state, questions):

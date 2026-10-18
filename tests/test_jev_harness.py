@@ -6,7 +6,9 @@ import io
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -14,6 +16,7 @@ from urllib.error import HTTPError
 from jev import openrouter
 from jev.answers import Answer, MODEL, pinned_model
 from jev.client import JevClient, MockClient, canonical, load_key, sha256, validate_questions
+from concurrent.futures import wait as cli_wait
 from jev.cli import main, score
 from jev.eval import (agreement, confidence_table, fn_zero_threshold, gate, metrics, metrics_from_confusion,
                       binary_counts, noul_metrics, score_metrics, within)
@@ -691,6 +694,192 @@ class HarnessTests(unittest.TestCase):
         for matrix in ([[0]], [[-1]], [[True]], [[1, 0]]):
             with self.assertRaises(ValueError): metrics_from_confusion(matrix, ["a"])
         self.assertEqual(metrics_from_confusion([[2, 1], [0, 1]], ["a", "b"])["correct"], 3)
+
+    # --concurrency: a thread-safe fake stands in at the live-client seam; the network blockers stay on.
+    def concurrent_run(self, states, concurrency, repeat=1, gates=(), fail=None, denied=(), timeout=5, out_name="out"):
+        questions = load_questions("work_purpose_v3")
+        records = [{"id": "r%d" % (i + 1), "repo": "HiQS-Labs/" + ("denied" if state in denied else "pub"),
+                    "state": state} for i, state in enumerate(states)]
+        labels = [{"id": r["id"], "purpose": "bug_fix", "area": "integrations"} for r in records]
+        files = {name: self.tmp / (name + ".json") for name in ("records", "labels", "manifest")}
+        files["records"].write_bytes(canonical(records))
+        files["labels"].write_bytes(canonical(labels))
+        files["manifest"].write_bytes(canonical({"model": MODEL,
+            "quiz_sha256": sha256(files["records"].read_bytes()),
+            "questions_sha256": sha256(canonical(questions)), **commit(files["labels"]),
+            "gate": {"axis": "purpose", "confidence_floor": 0.8, "min_accuracy": 0.0, "min_coverage": 0.0}}))
+        canned = {"model": MODEL, "usage": {"input_tokens": 7}, "answers": {
+            axis: {"type": "choice", "choice": choice, "confidence": 0.9}
+            for axis, choice in (("purpose", "bug_fix"), ("area", "integrations"))}}
+        lock, held = threading.Lock(), {state: threading.Event() for state in gates}
+        seen = {"active": 0, "peak": 0, "entered": {}, "finished": {}, "observed": threading.Event(), "order": [], "calls": {}}
+        event = lambda kind, state: seen[kind].setdefault(state, threading.Event())
+
+        class Fake:
+            input_tokens, models_seen = 0, set()
+            def __init__(self, key):
+                pass
+            def ask(self, state, questions):
+                with lock:
+                    seen["active"] += 1
+                    seen["peak"] = max(seen["peak"], seen["active"])
+                    seen["calls"][state] = call = seen["calls"].get(state, 0) + 1
+                    event("entered", state).set()
+                try:
+                    if state in held and not held[state].wait(timeout):
+                        raise AssertionError("gate never released")
+                    if fail == (state, call):
+                        raise RuntimeError("synthetic failure")
+                    return MockClient([canned]).ask(state, questions)
+                finally:
+                    with lock:
+                        seen["active"] -= 1
+                        seen["order"].append(state)
+                        event("finished", state).set()
+
+        out = self.tmp / out_name
+        args = ["eval", "--records", str(files["records"]), "--labels", str(files["labels"]),
+                "--manifest", str(files["manifest"]), "--live", "--repeat", str(repeat),
+                "--concurrency", str(concurrency), "--out", str(out)]
+        visibility = {"HiQS-Labs/pub": "PUBLIC", "HiQS-Labs/denied": "PRIVATE"}
+        seen["event"], seen["held"], seen["out"] = event, held, out
+
+        real_wait = cli_wait
+
+        def spy_wait(pending, **kwargs):
+            done, rest = real_wait(pending, **kwargs)
+            if any(future.exception() is not None for future in done):
+                seen["observed"].set()  # The dispatcher is now holding a failed Future.
+            return done, rest
+
+        def run():
+            with patch.dict(os.environ, {"TYPESAFE_API_KEY": "test-only"}, clear=True), \
+                    patch("jev.cli.repo_visibility", return_value=visibility), \
+                    patch("jev.cli.JevClient", Fake), patch("jev.cli.wait", spy_wait), \
+                    contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                try:
+                    return main(args)
+                except SystemExit as exit:
+                    return exit.code
+        seen["run"] = run
+        return seen
+
+    def drive(self, seen, script):
+        """Run the CLI on this thread while a controller thread releases gates in a chosen order."""
+        errors = []
+
+        def controller():
+            try:
+                script()
+            except BaseException as error:  # Surface controller failures on the test thread.
+                errors.append(error)
+                for gate in seen["held"].values():
+                    gate.set()  # Never leave a worker waiting on a gate that will not open.
+        thread = threading.Thread(target=controller, daemon=True)
+        thread.start()
+        code = seen["run"]()
+        thread.join(10)
+        self.assertFalse(thread.is_alive())
+        if errors:
+            raise errors[0]
+        return code
+
+    def test_concurrent_dispatch_is_bounded_ordered_and_matches_serial_names(self):
+        states = ["s%d" % i for i in range(1, 7)]
+        seen = self.concurrent_run(states, 3, gates=states)
+        entered, held = (lambda s: seen["event"]("entered", s)), seen["held"]
+        finished = lambda s: seen["event"]("finished", s)
+
+        def script():
+            for state in states[:3]:
+                self.assertTrue(entered(state).wait(5))
+            # A replacement starts only after the dispatcher has observed a completion, so waiting for it
+            # fixes the completion order: s3, s2, s1, then (reversed again) s6, s5, s4.
+            for done, replacement in (("s3", "s4"), ("s2", "s5"), ("s1", "s6")):
+                held[done].set()
+                self.assertTrue(entered(replacement).wait(5))
+            for state in ("s6", "s5", "s4"):
+                held[state].set()
+                self.assertTrue(finished(state).wait(5))
+        self.assertEqual(self.drive(seen, script), 0)
+        out = seen["out"]
+        self.assertEqual(seen["order"], ["s3", "s2", "s1", "s6", "s5", "s4"])  # Red control: not input order.
+        self.assertEqual([r["id"] for r in json.loads((out / "answers.json").read_text())],
+                         ["r%d" % i for i in range(1, 7)])
+        self.assertEqual(sorted(p.name for p in out.glob("answer-*.json")),
+                         ["answer-%04d.json" % i for i in range(1, 7)])
+        self.assertEqual(seen["peak"], 3)
+
+    def test_concurrent_failure_stops_dispatch_and_keeps_completed_checkpoints(self):
+        states = ["s%d" % i for i in range(1, 7)]
+        seen = self.concurrent_run(states, 3, repeat=2, gates=["s1", "s2"], fail=("s3", 2))
+        entered, finished, held = (lambda s: seen["event"]("entered", s)), (lambda s: seen["event"]("finished", s)), seen["held"]
+
+        def script():
+            self.assertTrue(entered("s1").wait(5) and entered("s2").wait(5))
+            self.assertTrue(seen["observed"].wait(5))  # The dispatcher returned s3's failed Future; s1 and s2 still held.
+            self.assertFalse(any(seen["event"]("entered", s).is_set() for s in states[3:]))
+            held["s1"].set(); held["s2"].set()
+        self.assertEqual(self.drive(seen, script), 2)
+        out = seen["out"]
+        self.assertEqual(sorted(seen["calls"]), ["s1", "s2", "s3"])  # Records 4-6 never started.
+        self.assertEqual(sorted(p.name for p in out.glob("answer-*.json")),
+                         ["answer-0001-r2.json", "answer-0001.json", "answer-0002-r2.json", "answer-0002.json",
+                          "answer-0003.json"])  # s3's completed first repeat kept; its failed repeat absent.
+        self.assertFalse((out / "answers.json").exists())
+        self.assertFalse((out / "results.json").exists())
+
+    def test_serial_and_concurrent_runs_name_checkpoints_by_eligible_position(self):
+        for concurrency in (1, 3):
+            with self.subTest(concurrency=concurrency):
+                seen = self.concurrent_run(["skip", "a", "b"], concurrency, repeat=3, denied=["skip"],
+                                           out_name="out%d" % concurrency)
+                self.assertEqual(seen["run"](), 0)
+                names = sorted(p.name for p in seen["out"].glob("answer-*.json"))
+                self.assertEqual(names, ["answer-0001-r2.json", "answer-0001-r3.json", "answer-0001.json",
+                                         "answer-0002-r2.json", "answer-0002-r3.json", "answer-0002.json"])
+                self.assertEqual([r["id"] for r in json.loads((seen["out"] / "answers.json").read_text())],
+                                 ["r2", "r3"])
+                self.assertNotIn("skip", seen["calls"])
+
+    def test_concurrency_bounds_and_ordered_mock_refusal(self):
+        fixture = ROOT / "examples/fixtures/purpose-40"
+        for value in ("0", "9", "2"):  # Out of range twice; then above 1 with ordered mock responses.
+            out = self.tmp / ("refused" + value)
+            with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                main(["replay", "--fixture", str(fixture), "--concurrency", value, "--out", str(out)])
+            self.assertFalse(out.exists())
+
+    def test_client_accounting_is_exact_under_threads(self):
+        interval = sys.getswitchinterval()
+        sys.setswitchinterval(1e-6)  # Make an unlocked += lose updates if the lock is ever removed.
+        self.addCleanup(sys.setswitchinterval, interval)
+        cases = ((MockClient([]), response()), (openrouter.OpenRouterMockClient([]), self.router_response()))
+        for client, canned in cases:
+            def work():
+                for _ in range(300):
+                    client._answer(b"request", canonical(canned), Q)
+            threads = [threading.Thread(target=work) for _ in range(8)]
+            for thread in threads: thread.start()
+            for thread in threads: thread.join()
+            self.assertEqual(client.input_tokens, 7 * 8 * 300)
+            self.assertEqual(client.models_seen, {canned["model"]})
+            before = client.input_tokens  # The GIL can hide a lost update, so also prove the lock guards it.
+            worker = threading.Thread(target=client._answer, args=(b"request", canonical(canned), Q))
+            with client._lock:
+                worker.start()
+                worker.join(0.3)
+                self.assertTrue(worker.is_alive())
+                self.assertEqual(client.input_tokens, before)
+            worker.join(5)
+            self.assertEqual(client.input_tokens, before + 7)
+        self.assertAlmostEqual(client.cost, 0.001 * (8 * 300 + 1))
+        client.cost = 1e308  # A nonfinite cumulative cost is refused without a partial update.
+        canned = self.router_response(); canned["usage"]["cost"] = 1e308
+        before = client.input_tokens
+        with self.assertRaises(ValueError):
+            client._answer(b"request", canonical(canned), Q)
+        self.assertEqual(client.input_tokens, before)
 
 
 if __name__ == "__main__":
