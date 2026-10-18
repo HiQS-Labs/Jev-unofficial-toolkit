@@ -1,0 +1,62 @@
+{
+ "baselines": {
+  "majority": 26,
+  "markov_1": 37,
+  "phase_backoff": 42,
+  "repeat_last": 22
+ },
+ "created_utc": "2026-09-22T23:55:24.303259+00:00",
+ "dataset": "nebius/SWE-rebench-openhands-trajectories",
+ "dataset_license": "CC BY 4.0",
+ "dataset_revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
+ "hashes": {
+  "baselines_sha256": "27672f088c1a47010e40af58b00806c6aa4c1003b98e78c06ab0b88736a38a00",
+  "holdout_sha256": "f016551eda2f9912c2ab81887669281452777ac103737f6e9b092044064a8587",
+  "laya_choice_contract_sha256": "6a268fefffc807cb1013765c5e23e9b668326f69704c0a65389989e7ca2f8edb",
+  "laya_input_sha256": "11bd8f2714ab73feb07e44b6da65785d8bd9a7999d1cb95581d7f0aeec610024",
+  "laya_output_sha256": "bdd42a8765ca225b4d43c4ef89e5d83e356b10c5d80808e12b5562e9975205b3",
+  "question_sha256": "b85f255481aed18ee2aa755bcb6d91baf4e5fd4beaa51223d9140d149f179ce7",
+  "runner_sha256": "8184ae9c5f714eb500c186472131560ef9878377c5a7a845231b51947be29dd8",
+  "train_sha256": "733f93d0cde117b808ec21046787d1348a5b3f3681bbc6e8c2cb34decb2bf776"
+ },
+ "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
+ "model_identity": {
+  "config_sha256": "ae287b56bbcf5f8c4f4541ae9dfd00c914c4c48b940b8398c3058af37ba92bbd",
+  "device": "cpu",
+  "dtype": "torch.float32",
+  "huggingface_hub_version": "1.32.0",
+  "laya_commit": "c7527708f9f5220c669d8aa385077cd28d04708a",
+  "laya_source_sha256": {
+   "__init__.py": "f6d6368e68a5570382481f2d87b165865e062dd1672c9003b47577cd362a7a65",
+   "agent.py": "128567096446c5d39af8e4a3a7c4dd9e32a134a1b099ce5a5eed383beeff1b89",
+   "common.py": "f231d42fcec84da203222fcaa89c083b22776e00341e66e118183d754e1dcabf",
+   "email.py": "481440b9f4dfc1d8c0c297322581ec2ba567f4286c1988c6e0b5163889f32088",
+   "lang.py": "59589b1476b02a54e64926399a012e49b9615a668309fe429f440bf4af19a43b",
+   "presets.py": "2a3370f587cae29696bfa487edcc51caf47a211518733fdb192cf6d4eddbf1ea",
+   "router.py": "1bdb5f3eda41a9dafddc3cd0cde150538b1bd36fbc1dba9f9d06ea00c774efa1",
+   "shortlist.py": "0d5a2a0f59ceb3e7fbf1f087864fcce41bb73eb039cf73357792976c10bfdb76"
+  },
+  "laya_version": "0.3.6",
+  "numpy_version": "2.4.6",
+  "revision": "1c5edc17a7acd8701df6fc341c0d179f1c62c982",
+  "safetensors_version": "0.8.0",
+  "source": "convaiinnovations/laya",
+  "source_artifact_sha256": {
+   "encoder/config.json": "bf3ab80598fdccf414855a2ce80f22859e4492d06ca8a62ddd1cfb63972f8979",
+   "model.safetensors": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+   "rl_agent_config.json": "ae287b56bbcf5f8c4f4541ae9dfd00c914c4c48b940b8398c3058af37ba92bbd",
+   "tokenizer/tokenizer.json": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+   "tokenizer/tokenizer_config.json": "50044de60daaa73df97d262e15a40d4faf0160e7d742df64b377877a1320dd12"
+  },
+  "torch_version": "2.14.0",
+  "transformers_version": "5.17.0"
+ },
+ "needle_commit": "d3be2058230cee6dc69f85c074a41bba5c8ecf61",
+ "runtime": {
+  "machine": "arm64",
+  "platform": "Darwin",
+  "python": "3.11.15"
+ },
+ "schema": "laya-six-action-provenance-v1",
+ "toolkit_commit": "2ba087a9533466de300e6f0d6dfedebbf8bb1157"
+}
